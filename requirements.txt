@@ -1,0 +1,10 @@
+# Torch built for CUDA 12.8 (RTX 5070 / Blackwell sm_120 needs cu128+ wheels):
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+torch==2.11.0
+torchvision==0.26.0
+ultralytics==8.4.84
+sahi==0.12.1
+opencv-contrib-python==5.0.0.93  # contrib: dnn_superres for the SR ablation
+numpy==2.5.0
+scipy==1.18.0
+lap==0.5.13
