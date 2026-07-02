@@ -1,0 +1,3 @@
+reference track id1 (280 measured frames): baseline hit 35 (12.5%) at conf>=0.25
+reference track id1 (280 measured frames): baseline hit 36 (12.9%) at conf>=0.1
+reference track id1 (280 measured frames): baseline hit 37 (13.2%) at conf>=0.02

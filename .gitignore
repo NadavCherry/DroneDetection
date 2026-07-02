@@ -18,5 +18,6 @@ work/train_*.log
 *.mp4
 *.docx
 *.pt
-# ...but the trained pipeline weights are kept (each ~22 MB)
+# ...but the trained pipeline weights and provided baselines are kept
 !work/models/*.pt
+!baseline/*.pt
