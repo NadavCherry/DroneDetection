@@ -4,18 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5fee4497-8da2-4375-901c-2471f62b3200" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/DroneDetection.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/07_05.mp4" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/compass_artifact_wf-032ca025-b593-4544-a778-63beeec04e43_text_markdown.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/drone_detection.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/זיהוי רחפנים ואובייקטים זעירים.docx" afterDir="false" />
-    </list>
+    <list default="true" id="5fee4497-8da2-4375-901c-2471f62b3200" name="Changes" comment="feat(dronedet): implement end-to-end drone detection and tracking pipeline&#10;&#10;- Detection: Introduce `moe-hybrid` layered fusion (stabilization -&gt; motion proposals -&gt; tiny-specialist YOLO -&gt; near/big-expert YOLO). Achieved 100% near-drone recall and successful detection of 3-5px hazy drones with 0.44 FP/frame.&#10;- Tracking: Implement camera-motion-compensated Kalman tracker with Hungarian association, coasting, and directedness-based clutter rejection. Maintained stable tracking over 91.4% of far drone frames and 100% for the landed drone.&#10;- Training Recipe: Resolve small-object (&lt;10px) starvation in YOLO loss by separating tiny/large target training, inflating sub-10px labels to 24px, and using copy-paste augmentation with scale/haze jitter.&#10;- Documentation &amp; Tools: Add comprehensive `REPORT.md`, evaluation matrices (`eval_val.md`, `eval_full.md`), trained experts (`yolo-ft-best.pt`, `yolo-ft5-best.pt`), and reproduction scripts (`python -m dronedet ...`).&#10;&#10;Note: Current fine-tuned weights are scene-tuned to the 24s video; the pipeline architecture, harness, and training recipes are the primary transferable deliverables." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -24,6 +13,12 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/NadavCherry/DroneDetection.git",
+    "accountId": "7ab86b8b-b893-42a9-bc9d-cf0093872920"
+  }
+}]]></component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
@@ -47,7 +42,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "ai.playground.ignore.import.keys.banner.in.settings": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "main",
     "last_opened_file_path": "/home/nadavc/PycharmProjects/DroneDetection",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -108,12 +103,44 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1782980841384</updated>
-      <workItem from="1782980842412" duration="13468000" />
+      <workItem from="1782980842412" duration="13841000" />
     </task>
+    <task id="LOCAL-00001" summary="feat(dronedet): implement end-to-end drone detection and tracking pipeline&#10;&#10;- Detection: Introduce `moe-hybrid` layered fusion (stabilization -&gt; motion proposals -&gt; tiny-specialist YOLO -&gt; near/big-expert YOLO). Achieved 100% near-drone recall and successful detection of 3-5px hazy drones with 0.44 FP/frame.&#10;- Tracking: Implement camera-motion-compensated Kalman tracker with Hungarian association, coasting, and directedness-based clutter rejection. Maintained stable tracking over 91.4% of far drone frames and 100% for the landed drone.&#10;- Training Recipe: Resolve small-object (&lt;10px) starvation in YOLO loss by separating tiny/large target training, inflating sub-10px labels to 24px, and using copy-paste augmentation with scale/haze jitter.&#10;- Documentation &amp; Tools: Add comprehensive `REPORT.md`, evaluation matrices (`eval_val.md`, `eval_full.md`), trained experts (`yolo-ft-best.pt`, `yolo-ft5-best.pt`), and reproduction scripts (`python -m dronedet ...`).&#10;&#10;Note: Current fine-tuned weights are scene-tuned to the 24s video; the pipeline architecture, harness, and training recipes are the primary transferable deliverables.">
+      <option name="closed" value="true" />
+      <created>1783010654915</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1783010654915</updated>
+    </task>
+    <task id="LOCAL-00002" summary="feat(dronedet): implement end-to-end drone detection and tracking pipeline&#10;&#10;- Detection: Introduce `moe-hybrid` layered fusion (stabilization -&gt; motion proposals -&gt; tiny-specialist YOLO -&gt; near/big-expert YOLO). Achieved 100% near-drone recall and successful detection of 3-5px hazy drones with 0.44 FP/frame.&#10;- Tracking: Implement camera-motion-compensated Kalman tracker with Hungarian association, coasting, and directedness-based clutter rejection. Maintained stable tracking over 91.4% of far drone frames and 100% for the landed drone.&#10;- Training Recipe: Resolve small-object (&lt;10px) starvation in YOLO loss by separating tiny/large target training, inflating sub-10px labels to 24px, and using copy-paste augmentation with scale/haze jitter.&#10;- Documentation &amp; Tools: Add comprehensive `REPORT.md`, evaluation matrices (`eval_val.md`, `eval_full.md`), trained experts (`yolo-ft-best.pt`, `yolo-ft5-best.pt`), and reproduction scripts (`python -m dronedet ...`).&#10;&#10;Note: Current fine-tuned weights are scene-tuned to the 24s video; the pipeline architecture, harness, and training recipes are the primary transferable deliverables.">
+      <option name="closed" value="true" />
+      <created>1783010658397</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1783010658397</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat(dronedet): implement end-to-end drone detection and tracking pipeline&#10;&#10;- Detection: Introduce `moe-hybrid` layered fusion (stabilization -&gt; motion proposals -&gt; tiny-specialist YOLO -&gt; near/big-expert YOLO). Achieved 100% near-drone recall and successful detection of 3-5px hazy drones with 0.44 FP/frame.&#10;- Tracking: Implement camera-motion-compensated Kalman tracker with Hungarian association, coasting, and directedness-based clutter rejection. Maintained stable tracking over 91.4% of far drone frames and 100% for the landed drone.&#10;- Training Recipe: Resolve small-object (&lt;10px) starvation in YOLO loss by separating tiny/large target training, inflating sub-10px labels to 24px, and using copy-paste augmentation with scale/haze jitter.&#10;- Documentation &amp; Tools: Add comprehensive `REPORT.md`, evaluation matrices (`eval_val.md`, `eval_full.md`), trained experts (`yolo-ft-best.pt`, `yolo-ft5-best.pt`), and reproduction scripts (`python -m dronedet ...`).&#10;&#10;Note: Current fine-tuned weights are scene-tuned to the 24s video; the pipeline architecture, harness, and training recipes are the primary transferable deliverables." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(dronedet): implement end-to-end drone detection and tracking pipeline&#10;&#10;- Detection: Introduce `moe-hybrid` layered fusion (stabilization -&gt; motion proposals -&gt; tiny-specialist YOLO -&gt; near/big-expert YOLO). Achieved 100% near-drone recall and successful detection of 3-5px hazy drones with 0.44 FP/frame.&#10;- Tracking: Implement camera-motion-compensated Kalman tracker with Hungarian association, coasting, and directedness-based clutter rejection. Maintained stable tracking over 91.4% of far drone frames and 100% for the landed drone.&#10;- Training Recipe: Resolve small-object (&lt;10px) starvation in YOLO loss by separating tiny/large target training, inflating sub-10px labels to 24px, and using copy-paste augmentation with scale/haze jitter.&#10;- Documentation &amp; Tools: Add comprehensive `REPORT.md`, evaluation matrices (`eval_val.md`, `eval_full.md`), trained experts (`yolo-ft-best.pt`, `yolo-ft5-best.pt`), and reproduction scripts (`python -m dronedet ...`).&#10;&#10;Note: Current fine-tuned weights are scene-tuned to the 24s video; the pipeline architecture, harness, and training recipes are the primary transferable deliverables." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

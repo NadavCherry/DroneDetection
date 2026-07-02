@@ -2,8 +2,21 @@
 .idea/
 __pycache__/
 *.pyc
-work/
 runs/
-*.pt
+
+# large regenerable artifacts (scripts in tools/ rebuild all of these)
+work/runs/
+work/dataset/
+work/dataset_*/
+work/vis/
+work/vis2/
+work/frames/
+work/frames_all/
+work/train_*.log
+
+# media and model weights are ignored by default...
 *.mp4
 *.docx
+*.pt
+# ...but the trained pipeline weights are kept (each ~22 MB)
+!work/models/*.pt
