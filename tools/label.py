@@ -1,8 +1,7 @@
 """Browser-based frame-by-frame bounding-box labeler for tiny drones.
 
 Zero extra dependencies: a stdlib HTTP server (``http.server``) serves a
-single-page canvas app; frames are decoded once, sequentially (the video
-must never be seeked -- see CLAUDE.md), JPEG-encoded, and held in memory
+single-page canvas app; frames are decoded once, sequentially, JPEG-encoded, and held in memory
 for instant random access.
 
     .venv/bin/python tools/label.py                      # 07_05.mp4 -> work/labels.json
