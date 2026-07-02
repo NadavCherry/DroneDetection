@@ -54,7 +54,10 @@ APPEARANCE_KEEP = 0.55   # tracks with this mean detector confidence are kept
 DIRECT_WINDOW = 40
 DIRECT_MIN = 0.55
 DIRECT_NET_MIN = 25.0
-MERGE_DIST = 20.0        # concurrent tracks closer than this are duplicates
+MERGE_DIST = 6.0         # median distance over common frames below this =
+#                          duplicates riding the same detections (~1 px);
+#                          kept tight so objects flying in formation
+#                          (e.g. a bird 10-20 px from the drone) never merge
 
 
 class Kalman:
@@ -262,7 +265,10 @@ def postprocess(tracks: list[Track]) -> list[Track]:
             if len(t.frames) >= MIN_TRACK_FRAMES
             and (t.score >= APPEARANCE_KEEP or directedness(t)[0] >= DIRECT_MIN)]
 
-    # merge concurrent duplicates (mean distance over common frames small)
+    # merge concurrent duplicates. Median distance over common frames: a
+    # track that spawned on clutter and then latched onto another track's
+    # target rides it for most of its life -- the median ignores the short
+    # pre-capture segment that would drag a mean above threshold.
     kept.sort(key=lambda t: -len(t.frames))
     out: list[Track] = []
     for t in kept:
@@ -271,7 +277,7 @@ def postprocess(tracks: list[Track]) -> list[Track]:
             common = set(t.frames) & set(k.frames)
             if len(common) < 5:
                 continue
-            d = np.mean([math_hypot(t.frames[f], k.frames[f]) for f in common])
+            d = np.median([math_hypot(t.frames[f], k.frames[f]) for f in common])
             if d < MERGE_DIST:
                 for f, v in t.frames.items():  # absorb non-overlapping part
                     k.frames.setdefault(f, v)
