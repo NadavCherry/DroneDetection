@@ -41,31 +41,88 @@ Videos: [pipeline on unseen video](docs/media/10_06_tracks_confirmed.mp4) · [ba
 
 ## The method
 
+### The core idea in one picture
+
+A drone crossing a field at 4–10 px is invisible in a single frame — to a detector *and* to a human. But stack three **stabilized** grayscale frames (t−12, t−6, t) as the color channels of one image, and everything static cancels to gray while anything that moved appears as colored blips — one blip per moment in time:
+
+<p align="center">
+  <img src="docs/media/temporal_input.jpg" width="900" alt="single frame vs stacked temporal input"/>
+  <br/>
+  <em>Same spot, same moment, unseen video. Left: find the drone (you can't — and neither can any single-frame detector, at any confidence). Right: the verifier's input — <b>yellow</b> = where the drone was 12 frames ago, <b>magenta</b> = 6 frames ago, <b>cyan</b> (circled) = now. The trail even shows its direction of flight.</em>
+</p>
+
+The verifier is an ordinary YOLOv8s with a stride-4 (P2) head — no architecture changes — trained on this 3-channel temporal representation with two classes (drone / bird). On identical held-out instances, identical training recipe: **single-frame input mAP50 = 0.06, temporal input mAP50 = 0.83**. The representation, not the network, is the breakthrough. (It formalizes exactly how our human labeler found the drone: flip frames, watch what moves.)
+
+### The full pipeline, frame by frame
+
+Every frame `t` (1280×720 BGR) goes through six stages:
+
 ```mermaid
-flowchart LR
-    A[video frame] --> B[stabilize<br/>phase-correlation / affine]
-    B --> C1[slow-mover detector<br/>LAGGED median background + MAD noise<br/>+ flicker suppression]
-    B --> C2[MOG2<br/>background subtraction]
-    C1 --> D[candidate union]
-    C2 --> D
-    D --> E["temporal verifier (ft7)<br/>YOLOv8s-P2, 2 classes: drone / bird<br/>input = stacked stabilized grays t-12 / t-6 / t"]
-    A --> F["full-frame expert (ft1)<br/>YOLOv8s-P2 @1280<br/>large / landed drones"]
-    E --> G[fusion + center-NMS<br/>drone-confirmed / bird / unverified]
-    F --> G
-    G --> H[Kalman tracker<br/>camera-motion compensated<br/>coasting + strict re-acquisition<br/>kinematic clutter filter]
-    H --> I[drone tracks + flying-object tracks]
+flowchart TD
+    F["frame t (BGR 1280x720)"]:::io
+
+    subgraph S0 ["0 - stabilization"]
+        B["global camera transform vs frame 0<br/>(phase correlation; affine LK+RANSAC for stronger ego-motion)<br/>keep a rolling 13-frame buffer of stabilized grays"]
+    end
+
+    subgraph S1 ["1 - motion proposals  (find everything that moves)"]
+        C1["slow-mover channel<br/>median background from frames &ge;90 old<br/>+ per-pixel MAD noise + flicker map<br/>&rarr; SNR image &rarr; blobs (&le;80)"]
+        C2["fast channel: MOG2<br/>per-pixel Gaussian mixture<br/>&rarr; blobs (&le;120)"]
+        U["union + center-NMS &rarr; top-20 candidates by SNR"]
+    end
+
+    subgraph S2 ["2 - temporal verification  (decide what each mover is)"]
+        V["per candidate: 640x640 native-res crop whose channels are<br/>stabilized grays at t-12 / t-6 / t<br/>&rarr; ft7: YOLOv8s-P2, classes {drone, bird}<br/>&rarr; best drone / bird confidence within 16 px"]
+    end
+
+    subgraph S3 ["3 - full-frame expert  (what motion cannot see)"]
+        E["ft1: YOLOv8s-P2 @1280 on the raw frame<br/>large / hovering / landed drones"]
+    end
+
+    subgraph S4 ["4 - fusion"]
+        G["drone-confirmed &rarr; score 0.5 + 0.5&middot;conf<br/>bird-classified &rarr; score &le;0.2 (suppressed)<br/>unverified motion &rarr; score &le;0.5<br/>&cup; expert detections &rarr; center-NMS"]
+    end
+
+    subgraph S5 ["5 - tracking  (temporal integration)"]
+        T["constant-velocity Kalman in stabilized coords<br/>Hungarian association on gated center distance<br/>coast &le;45 frames through fades<br/>strict re-acquisition: unique-peak search &plusmn;18 px, &le;12 consecutive"]
+        P["track filters: directedness &ge;0.55 over a 40-detection window<br/>(foliage jitter is zero-mean; flying objects sustain direction)<br/>appearance-confirmed tracks exempt &middot; duplicate merge (median &lt;6 px)"]
+    end
+
+    subgraph S6 ["6 - decision"]
+        O["DRONE alarm: track repeatedly verifier-confirmed<br/>flying object: directed but unconfirmed (birds)<br/>everything else never surfaces"]
+    end
+
+    F --> B
+    B --> C1 --> U
+    B --> C2 --> U
+    U --> V
+    F --> E
+    V --> G
+    E --> G
+    G --> T --> P --> O
+
+    classDef io fill:#1f6feb,color:#fff,stroke:none
+    classDef key fill:#238636,color:#fff,stroke:none
+    class V,T key
 ```
 
-Every stage exists because a simpler version measurably failed:
+Why each stage exists — every one replaced a simpler version that **measurably failed**:
 
-1. **Stabilization** — all motion reasoning happens in a fixed reference frame (translation via phase correlation; LK+RANSAC affine available for stronger ego-motion).
-2. **Slow-mover motion proposals** — background subtraction with a **lagged background** (built only from frames ≥ 90 old): a drone drifting at 0.5 px/frame has moved 45+ px out of its own background model instead of being absorbed by it. A per-pixel noise model (median-absolute-deviation) and a **flicker map** (chronic movers raise their own local threshold) suppress wind-blown foliage, which oscillates in place, while a transiting drone passes. Unioned with MOG2 for maximum recall — precision is the next stage's job.
-3. **Temporal verification — the key idea.** Each candidate gets a 640×640 native-resolution crop whose three channels are **stabilized grayscale frames at t−12, t−6, t**. Static scenery cancels to gray; anything moving leaves a color-fringed trail. A 2-class (drone/bird) YOLOv8s-P2 trained on this representation reaches **mAP50 0.83** on real held-out instances where the *identical* single-frame model reaches **0.06**. This is the observation a human labeler makes ("I could only find it by flipping frames") turned into the model's input.
-4. **Full-frame expert** — a separate YOLOv8s-P2 covers what motion can't see: large, hovering, or landed drones.
-5. **Tracking** — constant-velocity Kalman in stabilized coordinates, Hungarian association by center distance (appearance is meaningless at 4 px), coasting through fades, **strict local re-acquisition** (unique-peak test in a short-term background difference — a loose version latches onto foliage), and a **kinematic clutter filter**: foliage jitter is zero-mean, flying objects sustain direction; appearance-confirmed tracks (a landed drone) are exempt.
-6. **Track classification** — drone-confirmed tracks (verifier agrees repeatedly) become alarms; directed-but-unconfirmed movers surface as "flying object" (birds); everything else never surfaces.
+| stage | without it |
+|---|---|
+| stabilization | sub-pixel camera drift makes every high-contrast edge flicker; all motion logic downstream breaks |
+| **lagged** background (≥ 90 frames old) | a drone drifting at 0.5 px/frame is *absorbed into its own background model* and vanishes — recall on the hard segment was 0.05 before, 0.57 after |
+| flicker map + MAD noise | wind-blown foliage produced ~50 false candidates/frame; foliage oscillates in place so its own history raises its threshold, while a transiting drone passes clean |
+| MOG2 union | the lagged channel alone misses ~30% of the hardest frames; MOG2 sees 86% at hopeless precision — the union feeds the verifier maximal recall and lets it supply the precision |
+| **temporal verifier** | the single-frame ablation: AP 0.22 vs 0.66 with everything else identical |
+| full-frame expert | motion is blind to a landed/hovering drone; the expert holds it at 100% recall (a single 526-frame track at 0.57 px error) |
+| 2-class (bird) training | birds are the dominant false-alarm source; classifying them *in the verifier* suppresses them before tracking |
+| coasting + strict re-acquisition | the drone fades for up to ~45 frames crossing low-contrast patches; coasting bridges, re-acquisition re-locks — a *loose* version latched onto foliage and made clutter tracks immortal, hence the unique-peak test and use cap |
+| kinematic track filter | gust-triggered tracks survive confirmation; directedness kills them (foliage nets ~0 displacement), while the appearance exemption protects the stationary landed drone |
 
-Training the tiny verifier has its own recipe (labels inflated to fixed 24 px boxes, copy-paste augmentation with multi-scale + atmospheric-haze jitter + simulated per-channel motion, and **never mixing large and sub-10 px instances in one training mix** — the large object's alignment scores starve the tiny ones to exactly zero recall). The full failure-mode investigation is in [REPORT.md](REPORT.md) §"training saga" and [REPORT2.md](REPORT2.md).
+The result of stage 5 is also reusable as a detector: converting tracks *back* into per-frame detections (`tracked-moe3`) fills detection gaps with track persistence — that is the F1 0.94 / recall 1.0 row in the headline table.
+
+**Training the temporal verifier** has its own recipe, each element earned in [the reports](REPORT2.md): tiny labels inflated to fixed 24 px boxes (IoU-based label assignment starves true-size sub-10 px boxes to exactly zero recall); copy-paste augmentation where patches are pasted **per-channel along a simulated velocity** (rigid for drones — including hover; faster with per-channel size jitter for birds — wing flap); atmospheric-haze jitter (distant targets fade toward the background); and **never mixing large and tiny instances in one training set** — a 180 px object's alignment scores dilute the tiny targets' gradient to nothing (the landed drone is erased from the verifier's backgrounds and handled by the separate expert).
 
 ---
 

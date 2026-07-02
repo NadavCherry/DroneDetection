@@ -49,7 +49,7 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "ai.playground.ignore.import.keys.banner.in.settings": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/home/nadavc/PycharmProjects/DroneDetection/baseline",
+    "last_opened_file_path": "/home/nadavc/PycharmProjects/DroneDetection",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -60,8 +60,8 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/baseline" />
       <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/baseline" />
     </key>
   </component>
   <component name="RunManager">
@@ -110,7 +110,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1782980841384</updated>
-      <workItem from="1782980842412" duration="16229000" />
+      <workItem from="1782980842412" duration="16784000" />
     </task>
     <task id="LOCAL-00001" summary="feat(dronedet): implement end-to-end drone detection and tracking pipeline&#10;&#10;- Detection: Introduce `moe-hybrid` layered fusion (stabilization -&gt; motion proposals -&gt; tiny-specialist YOLO -&gt; near/big-expert YOLO). Achieved 100% near-drone recall and successful detection of 3-5px hazy drones with 0.44 FP/frame.&#10;- Tracking: Implement camera-motion-compensated Kalman tracker with Hungarian association, coasting, and directedness-based clutter rejection. Maintained stable tracking over 91.4% of far drone frames and 100% for the landed drone.&#10;- Training Recipe: Resolve small-object (&lt;10px) starvation in YOLO loss by separating tiny/large target training, inflating sub-10px labels to 24px, and using copy-paste augmentation with scale/haze jitter.&#10;- Documentation &amp; Tools: Add comprehensive `REPORT.md`, evaluation matrices (`eval_val.md`, `eval_full.md`), trained experts (`yolo-ft-best.pt`, `yolo-ft5-best.pt`), and reproduction scripts (`python -m dronedet ...`).&#10;&#10;Note: Current fine-tuned weights are scene-tuned to the 24s video; the pipeline architecture, harness, and training recipes are the primary transferable deliverables.">
       <option name="closed" value="true" />
@@ -136,7 +136,15 @@
       <option name="project" value="LOCAL" />
       <updated>1783011206834</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="feat(dronedet): implement end-to-end drone detection and tracking pipeline&#10;&#10;- Detection: Introduce `moe-hybrid` layered fusion (stabilization -&gt; motion proposals -&gt; tiny-specialist YOLO -&gt; near/big-expert YOLO). Achieved 100% near-drone recall and successful detection of 3-5px hazy drones with 0.44 FP/frame.&#10;- Tracking: Implement camera-motion-compensated Kalman tracker with Hungarian association, coasting, and directedness-based clutter rejection. Maintained stable tracking over 91.4% of far drone frames and 100% for the landed drone.&#10;- Training Recipe: Resolve small-object (&lt;10px) starvation in YOLO loss by separating tiny/large target training, inflating sub-10px labels to 24px, and using copy-paste augmentation with scale/haze jitter.&#10;- Documentation &amp; Tools: Add comprehensive `REPORT.md`, evaluation matrices (`eval_val.md`, `eval_full.md`), trained experts (`yolo-ft-best.pt`, `yolo-ft5-best.pt`), and reproduction scripts (`python -m dronedet ...`).&#10;&#10;Note: Current fine-tuned weights are scene-tuned to the 24s video; the pipeline architecture, harness, and training recipes are the primary transferable deliverables.">
+      <option name="closed" value="true" />
+      <created>1783019195592</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1783019195592</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
