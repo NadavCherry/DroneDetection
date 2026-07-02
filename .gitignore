@@ -26,3 +26,10 @@ work/train_*.log
 
 # assistant guidance stays local-only
 CLAUDE.md
+
+# REALTIME: datasets and arch-specific engines are regenerable
+REALTIME/work/dataset_*/
+REALTIME/work/models/*.engine
+REALTIME/work/models/*.onnx
+REALTIME/work/*.log
+!REALTIME/work/models/*.pt

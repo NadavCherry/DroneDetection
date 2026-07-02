@@ -83,6 +83,10 @@ The result of stage 5 is also reusable as a detector: converting tracks *back* i
 
 ---
 
+## REALTIME (edge) version
+
+The same task at edge speed: [`REALTIME/`](REALTIME/README.md) re-architects the pipeline for Jetson-Orin-Nano-class hardware — six pipeline variants compared, TensorRT FP16 engines, and a bottleneck-iteration log. Outcome: **one temporal nano network @1280 (rt-c) reaches AP 0.93 tracked (vs the PC's 0.96) at 74 fps — 18× faster — with a zero-false-positive operating point**, and 99.6% single-track coverage on the unseen test video. Projected 10-15 fps on Orin Nano at 1280, 25-35 fps at 640.
+
 ## What's in the project
 
 Two full experiment rounds, 19 evaluated method variants, 7 trained models, a labeling tool, and an evaluation harness built for few-pixel targets (center-distance matching — IoU is meaningless at 4 px).
