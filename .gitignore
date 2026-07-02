@@ -23,3 +23,6 @@ work/train_*.log
 !baseline/*.pt
 # ...and the README showcase media
 !docs/media/*.mp4
+
+# assistant guidance stays local-only
+CLAUDE.md
