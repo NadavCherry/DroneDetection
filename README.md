@@ -57,54 +57,11 @@ The verifier is an ordinary YOLOv8s with a stride-4 (P2) head — no architectur
 
 Every frame `t` (1280×720 BGR) goes through six stages:
 
-```mermaid
-flowchart TD
-    F["frame t (BGR 1280x720)"]:::io
+<p align="center">
+  <img src="docs/media/architecture.svg" width="1000" alt="HiveLab pipeline architecture"/>
+</p>
 
-    subgraph S0 ["0 - stabilization"]
-        B["global camera transform vs frame 0<br/>(phase correlation; affine LK+RANSAC for stronger ego-motion)<br/>keep a rolling 13-frame buffer of stabilized grays"]
-    end
-
-    subgraph S1 ["1 - motion proposals  (find everything that moves)"]
-        C1["slow-mover channel<br/>median background from frames &ge;90 old<br/>+ per-pixel MAD noise + flicker map<br/>&rarr; SNR image &rarr; blobs (&le;80)"]
-        C2["fast channel: MOG2<br/>per-pixel Gaussian mixture<br/>&rarr; blobs (&le;120)"]
-        U["union + center-NMS &rarr; top-20 candidates by SNR"]
-    end
-
-    subgraph S2 ["2 - temporal verification  (decide what each mover is)"]
-        V["per candidate: 640x640 native-res crop whose channels are<br/>stabilized grays at t-12 / t-6 / t<br/>&rarr; ft7: YOLOv8s-P2, classes {drone, bird}<br/>&rarr; best drone / bird confidence within 16 px"]
-    end
-
-    subgraph S3 ["3 - full-frame expert  (what motion cannot see)"]
-        E["ft1: YOLOv8s-P2 @1280 on the raw frame<br/>large / hovering / landed drones"]
-    end
-
-    subgraph S4 ["4 - fusion"]
-        G["drone-confirmed &rarr; score 0.5 + 0.5&middot;conf<br/>bird-classified &rarr; score &le;0.2 (suppressed)<br/>unverified motion &rarr; score &le;0.5<br/>&cup; expert detections &rarr; center-NMS"]
-    end
-
-    subgraph S5 ["5 - tracking  (temporal integration)"]
-        T["constant-velocity Kalman in stabilized coords<br/>Hungarian association on gated center distance<br/>coast &le;45 frames through fades<br/>strict re-acquisition: unique-peak search &plusmn;18 px, &le;12 consecutive"]
-        P["track filters: directedness &ge;0.55 over a 40-detection window<br/>(foliage jitter is zero-mean; flying objects sustain direction)<br/>appearance-confirmed tracks exempt &middot; duplicate merge (median &lt;6 px)"]
-    end
-
-    subgraph S6 ["6 - decision"]
-        O["DRONE alarm: track repeatedly verifier-confirmed<br/>flying object: directed but unconfirmed (birds)<br/>everything else never surfaces"]
-    end
-
-    F --> B
-    B --> C1 --> U
-    B --> C2 --> U
-    U --> V
-    F --> E
-    V --> G
-    E --> G
-    G --> T --> P --> O
-
-    classDef io fill:#1f6feb,color:#fff,stroke:none
-    classDef key fill:#238636,color:#fff,stroke:none
-    class V,T key
-```
+Reading the figure: the **top lane** finds and identifies movers — stabilization gives every later stage a camera-motion-free world; two complementary background models propose everything that moves (the lagged one catches drifters as slow as half a pixel per frame, MOG2 maximizes recall); each candidate is judged by the temporal verifier on its motion trail. The **bottom lane** completes the picture — a separate full-frame expert catches drones that do not move (hovering, landed), fusion produces one scored detection list per frame, and the tracker integrates over time: it carries the target through fades, re-locks with a strict local search, and rejects clutter by kinematics. The output is a decision, not a box soup: **drone alarms**, **unconfirmed flying objects** (birds), and silence.
 
 Why each stage exists — every one replaced a simpler version that **measurably failed**:
 
