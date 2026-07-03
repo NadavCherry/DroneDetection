@@ -23,10 +23,10 @@ def main() -> None:
     shutil.copy(RUN_DIR / "results.csv", "work/models/ft_results.csv")
 
     # fine-tuned detectors
-    sh(PY, "-m", "dronedet", "detect", "--video", "07_05.mp4",
+    sh(PY, "-m", "dronedet", "detect", "--video", "data/videos/07_05.mp4",
        "--method", "yolo-ft", "--weights", str(BEST),
        "--out", "work/det/yolo-ft.json")
-    sh(PY, "-m", "dronedet", "detect", "--video", "07_05.mp4",
+    sh(PY, "-m", "dronedet", "detect", "--video", "data/videos/07_05.mp4",
        "--method", "yolo-ft-hybrid", "--weights", str(BEST),
        "--out", "work/det/yolo-ft-hybrid.json")
 
@@ -42,10 +42,10 @@ def main() -> None:
        "--dets", *dets, "--out", "work/eval_full.md")
 
     # trackers on the strongest detector, two operating modes
-    sh(PY, "-m", "dronedet", "track", "--video", "07_05.mp4",
+    sh(PY, "-m", "dronedet", "track", "--video", "data/videos/07_05.mp4",
        "--dets", "work/det/yolo-ft-hybrid.json",
        "--out", "work/tracks/ft-hybrid-all.json", "--min-score", "0.2")
-    sh(PY, "-m", "dronedet", "track", "--video", "07_05.mp4",
+    sh(PY, "-m", "dronedet", "track", "--video", "data/videos/07_05.mp4",
        "--dets", "work/det/yolo-ft-hybrid.json",
        "--out", "work/tracks/ft-hybrid-confirmed.json", "--min-score", "0.55")
     sh(PY, "tools/eval_tracks.py", "--tracks",
@@ -53,12 +53,12 @@ def main() -> None:
        "work/tracks/hybrid.json", "work/tracks/motion-median.json")
 
     # final annotated videos
-    sh(PY, "-m", "dronedet", "render", "--video", "07_05.mp4",
+    sh(PY, "-m", "dronedet", "render", "--video", "data/videos/07_05.mp4",
        "--dets", "work/det/yolo-ft-hybrid.json",
        "--out", "work/vis/ft_hybrid_dets.mp4", "--min-score", "0.5")
     sh(PY, "-c",
        "from dronedet.render import render_tracks; "
-       "render_tracks('07_05.mp4', 'work/tracks/ft-hybrid-confirmed.json', "
+       "render_tracks('data/videos/07_05.mp4', 'work/tracks/ft-hybrid-confirmed.json', "
        "'work/vis/ft_hybrid_tracks.mp4')")
 
 

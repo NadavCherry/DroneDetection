@@ -26,7 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from dronedet.gt import GroundTruth
 from dronedet.video import frames
 
-VIDEO = "07_05.mp4"
+VIDEO = "data/videos/07_05.mp4"
 SPLIT_AT = 342
 TILE = 640
 LABEL = 24.0

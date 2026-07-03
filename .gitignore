@@ -1,48 +1,67 @@
+# ---------------------------------------------------------------------------
+# NOTE: git does not support inline comments — every comment must be on its
+# own line, or the '#' becomes part of the pattern above it.
+# ---------------------------------------------------------------------------
+
+# --- Python / tooling ---
 .venv/
 .idea/
 __pycache__/
 *.pyc
+# ultralytics writes training runs here (see docs/guides/retrain.md gotcha)
 runs/
 
-# large regenerable artifacts (scripts in tools/ rebuild all of these)
+# --- Model weights ---
+# Ignore weights by default: pretrained base weights at the repo root
+# (yolov8n/s.pt, yolo11n/s.pt, yolo26n.pt) auto-download and stay local.
+*.pt
+# ...but keep everything we trained or ship:
+!work/models/*.pt
+!baseline/*.pt
+!realtime/work/models/*.pt
+!final/pc_max/*.pt
+!final/edge_rt/*.pt
+
+# Arch-specific / regenerable model artifacts (rebuilt on the target device)...
+*.onnx
+*.engine
+# ...except the portable ONNX that ships with the EDGE-RT deliverable:
+!final/edge_rt/*.onnx
+# two duplicate edge-weight copies that are regenerable:
+realtime/work/models/v3_full_temporal_n640.pt
+realtime/work/models/v3_full_temporal_n1280_int8.pt
+
+# --- Videos & docs ---
+# Ignore videos by default, keep the two sources and the showcase media:
+*.mp4
+!data/videos/*.mp4
+!docs/media/*.mp4
+# Ignore Word docs by default, keep the research source:
+*.docx
+!docs/references/*.docx
+
+# --- Regenerable experiment artifacts (rebuilt by tools/*) ---
 work/runs/
 work/dataset/
 work/dataset_*/
+work/dsv3_*/
 work/vis/
 work/vis2/
 work/frames/
 work/frames_all/
 work/train_*.log
+# edit-list-recovered full videos (tools/recover_full_video.py)
+work/video/
 
-# media and model weights are ignored by default...
-*.mp4
-*.docx
-*.pt
-# ...but the trained pipeline weights and provided baselines are kept
-!work/models/*.pt
-!baseline/*.pt
-# ...and the README showcase media
-!docs/media/*.mp4
+# --- realtime: datasets, engines and demo outputs are regenerable ---
+realtime/work/dataset_*/
+realtime/work/*.log
+realtime/work/outv3cpu/
+realtime/work/outfinal/
+realtime/work/gt1006_verify/sheet_*.png
 
-# assistant guidance stays local-only
+# --- final: demo run outputs are regenerable ---
+final/out/
+
+# --- assistant guidance stays local-only ---
 CLAUDE.md
-
-# REALTIME: datasets and arch-specific engines are regenerable
-REALTIME/work/dataset_*/
-REALTIME/work/models/*.engine
-REALTIME/work/models/*.onnx
-REALTIME/work/*.log
-!REALTIME/work/models/*.pt
-
-# round 3: datasets, CPU-proxy eval intermediates, demo run outputs,
-# duplicate weight copies and arch-specific engines are all regenerable
-work/dsv3_*/
-REALTIME/work/outv3cpu/
-REALTIME/work/outfinal/
-REALTIME/work/gt1006_verify/sheet_*.png
-REALTIME/work/models/v3_full_temporal_n640.pt
-REALTIME/work/models/v3_full_temporal_n1280_int8.pt
-FINAL/out/
-FINAL/edge_rt/*.engine
-!FINAL/pc_max/*.pt
-!FINAL/edge_rt/*.pt

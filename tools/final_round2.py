@@ -33,24 +33,24 @@ def main() -> None:
     shutil.copy(run / "results.csv", "work/models/ft7_results.csv")
 
     kw2 = json.dumps({"weights": FT6, "full_weights": FT1})
-    sh(PY, "-m", "dronedet", "detect", "--video", "07_05.mp4",
+    sh(PY, "-m", "dronedet", "detect", "--video", "data/videos/07_05.mp4",
        "--method", "moe2-hybrid", "--method-kw", kw2,
        "--out", "work/det2/moe2-hybrid.json")
 
     kw3 = json.dumps({"weights": FT7, "full_weights": FT1})
-    sh(PY, "-m", "dronedet", "detect", "--video", "07_05.mp4",
+    sh(PY, "-m", "dronedet", "detect", "--video", "data/videos/07_05.mp4",
        "--method", "moe3-stacked", "--method-kw", kw3,
        "--out", "work/det2/moe3-stacked.json")
 
     kwsr = json.dumps({"sr_model_path": "work/models/FSRCNN_x4.pb"})
-    sh(PY, "-m", "dronedet", "detect", "--video", "07_05.mp4",
+    sh(PY, "-m", "dronedet", "detect", "--video", "data/videos/07_05.mp4",
        "--method", "sr-hybrid", "--method-kw", kwsr,
        "--out", "work/det2/sr-hybrid.json")
 
     # trackers on both new hybrids; feedback method from the better one
     for tag in ("moe2-hybrid", "moe3-stacked"):
         for mode, score in (("all", "0.2"), ("confirmed", "0.55")):
-            sh(PY, "-m", "dronedet", "track", "--video", "07_05.mp4",
+            sh(PY, "-m", "dronedet", "track", "--video", "data/videos/07_05.mp4",
                "--dets", f"work/det2/{tag}.json",
                "--out", f"work/tracks2/{tag}-{mode}.json", "--min-score", score)
     sh(PY, "tools/eval_tracks.py", "--gt", GT, "--tracks",
@@ -75,11 +75,11 @@ def main() -> None:
     # videos painted with the user's labels
     sh(PY, "-c",
        "from dronedet.render import render_detections; "
-       f"render_detections('07_05.mp4', 'work/det2/moe3-stacked.json', "
+       f"render_detections('data/videos/07_05.mp4', 'work/det2/moe3-stacked.json', "
        f"'work/vis2/round2_dets.mp4', min_score=0.5, gt_path='{GT}')")
     sh(PY, "-c",
        "from dronedet.render import render_tracks; "
-       "render_tracks('07_05.mp4', 'work/tracks2/moe3-stacked-all.json', "
+       "render_tracks('data/videos/07_05.mp4', 'work/tracks2/moe3-stacked-all.json', "
        "'work/vis2/round2_tracks.mp4')")
 
 

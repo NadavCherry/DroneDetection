@@ -4,13 +4,13 @@ Zero extra dependencies: a stdlib HTTP server (``http.server``) serves a
 single-page canvas app; frames are decoded once, sequentially, JPEG-encoded, and held in memory
 for instant random access.
 
-    .venv/bin/python tools/label.py                      # 07_05.mp4 -> work/labels.json
+    .venv/bin/python tools/label.py                      # data/videos/07_05.mp4 -> work/labels.json
     .venv/bin/python tools/label.py --from-gt work/gt.json   # seed boxes from existing GT
     .venv/bin/python tools/label.py --export-gt work/gt.json # write labels back as GT and exit
 
 Labels live in ``work/labels.json`` as per-frame corner boxes::
 
-    {"video": "07_05.mp4", "width": 1280, "height": 720,
+    {"video": "data/videos/07_05.mp4", "width": 1280, "height": 720,
      "classes": ["far", "near", "bird"],
      "frames": {"0": [{"x1":.., "y1":.., "x2":.., "y2":.., "label":"far"}], ...}}
 
@@ -893,7 +893,7 @@ def run(video: str, labels_path: str, from_gt: str | None,
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="frame-by-frame bbox labeler")
-    ap.add_argument("--video", default="07_05.mp4")
+    ap.add_argument("--video", default="data/videos/07_05.mp4")
     ap.add_argument("--labels", default="work/labels.json",
                     help="per-frame label store (read + written)")
     ap.add_argument("--from-gt", help="seed an empty label store from a GT json")

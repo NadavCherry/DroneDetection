@@ -1,9 +1,9 @@
 """Command-line interface.
 
-    python -m dronedet detect --video 07_05.mp4 --method motion-median --out work/det/motion-median.json
+    python -m dronedet detect --video data/videos/07_05.mp4 --method motion-median --out work/det/motion-median.json
     python -m dronedet eval   --gt work/gt.json --dets work/det/*.json --out work/eval.md
-    python -m dronedet track  --video 07_05.mp4 --dets work/det/hybrid.json --out work/tracks.json
-    python -m dronedet render --video 07_05.mp4 --dets work/det/hybrid.json --out work/vis.mp4
+    python -m dronedet track  --video data/videos/07_05.mp4 --dets work/det/hybrid.json --out work/tracks.json
+    python -m dronedet render --video data/videos/07_05.mp4 --dets work/det/hybrid.json --out work/vis.mp4
 """
 
 from __future__ import annotations

@@ -1,4 +1,4 @@
-"""Build a YOLO dataset from 07_05.mp4 + work/gt.json.
+"""Build a YOLO dataset from data/videos/07_05.mp4 + work/gt.json.
 
 Time-based split (no leakage): train = frames <= 341, val = frames >= 342.
 The val segment is the hardest part of the flight (3-5 px cruise).
@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from dronedet.gt import GroundTruth
 from dronedet.video import frames
 
-VIDEO = "07_05.mp4"
+VIDEO = "data/videos/07_05.mp4"
 SPLIT_AT = 342
 MIN_BOX = 8.0  # pad tiny GT boxes up to this size for regression stability
 ROOT = Path("work/dataset")

@@ -8,3 +8,4 @@ opencv-contrib-python==5.0.0.93  # contrib: dnn_superres for the SR ablation
 numpy==2.5.0
 scipy==1.18.0
 lap==0.5.13
+imageio-ffmpeg==0.6.0  # bundled ffmpeg: edit-list recovery (tools/recover_full_video.py), H.264 exports

@@ -1,4 +1,4 @@
-"""Semi-automatic ground-truth builder for 07_05.mp4.
+"""Semi-automatic ground-truth builder for data/videos/07_05.mp4.
 
 Tracks a seeded target frame-by-frame with a *local* search in a
 non-causal windowed-median difference image (a GT-only luxury: the
@@ -23,7 +23,7 @@ from dronedet.gt import GroundTruth, GTObject
 from dronedet.stabilize import Stabilizer, shift_of, warp_to_reference
 from dronedet.video import frames
 
-VIDEO = "07_05.mp4"
+VIDEO = "data/videos/07_05.mp4"
 SAMPLE = 5          # background sample stride (frames)
 HALF_WIN = 75       # background window half-width (frames)
 SEARCH = 28         # local search half-window (px)

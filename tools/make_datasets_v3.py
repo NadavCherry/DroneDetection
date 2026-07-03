@@ -1,7 +1,7 @@
 """Dataset v3 -- the round-3 training sets from 07_05 + gt_user.json.
 
 Supersedes make_dataset_ft7.py (PC verifier) and the dataset half of
-REALTIME/tools/make_datasets_rt.py (edge nets). One stabilization pass,
+realtime/tools/make_datasets_rt.py (edge nets). One stabilization pass,
 three outputs:
 
     work/dsv3_full_temporal   full-frame 3-ch stabilized stacks @1280 (RT-C/D + PC full pass)
@@ -45,7 +45,7 @@ from dronedet.gt import GroundTruth
 from dronedet.stabilize import Stabilizer, warp_to_reference
 from dronedet.video import frames
 
-VIDEO = "07_05.mp4"
+VIDEO = "data/videos/07_05.mp4"
 DT = 6      # overridable via --dt (channel spacing ablation)
 LABEL = 24.0
 CLS = {"drone": 0, "bird": 1}
@@ -241,7 +241,7 @@ def objs_at(gt, shifts, t):
 
 
 def hard_negative_frames(gt, split_at,
-                         det_path="REALTIME/work/out/0705/rt-c-full1280/dets.json",
+                         det_path="realtime/work/out/0705/rt-c-full1280/dets.json",
                          min_score=0.30, tau=12.0):
     """Train frames where the v2 edge net produced a false positive."""
     p = Path(det_path)

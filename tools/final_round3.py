@@ -22,7 +22,7 @@ FT1 = "work/models/yolo-ft-best.pt"
 FT7V3 = "work/models/yolo-ft7v3-best.pt"
 FTSV3 = "work/models/yolo-ftSv3-best.pt"
 GT05 = "work/gt_user.json"
-GT06 = "REALTIME/work/gt_1006_v2.json"
+GT06 = "realtime/work/gt_1006_v2.json"
 
 
 def sh(*args: str) -> None:
@@ -31,10 +31,10 @@ def sh(*args: str) -> None:
 
 
 def run_fullS(video: str, out: str) -> None:
-    """Full-frame temporal s-model pass via the REALTIME runner."""
-    from REALTIME.pipelines import FullFramePipeline
-    from REALTIME.rt_models import Detector
-    from REALTIME.runner import run_pipeline
+    """Full-frame temporal s-model pass via the realtime runner."""
+    from realtime.pipelines import FullFramePipeline
+    from realtime.rt_models import Detector
+    from realtime.runner import run_pipeline
 
     pipe = FullFramePipeline("fullS-s1280", Detector(FTSV3, 1280), temporal=True)
     run_pipeline(video, pipe, out)
@@ -50,7 +50,7 @@ def main() -> None:
         shutil.copy("work/runs/v3-ft7-s640/weights/best.pt", FT7V3)
         shutil.copy("work/runs/v3-ftS-s1280/weights/best.pt", FTSV3)
 
-    for video, tag in (("07_05.mp4", "0705"), ("10_06.mp4", "1006")):
+    for video, tag in (("data/videos/07_05.mp4", "0705"), ("data/videos/10_06.mp4", "1006")):
         det_dir = Path(f"work/det3/{tag}")
         det_dir.mkdir(parents=True, exist_ok=True)
         if want("moe3"):

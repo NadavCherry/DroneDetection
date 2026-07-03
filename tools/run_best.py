@@ -1,6 +1,6 @@
 """Run the best pipeline (moe3-stacked + tracker) on any video.
 
-    python tools/run_best.py --video 10_06.mp4
+    python tools/run_best.py --video data/videos/10_06.mp4
 
 Pipeline: stabilization -> motion proposals (lagged-background slow-mover
 detector + MOG2) -> temporal 2-class verifier (ft7: stacked stabilized

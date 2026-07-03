@@ -2,7 +2,7 @@
 video and render it with the same visualization as the full pipeline --
 for baseline presentations.
 
-    python tools/run_baseline.py --weights baseline/yolo26n-...pt --video 10_06.mp4
+    python tools/run_baseline.py --weights baseline/yolo26n-...pt --video data/videos/10_06.mp4
 
 The model runs full-frame at its own training imgsz (read from the
 checkpoint, overridable with --imgsz). Detections are saved at a low

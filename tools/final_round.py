@@ -38,12 +38,12 @@ def main() -> None:
     w1 = "work/models/yolo-ft-best.pt"
 
     out = "work/det/ft5-sahi.json"
-    sh(PY, "-m", "dronedet", "detect", "--video", "07_05.mp4",
+    sh(PY, "-m", "dronedet", "detect", "--video", "data/videos/07_05.mp4",
        "--method", "yolo-ft-sahi", "--weights", w5, "--out", out)
     rename_method(out, "ft5-sahi")
 
     out = "work/det/moe-hybrid.json"
-    sh(PY, "-m", "dronedet", "detect", "--video", "07_05.mp4",
+    sh(PY, "-m", "dronedet", "detect", "--video", "data/videos/07_05.mp4",
        "--method", "yolo-ft-hybrid", "--weights", w5,
        "--method-kw",
        json.dumps({"crop_half": 320, "zoom": 1,
@@ -63,18 +63,18 @@ def main() -> None:
        "--dets", *all_dets, "--out", "work/eval_full.md")
 
     for mode, score in (("all", "0.2"), ("confirmed", "0.55")):
-        sh(PY, "-m", "dronedet", "track", "--video", "07_05.mp4",
+        sh(PY, "-m", "dronedet", "track", "--video", "data/videos/07_05.mp4",
            "--dets", "work/det/moe-hybrid.json",
            "--out", f"work/tracks/moe-{mode}.json", "--min-score", score)
     sh(PY, "tools/eval_tracks.py", "--tracks",
        "work/tracks/moe-all.json", "work/tracks/moe-confirmed.json")
 
-    sh(PY, "-m", "dronedet", "render", "--video", "07_05.mp4",
+    sh(PY, "-m", "dronedet", "render", "--video", "data/videos/07_05.mp4",
        "--dets", "work/det/moe-hybrid.json",
        "--out", "work/vis/final_dets.mp4", "--min-score", "0.5")
     sh(PY, "-c",
        "from dronedet.render import render_tracks; "
-       "render_tracks('07_05.mp4', 'work/tracks/moe-confirmed.json', "
+       "render_tracks('data/videos/07_05.mp4', 'work/tracks/moe-confirmed.json', "
        "'work/vis/final_tracks.mp4')")
 
 
