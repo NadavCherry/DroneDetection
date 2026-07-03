@@ -33,3 +33,16 @@ REALTIME/work/models/*.engine
 REALTIME/work/models/*.onnx
 REALTIME/work/*.log
 !REALTIME/work/models/*.pt
+
+# round 3: datasets, CPU-proxy eval intermediates, demo run outputs,
+# duplicate weight copies and arch-specific engines are all regenerable
+work/dsv3_*/
+REALTIME/work/outv3cpu/
+REALTIME/work/outfinal/
+REALTIME/work/gt1006_verify/sheet_*.png
+REALTIME/work/models/v3_full_temporal_n640.pt
+REALTIME/work/models/v3_full_temporal_n1280_int8.pt
+FINAL/out/
+FINAL/edge_rt/*.engine
+!FINAL/pc_max/*.pt
+!FINAL/edge_rt/*.pt

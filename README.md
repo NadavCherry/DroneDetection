@@ -10,7 +10,16 @@ Detecting and tracking a drone that occupies **3–14 pixels** in 720p RGB video
 
 ## Headline results
 
-**Held-out evaluation** (hand-labeled ground truth; the val segment is a 4–10 px drone drifting over bushes at ~0.5 px/frame — the hardest regime):
+**Round 3** (`REPORT3.md`) added a track-level classifier, v3 training data, a dense human-verified test reference, and two deliverable profiles (`FINAL/`). Center-distance matching, τ = 12 px:
+
+| pipeline | 07_05 val (hardest) | 07_05 full video | **10_06 test (unseen)** | fps (RTX 5070) |
+|---|---|---|---|---|
+| **PC-MAX** (fusion + tracker + classifier) | **AP/F1 1.000** | **1.000** | **1.000** | 4 |
+| **EDGE-RT** (one yolov8n, TensorRT FP16) | **1.000** | 0.996 / 0.998 | **1.000** | **85** |
+
+Every labeled frame of both videos is hit within 12 px with **zero false positives** (PC misses nothing; the 85 fps edge nano misses 2 frames of 885). Per-frame detection (no tracker) tops at AP 0.92 full / 0.91 test — the last mile is temporal: track integration + aggregated track-level confirmation (a drone track is announced after 8 verifier-confirmed detections ≈ 0.25 s).
+
+**Round 2 (previous generation)** — held-out evaluation (hand-labeled ground truth; the val segment is a 4–10 px drone drifting over bushes at ~0.5 px/frame — the hardest regime):
 
 | method | AP | best F1 | Recall | Precision | FP/frame |
 |---|---|---|---|---|---|
@@ -20,7 +29,7 @@ Detecting and tracking a drone that occupies **3–14 pixels** in 720p RGB video
 | plain fine-tuned YOLO (best of 5 recipes) | 0.023 | 0.060 | 0.049 | — | 0.57 |
 | pretrained YOLO — every variant (640/1280/SAHI) | ≈ 0.000 | ≤ 0.001 | ≤ 0.005 | — | — |
 
-**Tracking**: the drone's entire 548-frame flight — descent, bush-skim, fast dash, slow drift — is covered as **one track: 97.1% coverage, zero ID switches, 1.0 px median error**.
+**Tracking**: the drone's entire 548-frame flight — descent, bush-skim, fast dash, slow drift — is covered as **one track, zero ID switches, ≤1.0 px median error** (round 2: 97.1% coverage; round 3: 100%).
 
 **Against a strong conventional baseline** on the unseen video — YOLO26n trained on a real multi-scene drone dataset (imgsz 1760, 300 epochs):
 

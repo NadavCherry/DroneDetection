@@ -92,9 +92,13 @@ class RTBase:
         return gray_stab, m
 
     def temporal_image(self):
-        if len(self.grays) < 2 * DT + 1:
+        """Stack t-12/t-6/t; early frames clamp to the oldest available
+        (matches the v3 warmup training images -> detections from frame 0)."""
+        if not self.grays:
             return None
-        return np.dstack([self.grays[0], self.grays[DT], self.grays[-1]])
+        g = self.grays
+        mid = max(0, len(g) - 1 - DT)
+        return np.dstack([g[0], g[mid], g[-1]])
 
     def stage_report(self, n_frames):
         rep = {k: 1000 * v / n_frames for k, v in self.times.items()}
@@ -149,18 +153,20 @@ class VerifiedPipeline(RTBase):
         self._tick("motion", t0)
 
         dets = []
-        do_verify = (idx % self.verify_every == 0) and len(self.grays) == 2 * DT + 1
+        do_verify = (idx % self.verify_every == 0) and len(self.grays) >= 1
         verdicts = [None] * len(cands)
         if do_verify and cands:
             t0 = time.perf_counter()
             half = self.crop // 2
+            mid = max(0, len(self.grays) - 1 - DT)
+            chan_srcs = (self.grays[0], self.grays[mid], self.grays[-1])
             crops = []
             for c in cands:
                 x0 = int(np.clip(c.cx - half, 0, w - self.crop))
                 y0 = int(np.clip(c.cy - half, 0, h - self.crop))
                 crops.append((x0, y0, np.ascontiguousarray(np.dstack(
                     [g[y0:y0 + self.crop, x0:x0 + self.crop]
-                     for g in (self.grays[0], self.grays[DT], self.grays[-1])]))))
+                     for g in chan_srcs]))))
             self._tick("crop build", t0)
             t0 = time.perf_counter()
             results = self.verifier([c[2] for c in crops])

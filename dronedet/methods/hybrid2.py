@@ -84,13 +84,14 @@ class Hybrid2(BaseMethod):
 
         crops, metas = [], []
         side = 2 * self.crop_half
+        mid = max(0, len(self.grays) - 1 - DT)
         for cand, cand_s in pairs:
             if self.temporal:
-                if len(self.grays) < 2 * DT + 1:
-                    continue
+                # early frames clamp to the oldest available gray (matches
+                # the v3 warmup training images)
                 x0 = int(np.clip(cand_s.cx - self.crop_half, 0, w - side))
                 y0 = int(np.clip(cand_s.cy - self.crop_half, 0, h - side))
-                chans = [self.grays[0][1], self.grays[DT][1], self.grays[-1][1]]
+                chans = [self.grays[0][1], self.grays[mid][1], self.grays[-1][1]]
                 crop = np.dstack([c[y0:y0 + side, x0:x0 + side] for c in chans])
                 metas.append((cand, cand_s, x0, y0, True))
             else:

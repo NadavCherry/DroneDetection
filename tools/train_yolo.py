@@ -25,6 +25,11 @@ def main() -> None:
     ap.add_argument("--epochs", type=int, default=60)
     ap.add_argument("--batch", type=int, default=6)
     ap.add_argument("--name", default="ft-p2-1280")
+    ap.add_argument("--patience", type=int, default=25)
+    # temporal-stack channels are stabilized grays at t-12/t-6/t; hue/sat
+    # jitter would remix them semantically, so v3 runs pass 0 0
+    ap.add_argument("--hsv", type=float, nargs=3, default=[0.015, 0.7, 0.4],
+                    metavar=("H", "S", "V"))
     a = ap.parse_args()
 
     model = YOLO(a.model).load(a.weights)
@@ -46,8 +51,11 @@ def main() -> None:
         shear=0.0,
         mixup=0.0,
         erasing=0.0,
+        hsv_h=a.hsv[0],
+        hsv_s=a.hsv[1],
+        hsv_v=a.hsv[2],
         cos_lr=True,
-        patience=25,
+        patience=a.patience,
         workers=8,
         plots=True,
     )

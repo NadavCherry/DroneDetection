@@ -2,14 +2,24 @@
 
 Goal: the same task as the PC pipeline — find and track a 3–14 px drone in 720p video — at **real-time rates on Jetson-Orin-Nano-class hardware**, with minimal accuracy loss. Trained on `07_05.mp4` only (time-split); `10_06.mp4` is a pure test set never touched by training.
 
-## Result
+## Result (round 3 — see REPORT3.md; round-2 numbers further below)
 
-**RT-C** — stabilize → 3-frame temporal stack → **one YOLOv8-nano-P2 @1280 (TensorRT FP16)** → Kalman tracker — is the edge champion:
+**RT-C** — stabilize → 3-frame temporal stack → **one YOLOv8-nano-P2 @1280 (TensorRT FP16)** → Kalman tracker → **track-level classification** — is the edge champion. Round 3 added v3 training data (dim bush-phase patch bank, sub-pixel trails, warmup-clamped stacks, hard negatives), the track classifier (`dronedet/trackclass.py`), and a hardened dense test reference (`gt_1006_v2`, every frame human-verified):
+
+| tracked-rt-c (v3) | AP | best F1 | R | P | fps (5070) |
+|---|---|---|---|---|---|
+| 07_05 val (hardest segment, hand labels) | **1.000** | **1.000** | 1.000 | 1.000 | **84.8** |
+| 07_05 full video | 0.996 | 0.998 | 0.996 | 1.000 | 84.8 |
+| **10_06 test (unseen, dense reference)** | **1.000** | **1.000** | 1.000 | 1.000 | 84.8 |
+
+One nano network, 9.5 ms/frame end-to-end, the whole flight covered as a single track in both videos, zero false positives at the operating point (per-frame, before track integration: AP 0.717 val / 0.889 test). INT8 was net-negative on this GPU (slower *and* less accurate than FP16 — recalibrate on-device before using); DT=9 stacks and a full-frame stabilizer were tried and rejected (`REPORT3.md` §5).
+
+## Round-2 result (previous generation, kept for the record)
 
 | | AP (07_05 val, hand labels) | best F1 | precision | fps (RTX 5070) | far-drone track |
 |---|---|---|---|---|---|
-| PC champion (`tracked-moe3`, s-model + proposals) | 0.960 | 0.938 | 0.884 | 4.0 | 97.1% cov, 1 ID |
-| **edge champion (`tracked-rt-c`, one nano net)** | **0.932** | 0.862 | **1.000** (0 FP/frame) | **74.3** | **97.3% cov, 1 ID, 0.99 px** |
+| PC champion round 2 (`tracked-moe3`, s-model + proposals) | 0.960 | 0.938 | 0.884 | 4.0 | 97.1% cov, 1 ID |
+| edge champion round 2 (`tracked-rt-c`, one nano net) | 0.932 | 0.862 | 1.000 (0 FP/frame) | 74.3 | 97.3% cov, 1 ID, 0.99 px |
 
 **18× faster than the PC pipeline at −0.03 AP**, with zero false positives at its operating point. On the unseen test video (`10_06.mp4`): per-frame **AP 0.894 / F1 0.894 / P 0.95 @ 78 fps**, and the tracker covers **99.6% of the verified flight as a single track (0.67 px median error)**.
 
@@ -77,11 +87,14 @@ REALTIME/
   pipelines.py       RT-A..RT-F definitions + crowding-aware candidate ranking
   runner.py          per-stage-timed video runner
   tools/
-    make_datasets_rt.py   the three training sets from 07_05 (train<342 only)
-    export_models.py      TRT FP16 + ONNX exports
-    run_all.py            run + evaluate + bench everything
+    make_datasets_rt.py   round-2 training sets (superseded by tools/make_datasets_v3.py)
+    export_models.py      TRT FP16 + ONNX exports (round 2)
+    run_all.py            round-2: run + evaluate + bench everything
+    run_round3.py         round-3: v3 engines, runs, tracked+classified, eval, bench
     bench_cpu.py          the component table above
-    build_gt_1006.py      test reference from the verified PC track
+    build_gt_1006.py      test reference v1 (from the verified PC track)
+    harden_gt_1006.py     test reference v2: dense, independently refined,
+                          every frame human-verified (gt_1006_v2.json)
   work/                  models, engines, eval tables, bench, outputs
 ```
 
