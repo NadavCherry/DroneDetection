@@ -30,6 +30,9 @@ def main() -> None:
     # jitter would remix them semantically, so v3 runs pass 0 0
     ap.add_argument("--hsv", type=float, nargs=3, default=[0.015, 0.7, 0.4],
                     metavar=("H", "S", "V"))
+    ap.add_argument("--scale", type=float, default=0.25,
+                    help="scale-jitter fraction (raise for scale invariance)")
+    ap.add_argument("--mosaic", type=float, default=0.3)
     a = ap.parse_args()
 
     model = YOLO(a.model).load(a.weights)
@@ -42,9 +45,9 @@ def main() -> None:
         # absolute path: the global ultralytics settings.json redirects
         # relative project dirs under another workspace's runs_dir
         project=str(Path("work/runs").resolve()),
-        mosaic=0.3,
+        mosaic=a.mosaic,
         close_mosaic=12,
-        scale=0.25,
+        scale=a.scale,
         translate=0.08,
         fliplr=0.5,
         degrees=0.0,

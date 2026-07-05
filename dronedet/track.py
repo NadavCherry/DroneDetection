@@ -297,18 +297,35 @@ def run_tracker_file(video: str, dets_path: str, out: str,
                      min_score: float = 0.25) -> None:
     ds = DetectionSet.load(dets_path)
     shifts = {int(k): v for k, v in ds.meta.get("shifts", {}).items()}
+    # full 2x3 current->reference transforms (affine-aware). When present they
+    # compensate camera rotation/zoom, not just translation; else fall back to
+    # the translation-only shifts so old detection JSONs still track.
+    transforms = {int(k): np.asarray(v, dtype=np.float64).reshape(2, 3)
+                  for k, v in ds.meta.get("transforms", {}).items()}
+
+    def frame_M(i: int) -> np.ndarray:
+        M = transforms.get(i)
+        if M is not None:
+            return M
+        dx, dy = shifts.get(i, (0.0, 0.0))
+        return np.float64([[1, 0, dx], [0, 1, dy]])
+
     tracker = Tracker(min_score=min_score)
     reacq = Reacquirer()
     t0 = time.perf_counter()
     n = 0
     for idx, frame in frames(video):
-        dx, dy = shifts.get(idx, (0.0, 0.0))
+        M = frame_M(idx)                          # full 2x3 current->reference
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        m = np.float64([[1, 0, dx], [0, 1, dy]])
-        gray_stab = cv2.warpAffine(gray, m, (gray.shape[1], gray.shape[0]),
+        gray_stab = cv2.warpAffine(gray, M, (gray.shape[1], gray.shape[0]),
                                    borderMode=cv2.BORDER_REPLICATE)
-        dets_stab = [Detection(d.x1 + dx, d.y1 + dy, d.x2 + dx, d.y2 + dy,
-                               d.score, d.label) for d in ds.frames.get(idx, [])]
+        scale = float(np.sqrt(abs(np.linalg.det(M[:, :2])))) or 1.0   # box-size compensation
+        dets_stab = []
+        for d in ds.frames.get(idx, []):
+            sx = M[0, 0] * d.cx + M[0, 1] * d.cy + M[0, 2]            # -> reference coords
+            sy = M[1, 0] * d.cx + M[1, 1] * d.cy + M[1, 2]
+            hw, hh = d.w * scale / 2, d.h * scale / 2
+            dets_stab.append(Detection(sx - hw, sy - hh, sx + hw, sy + hh, d.score, d.label))
         tracker.step(idx, dets_stab, reacq=reacq, gray_stab=gray_stab)
         reacq.push(gray_stab)
         n += 1
@@ -325,9 +342,12 @@ def run_tracker_file(video: str, dets_path: str, out: str,
     for t in confirmed:
         tf = {}
         for f, (cx, cy, w, h, status) in sorted(t.frames.items()):
-            sdx, sdy = shifts.get(f, (0.0, 0.0))
-            tf[str(f)] = [round(cx - sdx, 2), round(cy - sdy, 2),
-                          round(w, 2), round(h, 2), status]  # original coords
+            Minv = cv2.invertAffineTransform(frame_M(f))   # reference -> original coords
+            ox = Minv[0, 0] * cx + Minv[0, 1] * cy + Minv[0, 2]
+            oy = Minv[1, 0] * cx + Minv[1, 1] * cy + Minv[1, 2]
+            iscale = float(np.sqrt(abs(np.linalg.det(Minv[:, :2])))) or 1.0
+            tf[str(f)] = [round(ox, 2), round(oy, 2),
+                          round(w * iscale, 2), round(h * iscale, 2), status]
         payload["tracks"].append({"id": t.tid, "n": len(tf), "score": round(t.score, 3),
                                   "frames": tf})
     Path(out).parent.mkdir(parents=True, exist_ok=True)

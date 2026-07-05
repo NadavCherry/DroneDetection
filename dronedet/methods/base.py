@@ -39,6 +39,7 @@ def run_method(
     stab = Stabilizer(stab_mode)
     ds = DetectionSet(video=video_path, method=method.name)
     shifts: dict[str, list[float]] = {}
+    transforms: dict[str, list[float]] = {}   # full 2x3 current->reference (affine-aware tracking)
     t0 = time.perf_counter()
     n = 0
     for idx, frame in frames(video_path, stop=stop):
@@ -47,6 +48,7 @@ def run_method(
         ds.add(idx, dets)
         dx, dy = shift_of(m)
         shifts[str(idx)] = [round(dx, 3), round(dy, 3)]
+        transforms[str(idx)] = [round(float(v), 6) for v in np.asarray(m).reshape(-1)]
         n += 1
         if progress_every and n % progress_every == 0:
             el = time.perf_counter() - t0
@@ -59,6 +61,7 @@ def run_method(
         "video_size": [info.width, info.height],
         "stab_mode": stab_mode,
         "shifts": shifts,
+        "transforms": transforms,
     }
     method.close()
     return ds

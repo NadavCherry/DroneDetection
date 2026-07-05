@@ -55,4 +55,14 @@ def build_method(name: str, **kw) -> BaseMethod:
         from .hybrid2 import Hybrid2
 
         return Hybrid2("moe3-stacked", temporal=True, **kw)
+    if name in ("mc-motion", "mc-hybrid", "mc-verify"):
+        from .mc_hybrid import MCHybrid
+
+        opts = dict(drone_classes=None)
+        if name == "mc-motion":
+            opts["weights"] = None                 # motion proposals only
+        if name == "mc-verify":
+            opts["verify_only"] = True             # motion -> YOLO verify, no full-frame pass
+        opts.update(kw)
+        return MCHybrid(name, **opts)
     raise ValueError(f"unknown method: {name}")
