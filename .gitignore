@@ -52,6 +52,12 @@ work/frames_all/
 work/train_*.log
 # edit-list-recovered full videos (tools/recover_full_video.py)
 work/video/
+# external drone datasets (downloaded, not part of this repo) + converted YOLO layouts
+data/external/
+work/ext_datasets/
+# training logs and scratch inference outputs
+work/logs/
+work/infer/
 
 # --- realtime: datasets, engines and demo outputs are regenerable ---
 realtime/work/dataset_*/
