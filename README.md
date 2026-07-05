@@ -94,11 +94,13 @@ frames tracked; τ = 12 px center-distance):
 |---|---|---|---|---|---|---|
 | **PC v1** · `yolov8m-p2` | **1.000** | 0.993 | 0.914 | **0** | 0.518 | 6.9 |
 | PC v2 · + temporal expert | 1.000 | 0.999 | 0.914 | 2–3 | **0.690** | 4.3 |
-| **Edge v1** · `yolov8n-p2` + TensorRT | **1.000** | 1.000 | 0.906 | 0–6 | 0.465 | **23.7** (≈42 TRT-FP16) |
+| **Edge v1** · `yolov8n-p2` + TensorRT | **1.000** | 1.000 | 0.906 | 0–6 | 0.465 | **107–122** ᵒᵖᵗ |
 | Edge v2 · + temporal expert | 1.000 | 1.000 | 0.906 | 1–6 | 0.561 | 10.0 |
 
 - **PC winner → v1** — highest coverage, **zero false tracks**, ~1.6× faster than v2.
-- **Edge winner → v1** — same coverage, real-time, modest false-track cost on clutter.
+- **Edge winner → v1** — same coverage, real-time. Profiled + optimized (full-frame TRT +
+  ½-res stabiliser + detect-every-2nd-frame) from 20 → **107–122 fps** on moving cameras and
+  14 → **33 fps** on the near-static black-drone path, **with zero accuracy loss** — [how](docs/reports/round6-max-pipeline.md#edge-v1-speed--profile-then-attack-the-bottleneck-1420-fps--33122-fps).
 - The temporal ensemble (v2) is the strongest *detector* (black-drone AP **0.52 → 0.69**) but the
   tracker already saturates coverage, so it only buys false tracks — [full analysis](docs/reports/round6-max-pipeline.md).
 

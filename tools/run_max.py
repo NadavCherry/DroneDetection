@@ -40,18 +40,31 @@ def prescan_ego(video, sample=200):
     return float(np.median(shifts)) if shifts else 0.0
 
 
-def build_detector(profile, weights, near_static, temporal_weights=None, tile=640):
+def build_detector(profile, weights, near_static, temporal_weights=None, tile=640,
+                   moving_detector="sahi", imgsz=1280, stab_scale=1.0, engine=None):
     """Regime-adaptive: near-static -> motion+appearance (mc-hybrid), the black
-    drone needs colour-blind motion; moving camera -> appearance-only SAHI, which
-    is cleaner and faster (motion is parallax clutter there)."""
+    drone needs colour-blind motion; moving camera -> appearance-only (SAHI for max
+    accuracy, or a single full-frame pass for edge speed)."""
     from dronedet.methods.mc_hybrid import MCHybrid
-    from dronedet.methods.yolo import YoloSahi
+    from dronedet.methods.yolo import YoloSahi, YoloFullFrame
     if profile == "v2":
         from dronedet.methods.max_ensemble import MaxEnsemble
         return MaxEnsemble("max-v2", weights=weights, temporal_weights=temporal_weights,
                            tile=tile, near_static=near_static)
     if near_static:
-        return MCHybrid("max-v1-mc", weights=weights, tile=tile, drone_classes=None)
+        # edge speedups (opt-in via --moving-detector full / --stab-scale): a single
+        # full-frame appearance pass instead of SAHI, and downscaled motion estimation.
+        fimg = imgsz if moving_detector == "full" else None
+        # the colour-blind motion detector is the black drone's recall driver -- never
+        # downscale it below 0.7 (a 3-14 px target vanishes at 0.5), even when the
+        # tracker's stabiliser runs at a more aggressive scale.
+        mscale = max(stab_scale, 0.7)
+        mkw = {"scale": mscale} if mscale < 1.0 else None
+        return MCHybrid("max-v1-mc", weights=weights, tile=tile, drone_classes=None,
+                        full_imgsz=fimg, motion_kw=mkw)
+    if moving_detector == "full":     # TensorRT engine here if given (near-static keeps .pt)
+        return YoloFullFrame("max-v1-full", imgsz=imgsz, weights=engine or weights,
+                             drone_classes=None, conf=0.02)
     return YoloSahi("max-v1-app", tile=tile, weights=weights, drone_classes=None, conf=0.02)
 
 
@@ -64,6 +77,11 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--stop", type=int, default=None)
     ap.add_argument("--min-score", type=float, default=0.2)
+    ap.add_argument("--moving-detector", choices=["sahi", "full"], default="sahi")
+    ap.add_argument("--imgsz", type=int, default=1280, help="full-frame detection imgsz (moving)")
+    ap.add_argument("--stab-scale", type=float, default=1.0, help="estimate camera motion on a downscaled frame")
+    ap.add_argument("--det-stride", type=int, default=1, help="detect every Nth frame, tracker coasts (moving/stateless only)")
+    ap.add_argument("--engine", default=None, help="TensorRT engine for the moving full-frame path (near-static keeps --weights)")
     ap.add_argument("--gt", default=None, help="score tracked coverage against this GT json")
     ap.add_argument("--gt-lt", type=int, default=None, help="restrict GT eval to frames < this")
     a = ap.parse_args()
@@ -77,8 +95,12 @@ def main():
           f"{'NEAR-STATIC (motion+appearance)' if near_static else 'MOVING (appearance-only)'}", flush=True)
 
     # 1. fused detection (affine transforms stored for the tracker)
-    method = build_detector(a.profile, a.weights, near_static, a.temporal_weights)
-    ds = run_method(a.video, method, stop=a.stop, stab_mode="affine")
+    method = build_detector(a.profile, a.weights, near_static, a.temporal_weights,
+                            moving_detector=a.moving_detector, imgsz=a.imgsz,
+                            stab_scale=a.stab_scale, engine=a.engine)
+    det_stride = 1 if near_static else a.det_stride   # motion path needs every frame
+    ds = run_method(a.video, method, stop=a.stop, stab_mode="affine",
+                    stab_scale=a.stab_scale, det_stride=det_stride)
     ds.save(str(out / "dets.json"))
     print(f"[max-{a.profile}] {ds.meta.get('fps_end_to_end')} fps, "
           f"{sum(len(v) for v in ds.frames.values())} dets", flush=True)

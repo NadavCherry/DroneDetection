@@ -34,9 +34,14 @@ def run_method(
     stop: int | None = None,
     stab_mode: str = "translation",
     progress_every: int = 100,
+    stab_scale: float = 1.0,
+    det_stride: int = 1,
 ) -> DetectionSet:
+    """stab_scale < 1 estimates the camera transform on a downscaled frame (cheap).
+    det_stride > 1 runs the detector on every Nth frame only (the tracker coasts
+    between) -- valid for STATELESS detectors; motion methods need every frame."""
     info = probe(video_path)
-    stab = Stabilizer(stab_mode)
+    stab = Stabilizer(stab_mode, scale=stab_scale)
     ds = DetectionSet(video=video_path, method=method.name)
     shifts: dict[str, list[float]] = {}
     transforms: dict[str, list[float]] = {}   # full 2x3 current->reference (affine-aware tracking)
@@ -44,7 +49,7 @@ def run_method(
     n = 0
     for idx, frame in frames(video_path, stop=stop):
         m = stab.update(frame)
-        dets = method.process(idx, frame, m)
+        dets = method.process(idx, frame, m) if idx % det_stride == 0 else []
         ds.add(idx, dets)
         dx, dy = shift_of(m)
         shifts[str(idx)] = [round(dx, 3), round(dy, 3)]

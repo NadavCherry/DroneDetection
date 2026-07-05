@@ -118,6 +118,42 @@ v2 only buys false tracks and halves the speed.
 
 Visual one-pager (diagram + tables): the published **MAX-pipeline artifact**.
 
+## Edge v1 speed — profile, then attack the bottleneck (14/20 fps → 33/122 fps)
+
+Iterated exactly as an optimiser should: measure, kill the biggest cost, re-measure.
+
+**Profile (moving path, nano):** the detector **forward is 82.6%** (41.7 ms for 8 SAHI tiles);
+stabiliser 10.7%, decode/tiling/NMS negligible. So the lever is forwards, not everything else.
+
+| step | change | result |
+|---|---|---|
+| baseline | nano SAHI @640, PyTorch FP32 | ~20 fps |
+| 1 · TensorRT-FP16 | same 8 tiles | forward 42→23 ms (only 1.9× — 8-tile SAHI is overhead-bound) |
+| 2 · **full-frame, not SAHI** | one forward @1280 instead of 8 tiles | ~46 fps, **coverage unchanged** (the P2 head handles the downscaled drone; the tracker fills gaps) |
+| 3 · full-frame **@1280 TRT** | | **67–80 fps** — target hit, coverage matched |
+| 4 · **stabiliser on ½-res** | affine is scale-invariant (only translation rescales) | 4.7→1.2 ms |
+| 5 · **detect every 2nd frame** | tracker coasts between (stateless path only) | **107–122 fps**, coverage still matched (0.997 / 0.906, 0 false) |
+
+**Near-static path** (the black drone — mc-hybrid): profile was SAHI full-pass 45% / classical
+motion 30% / verify 25%. Swapping the full-pass to a single full-frame forward + running the
+colour-blind motion on a **0.7×** frame (never 0.5× — a 3–14 px target vanishes there) took it
+**14 → 33 fps with coverage still 1.000**.
+
+**Final Edge v1** (one command, auto-regime): moving **107–122 fps**, near-static **33 fps**,
+**zero accuracy loss** vs the accurate SAHI build. All knobs are opt-in — the PC build is
+byte-identical (0.993 / 6.9 fps unchanged).
+
+```bash
+python tools/run_max.py --profile v1 --weights .../combined-n-p2-640/weights/best.pt \
+    --engine .../best_1280.engine --moving-detector full --imgsz 1280 --stab-scale 0.5 \
+    --det-stride 2 --video x.mp4 --out out_edge
+```
+
+**The 150+ ceiling.** @640 or stride-3 reaches **145–155 fps** on easy near-sky drones (phantom16
+0.99) but *collapses the hardest small NPS drone to 0.00* — it can't survive a 3× coordinate
+downscale or 3-frame coasting. So ~120 fps is the universal accuracy-preserving ceiling; 150+ is
+available as an explicit speed/accuracy trade for benign scenes.
+
 ## Reproduce
 ```bash
 # temporal expert

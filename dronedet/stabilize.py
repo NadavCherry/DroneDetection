@@ -22,11 +22,14 @@ IDENTITY = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]], dtype=np.float64)
 
 
 class Stabilizer:
-    def __init__(self, mode: str = "translation", min_response: float = 0.35):
+    def __init__(self, mode: str = "translation", min_response: float = 0.35,
+                 scale: float = 1.0):
         if mode not in ("translation", "affine", "off"):
             raise ValueError(f"unknown stabilizer mode: {mode}")
         self.mode = mode
         self.min_response = min_response
+        self.scale = scale          # estimate on a downscaled gray (affine is
+        #                             scale-invariant); only translation rescales
         self._ref_gray: np.ndarray | None = None
         self._prev_gray: np.ndarray | None = None
         self._window: np.ndarray | None = None
@@ -37,14 +40,21 @@ class Stabilizer:
         gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
         if self.mode == "off":
             return IDENTITY.copy()
+        if self.scale != 1.0:
+            gray = cv2.resize(gray, None, fx=self.scale, fy=self.scale,
+                              interpolation=cv2.INTER_AREA)
         if self._ref_gray is None:
             self._ref_gray = gray.astype(np.float32)
             self._prev_gray = gray
             self._window = cv2.createHanningWindow(gray.shape[::-1], cv2.CV_32F)
             return IDENTITY.copy()
-        if self.mode == "translation":
-            return self._update_translation(gray)
-        return self._update_affine(gray)
+        m = (self._update_translation(gray) if self.mode == "translation"
+             else self._update_affine(gray))
+        if self.scale != 1.0:            # rescale translation back to full-res pixels
+            m = m.copy()
+            m[0, 2] /= self.scale
+            m[1, 2] /= self.scale
+        return m
 
     def _update_translation(self, gray: np.ndarray) -> np.ndarray:
         (dx, dy), response = cv2.phaseCorrelate(

@@ -35,7 +35,8 @@ from .yolo import COCO_DRONE_LIKE, YoloSahi, tile_origins
 class _MCMotion:
     def __init__(self, k_sigma: float = 4.0, min_area: int = 3, max_area: int = 4000,
                  open_ksize: int = 3, dilate_ksize: int = 5, blur: int = 3,
-                 grid_x: int = 32, grid_y: int = 18):
+                 grid_x: int = 32, grid_y: int = 18, scale: float = 1.0):
+        self.scale = scale       # run registration+differencing on a downscaled gray (edge)
         self.k = k_sigma
         self.min_area, self.max_area = min_area, max_area
         self.open_k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (open_ksize, open_ksize))
@@ -69,6 +70,8 @@ class _MCMotion:
 
     def process(self, frame_bgr: np.ndarray) -> list[Detection]:
         g = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
+        if self.scale != 1.0:
+            g = cv2.resize(g, None, fx=self.scale, fy=self.scale, interpolation=cv2.INTER_AREA)
         if self.blur:
             g = cv2.GaussianBlur(g, (self.blur, self.blur), 0)
         h, w = g.shape
@@ -109,7 +112,8 @@ class _MCMotion:
             if max(bw, bh) > 120:            # too big to be a small drone blob
                 continue
             score = float(motion[lab == i].mean())
-            out.append(Detection(float(x), float(y), float(x + bw), float(y + bh), score, "motion"))
+            s = 1.0 / self.scale                         # back to full-res pixels
+            out.append(Detection(x * s, y * s, (x + bw) * s, (y + bh) * s, score, "motion"))
         self._g2, self._g1 = self._g1, g
         return out
 
@@ -119,21 +123,28 @@ class MCHybrid(BaseMethod):
                  drone_classes: list[int] | None = None, device=0,
                  tile: int = 640, overlap: float = 0.25, crop_half: int = 48,
                  zoom: int = 4, max_crops: int = 24, confirm_dist: float = 16.0,
-                 verify_only: bool = False, motion_kw: dict | None = None):
+                 verify_only: bool = False, motion_kw: dict | None = None,
+                 full_imgsz: int | None = None):
         from ultralytics import YOLO
         self.name = name
         self.model = None if weights is None else YOLO(weights)
         self.conf, self.classes, self.device = conf, drone_classes, device
         self.tile, self.overlap = tile, overlap
+        self.full_imgsz = full_imgsz    # set => single full-frame appearance pass (edge speed)
         self.crop_half, self.zoom, self.max_crops = crop_half, zoom, max_crops
         self.confirm_dist = confirm_dist
         self.verify_only = verify_only          # True => no full-frame pass (mc-motion+verify)
         self.motion = _MCMotion(**(motion_kw or {}))
 
-    # -- full-frame SAHI-tiled appearance pass --------------------------------
+    # -- full-frame appearance pass (SAHI-tiled, or single full frame for speed) --
     def _full_pass(self, frame):
         if self.model is None:
             return []
+        if self.full_imgsz:                         # one full-frame forward (edge)
+            r = self.model(frame, imgsz=self.full_imgsz, conf=self.conf,
+                           classes=self.classes, device=self.device, verbose=False)[0]
+            return [Detection(*(float(v) for v in b.xyxy[0]), float(b.conf[0]),
+                              r.names[int(b.cls[0])]) for b in r.boxes]
         h, w = frame.shape[:2]
         xs, ys = tile_origins(self.tile, w, self.overlap), tile_origins(self.tile, h, self.overlap)
         tiles, offs = [], []
