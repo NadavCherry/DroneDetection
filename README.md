@@ -74,6 +74,60 @@ The whole pipeline distilled into a **single YOLOv8-nano-P2** reading the stabil
 
 ---
 
+## Generalist upgrade — the MAX pipeline (any dataset · any colour · moving camera)
+
+The two models above are near-perfect on their one location. The limitation they left open —
+*"new scenes, drone types, and strong camera motion"* — is exactly what this block closes. We
+pulled in **public tiny-drone datasets** ([ARD-MAV](https://github.com/WindyLab/Global-Local-MAV-Detection) + [NPS-Drones](https://engineering.purdue.edu/~bouman/UAV_Dataset/), air-to-air, *moving* cameras), merged them
+with our own footage into **one combined training set**, and built a **regime-adaptive pipeline**
+that leans on the video (motion + tracking) to work across datasets, drone **colours**, and a
+flying camera. One command (`tools/run_max.py`), with a **winning build per hardware target**:
+
+<p align="center">
+  <img src="docs/media/external/max_pipeline_diagram.png" width="800" alt="The MAX pipeline (v1) — the winning method, end to end"/>
+</p>
+
+**End-to-end tracked** on held-out clips spanning both camera regimes (coverage = fraction of GT
+frames tracked; τ = 12 px center-distance):
+
+| build | 10_06 (black, near-static) | ARD-MAV (moving) | NPS (moving) | false tracks | black-drone det AP | fps |
+|---|---|---|---|---|---|---|
+| **PC v1** · `yolov8m-p2` | **1.000** | 0.993 | 0.914 | **0** | 0.518 | 6.9 |
+| PC v2 · + temporal expert | 1.000 | 0.999 | 0.914 | 2–3 | **0.690** | 4.3 |
+| **Edge v1** · `yolov8n-p2` + TensorRT | **1.000** | 1.000 | 0.906 | 0–6 | 0.465 | **23.7** (≈42 TRT-FP16) |
+| Edge v2 · + temporal expert | 1.000 | 1.000 | 0.906 | 1–6 | 0.561 | 10.0 |
+
+- **PC winner → v1** — highest coverage, **zero false tracks**, ~1.6× faster than v2.
+- **Edge winner → v1** — same coverage, real-time, modest false-track cost on clutter.
+- The temporal ensemble (v2) is the strongest *detector* (black-drone AP **0.52 → 0.69**) but the
+  tracker already saturates coverage, so it only buys false tracks — [full analysis](docs/reports/round6-max-pipeline.md).
+
+**Colour invariance** — one model finds white, varied **and black** drones (it was blind to the
+black drone before combined training). Green = ground truth, red = ours:
+
+<p align="center">
+  <img src="docs/media/external/panel_color_invariance.png" width="860" alt="the one model detects white, varied and black drones"/>
+</p>
+
+**The generalization + colour jump** — combined training takes NPS from 0.21 → 0.81 and the black
+drone in `10_06` from **0.00 → tracked**:
+
+<p align="center">
+  <img src="docs/media/external/comparison_chart.png" width="900" alt="combined training fixes generalization and colour"/>
+</p>
+
+Full story: [round 4 — datasets & generalization](docs/reports/round4-external-datasets.md) ·
+[round 5 — moving camera, colour/scale & edge](docs/reports/round5-moving-camera-multidataset.md) ·
+[round 6 — the unified MAX pipeline](docs/reports/round6-max-pipeline.md).
+
+```bash
+# run the generalist pipeline on any video (PC: default weights; edge: pass the nano weights)
+python tools/run_max.py --profile v1 --weights work/runs/combined-m-p2-640/weights/best.pt \
+    --video your_video.mp4 --out out_max
+```
+
+---
+
 ## Showcase videos
 
 All full-length runs on the unseen test video (the source files hide their opening seconds behind an MP4 edit list — [`tools/recover_full_video.py`](tools/recover_full_video.py) recovers them losslessly; `10_06.mp4` is really 591 frames / 19.7 s, not 361).
@@ -135,13 +189,13 @@ A map of **which weight file is what** lives in [docs/guides/methods.md § Weigh
 | [docs/guides/run-inference.md](docs/guides/run-inference.md) | run our models (or the baseline) on a new video |
 | [docs/guides/retrain.md](docs/guides/retrain.md) | relabel a clip, rebuild datasets, retrain, reproduce a round |
 | [final/README.md](final/README.md) · [realtime/README.md](realtime/README.md) | the two deliverables · the edge pipeline in depth |
-| [docs/reports/](docs/reports/) | the three-round build story ([round 1](docs/reports/round1-pipeline.md) · [round 2](docs/reports/round2-results.md) · [round 3](docs/reports/round3-deliverables.md)) |
+| [docs/reports/](docs/reports/) | the build story — single-scene ([round 1](docs/reports/round1-pipeline.md) · [2](docs/reports/round2-results.md) · [3](docs/reports/round3-deliverables.md)) then generalist ([4 — datasets](docs/reports/round4-external-datasets.md) · [5 — moving camera & edge](docs/reports/round5-moving-camera-multidataset.md) · [6 — MAX pipeline](docs/reports/round6-max-pipeline.md)) |
 | [docs/references/](docs/references/) | the tiny-object-detection research surveys that drove the design |
 
 ---
 
 ## Honest limitations & next steps
 
-- Trained/validated on footage from one location (train/val split by time; it held up on a different-day unseen video, but new scenes, drone types, and strong camera motion need the planned heavy fine-tune).
-- At 4 px, birds and drones genuinely converge; the track-level classifier resolves the shipped set perfectly, but two bird tracks in earlier generations still picked up occasional drone confirmations. Kinematic + flap-signature features are the next lever.
+- **New scenes / drone types / moving cameras — now addressed** by the [MAX pipeline](#generalist-upgrade--the-max-pipeline-any-dataset--any-colour--moving-camera) (combined multi-dataset training + regime-adaptive fusion + an affine-aware tracker). The remaining gap is *moving-camera datasets we never trained on* — public data closes most of it but in-domain footage still wins the last points.
+- **Drone-vs-bird is the frontier.** At a few pixels, motion cannot separate a bird from a drone — only appearance can, and appearance is exactly what's weakest at that scale. It's why the temporal ensemble's extra recall (round 6) turns into bird false-tracks. A learned drone-vs-bird *track* classifier (appearance + kinematics + flap signature over the whole track) is the single next lever.
 - Production fine-tune checklist (evidence-based, see the [reports](docs/reports/)): temporal input channels first, NWD/RFLA assignment for tiny boxes, copy-paste with scale + haze + trajectory jitter, scale-separated experts, and center-distance evaluation — never bare mAP@0.5.
