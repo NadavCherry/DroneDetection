@@ -87,15 +87,30 @@ flying camera. One command (`tools/run_max.py`), with a **winning build per hard
   <img src="docs/media/external/max_pipeline_diagram.png" width="800" alt="The MAX pipeline (v1) — the winning method, end to end"/>
 </p>
 
-**End-to-end tracked** on held-out clips spanning both camera regimes (coverage = fraction of GT
-frames tracked; τ = 12 px center-distance):
+The pipeline has two stages — **identification** (per-frame detection) and **tracking**
+(linking detections across time + coasting through gaps). They measure different things, so
+here they are **separately**. All center-distance, τ = 12 px.
 
-| build | 10_06 (black, near-static) | ARD-MAV (moving) | NPS (moving) | false tracks | black-drone det AP | fps |
-|---|---|---|---|---|---|---|
-| **PC v1** · `yolov8m-p2` | **1.000** | 0.993 | 0.914 | **0** | 0.518 | 6.9 |
-| PC v2 · + temporal expert | 1.000 | 0.999 | 0.914 | 2–3 | **0.690** | 4.3 |
-| **Edge v1** · `yolov8n-p2` + TensorRT | **1.000** | 1.000 | 0.906 | 0–6 | 0.465 | **107–122** ᵒᵖᵗ |
-| Edge v2 · + temporal expert | 1.000 | 1.000 | 0.906 | 1–6 | 0.561 | 10.0 |
+**① Identification only — per-frame detection AP (no tracker).** *How good is the raw detector
+each frame?* A 3–14 px drone is genuinely invisible in some frames, so no single-frame detector
+reaches 1.0 — and the low-contrast **black** drone is the hardest:
+
+| detector | ARD-MAV | NPS | 10_06 (black drone) |
+|---|---|---|---|
+| PC · `yolov8m-p2` | 0.84 | 0.81 | 0.52 → **0.69** (+ temporal expert) |
+| Edge · `yolov8n-p2` | 0.80 | 0.77 | 0.47 → 0.56 (+ temporal expert) |
+
+**② Full pipeline *with* tracking — coverage** (fraction of the flight actually tracked),
+false tracks, and speed. *Tracking links detections over time and **coasts through the frames
+the detector missed**, so coverage reaches ~1.0 with zero/few false alarms even where detection
+is weak* — the black drone is the clearest case: **~0.5–0.7 detected → 1.00 tracked**:
+
+| build | 10_06 (black) | ARD-MAV | NPS | false tracks | fps |
+|---|---|---|---|---|---|
+| **PC v1** · m-p2 | **1.000** | 0.993 | 0.914 | **0** | 6.9 |
+| PC v2 · + temporal | 1.000 | 0.999 | 0.914 | 2–3 | 4.3 |
+| **Edge v1** · nano + TensorRT | **1.000** | 1.000 | 0.906 | **0–6** | **107–122** ᵒᵖᵗ |
+| Edge v2 · + temporal | 1.000 | 1.000 | 0.906 | 1–6 | 10.0 |
 
 - **PC winner → v1** — highest coverage, **zero false tracks**, ~1.6× faster than v2.
 - **Edge winner → v1** — same coverage, real-time. Profiled + optimized (full-frame TRT +

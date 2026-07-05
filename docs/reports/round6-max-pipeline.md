@@ -92,16 +92,29 @@ into a cleaner tracked result.
 
 ## Edge versions + the final verdict
 
-The same pipeline was built at edge scale (nano-p2 backbone + a nano temporal expert). The
-four builds, end-to-end tracked on three held-out clips (coverage / false-tracks) plus
-black-drone detection AP and end-to-end fps (phantom16, RTX 5070 PyTorch):
+The same pipeline was built at edge scale (nano-p2 backbone + a nano temporal expert). The four
+builds — **identification** (per-frame detection) and **tracking** (full pipeline) are separate
+metrics, so they are shown apart.
 
-| Build | 10_06 | phantom16 | Clip_19 | false tracks | black det AP | fps |
-|---|---|---|---|---|---|---|
-| **PC v1** (m-p2) | 1.000 | 0.993 | 0.914 | **0** | 0.518 | 6.9 |
-| PC v2 (m-p2 + s-temporal) | 1.000 | 0.999 | 0.914 | 2–3 | **0.690** | 4.3 |
-| **Edge v1** (nano) | 1.000 | 1.000 | 0.906 | 0–6 | 0.465 | **23.7** |
-| Edge v2 (nano + n-temporal) | 1.000 | 1.000 | 0.906 | 1–6 | 0.561 | 10.0 |
+**Identification — per-frame black-drone detection AP on 10_06** (center-distance, no tracker):
+
+| build | black-drone det AP |
+|---|---|
+| PC v1 (m-p2) | 0.518 |
+| **PC v2** (m-p2 + s-temporal) | **0.690** |
+| Edge v1 (nano) | 0.465 |
+| Edge v2 (nano + n-temporal) | 0.561 |
+
+**Tracking — full-pipeline coverage / false-tracks** on three held-out clips, + end-to-end fps
+(phantom16, RTX 5070 PyTorch). Coverage reaches ~1.0 even where detection is 0.5, because the
+tracker coasts through the missed frames:
+
+| build | 10_06 cov | phantom16 cov | Clip_19 cov | false tracks | fps |
+|---|---|---|---|---|---|
+| **PC v1** (m-p2) | 1.000 | 0.993 | 0.914 | **0** | 6.9 |
+| PC v2 (m-p2 + s-temporal) | 1.000 | 0.999 | 0.914 | 2–3 | 4.3 |
+| **Edge v1** (nano) | 1.000 | 1.000 | 0.906 | 0–6 | 23.7 → **107–122** (optimized, see below) |
+| Edge v2 (nano + n-temporal) | 1.000 | 1.000 | 0.906 | 1–6 | 10.0 |
 
 The v1-beats-v2 pattern holds at **both** scales, and for the same reason: the temporal
 expert is the better *detector* (AP up at both scales) but the tracker saturates coverage, so
