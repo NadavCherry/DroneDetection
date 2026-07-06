@@ -47,6 +47,13 @@ def build_detector(profile, weights, near_static, temporal_weights=None, tile=64
     accuracy, or a single full-frame pass for edge speed)."""
     from dronedet.methods.mc_hybrid import MCHybrid
     from dronedet.methods.yolo import YoloSahi, YoloFullFrame
+    if profile == "fusion":
+        # round 7: single RGB+motion 4-channel detector (YOLOMG-style) -- one model,
+        # regime-agnostic, since motion is fused *inside* the net. `weights` is a ch=4
+        # fusion checkpoint (m-scale = PC flagship, s-scale = edge). Replaces the
+        # near-static/moving detector split entirely.
+        from dronedet.methods.fusion import FusionDetector
+        return FusionDetector("max-fusion", weights=weights, tile=tile, conf=0.02)
     if profile == "v2":
         from dronedet.methods.max_ensemble import MaxEnsemble
         return MaxEnsemble("max-v2", weights=weights, temporal_weights=temporal_weights,
@@ -71,7 +78,7 @@ def build_detector(profile, weights, near_static, temporal_weights=None, tile=64
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--video", required=True)
-    ap.add_argument("--profile", choices=["v1", "v2"], default="v1")
+    ap.add_argument("--profile", choices=["v1", "v2", "fusion"], default="v1")
     ap.add_argument("--weights", required=True, help="combined appearance model")
     ap.add_argument("--temporal-weights", default=None)
     ap.add_argument("--out", required=True)
@@ -98,7 +105,10 @@ def main():
     method = build_detector(a.profile, a.weights, near_static, a.temporal_weights,
                             moving_detector=a.moving_detector, imgsz=a.imgsz,
                             stab_scale=a.stab_scale, engine=a.engine)
-    det_stride = 1 if near_static else a.det_stride   # motion path needs every frame
+    # motion-based paths (near-static mc-hybrid, and the fusion detector's internal
+    # motion buffer) need every consecutive frame; only the stateless moving-appearance
+    # path can coast on a stride.
+    det_stride = 1 if (near_static or a.profile == "fusion") else a.det_stride
     ds = run_method(a.video, method, stop=a.stop, stab_mode="affine",
                     stab_scale=a.stab_scale, det_stride=det_stride)
     ds.save(str(out / "dets.json"))

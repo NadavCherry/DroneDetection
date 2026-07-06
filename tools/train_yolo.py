@@ -11,7 +11,10 @@ Recipe follows the tiny-object research notes:
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from ultralytics import YOLO
 
@@ -26,6 +29,14 @@ def main() -> None:
     ap.add_argument("--batch", type=int, default=6)
     ap.add_argument("--name", default="ft-p2-1280")
     ap.add_argument("--patience", type=int, default=25)
+    # NWD (Normalized Wasserstein Distance) for tiny-object assignment+regression
+    ap.add_argument("--nwd", action="store_true", help="enable NWD blend (dronedet.nwd)")
+    ap.add_argument("--nwd-assign-ratio", type=float, default=0.5)
+    ap.add_argument("--nwd-assign-c", type=float, default=16.0)
+    ap.add_argument("--nwd-loss-ratio", type=float, default=0.5)
+    ap.add_argument("--nwd-loss-c", type=float, default=2.0)
+    ap.add_argument("--mc", action="store_true",
+                    help="enable >3-channel .npy training (dronedet.mc_data)")
     # temporal-stack channels are stabilized grays at t-12/t-6/t; hue/sat
     # jitter would remix them semantically, so v3 runs pass 0 0
     ap.add_argument("--hsv", type=float, nargs=3, default=[0.015, 0.7, 0.4],
@@ -34,6 +45,14 @@ def main() -> None:
                     help="scale-jitter fraction (raise for scale invariance)")
     ap.add_argument("--mosaic", type=float, default=0.3)
     a = ap.parse_args()
+
+    if a.mc:
+        from dronedet.mc_data import enable_multichannel
+        enable_multichannel()
+
+    if a.nwd:
+        from dronedet.nwd import enable_nwd
+        enable_nwd(a.nwd_assign_ratio, a.nwd_assign_c, a.nwd_loss_ratio, a.nwd_loss_c)
 
     model = YOLO(a.model).load(a.weights)
     model.train(
@@ -59,7 +78,7 @@ def main() -> None:
         hsv_v=a.hsv[2],
         cos_lr=True,
         patience=a.patience,
-        workers=8,
+        workers=4,
         plots=True,
     )
 

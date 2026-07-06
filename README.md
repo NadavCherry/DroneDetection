@@ -119,6 +119,26 @@ is weak* — the black drone is the clearest case: **~0.5–0.7 detected → 1.0
 - The temporal ensemble (v2) is the strongest *detector* (black-drone AP **0.52 → 0.69**) but the
   tracker already saturates coverage, so it only buys false tracks — [full analysis](docs/reports/round6-max-pipeline.md).
 
+### Round 7 — one model for *all* datasets (RGB+motion fusion + NWD)
+
+Studying the NPS SOTA (Dogfight / TransVisDrone) pointed to two ideas worth folding into the
+*single generalist* model — **learned RGB+motion fusion** (a 4-channel `[R,G,B,ego-motion]`
+detector, YOLOMG-style) and **NWD** tiny-object loss — *not* their NPS-specialist video transformer
+(which their own ablation shows adds only +0.02 and is fragile on tiny drones). One model, trained
+on all datasets, no regime split (`run_max.py --profile fusion`):
+
+| the ONE fusion model | ARD-MAV | NPS | black drone |
+|---|---|---|---|
+| detection AP / R | **0.994 / 0.995** | **0.801** / 0.848 | 0.69 / 0.64 |
+| tracked coverage | 0.971 | **0.990** | 0.875 |
+
+It is the **best single-model generalist detector** and best on NPS (det 0.59 → 0.80, cov 0.91 →
+0.99), and lifts black-drone detection 0.27 → 0.69 — all in one model. **Honest limits:** on the
+user's *own near-static black drone* the round-6 regime pipeline still tracks marginally better
+(cov 1.000 vs 0.875) via classical motion, and fusion's motion channel yields more false tracks on
+moving cameras (5 vs 0 after classification) — so the regime pipeline stays the pick for the black
+drone, and fusion is the pick for one-model generalization + NPS. [round 7 →](docs/reports/round7-fusion.md)
+
 **Colour invariance** — one model finds white, varied **and black** drones (it was blind to the
 black drone before combined training). Green = ground truth, red = ours:
 
@@ -206,7 +226,7 @@ A map of **which weight file is what** lives in [docs/guides/methods.md § Weigh
 | [docs/guides/run-inference.md](docs/guides/run-inference.md) | run our models (or the baseline) on a new video |
 | [docs/guides/retrain.md](docs/guides/retrain.md) | relabel a clip, rebuild datasets, retrain, reproduce a round |
 | [final/README.md](final/README.md) · [realtime/README.md](realtime/README.md) | the two deliverables · the edge pipeline in depth |
-| [docs/reports/](docs/reports/) | the build story — single-scene ([round 1](docs/reports/round1-pipeline.md) · [2](docs/reports/round2-results.md) · [3](docs/reports/round3-deliverables.md)) then generalist ([4 — datasets](docs/reports/round4-external-datasets.md) · [5 — moving camera & edge](docs/reports/round5-moving-camera-multidataset.md) · [6 — MAX pipeline](docs/reports/round6-max-pipeline.md)) |
+| [docs/reports/](docs/reports/) | the build story — single-scene ([round 1](docs/reports/round1-pipeline.md) · [2](docs/reports/round2-results.md) · [3](docs/reports/round3-deliverables.md)) then generalist ([4 — datasets](docs/reports/round4-external-datasets.md) · [5 — moving camera & edge](docs/reports/round5-moving-camera-multidataset.md) · [6 — MAX pipeline](docs/reports/round6-max-pipeline.md) · [7 — RGB+motion fusion](docs/reports/round7-fusion.md)) |
 | [docs/references/](docs/references/) | the tiny-object-detection research surveys that drove the design |
 
 ---
