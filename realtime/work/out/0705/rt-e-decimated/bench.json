@@ -1,0 +1,10 @@
+{
+  "stabilize+warp": 4.48,
+  "motion": 31.58,
+  "expert (amortized)": 0.58,
+  "crop build": 0.28,
+  "verifier NN": 6.05,
+  "tracker": 0.87,
+  "TOTAL ms/frame": 43.84,
+  "fps_end_to_end": 22.1
+}

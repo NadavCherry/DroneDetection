@@ -1,0 +1,7 @@
+{
+  "stabilize+warp": 4.12,
+  "detector NN": 5.3,
+  "tracker": 0.07,
+  "TOTAL ms/frame": 9.49,
+  "fps_end_to_end": 84.83
+}

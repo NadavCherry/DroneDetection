@@ -1,0 +1,231 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2040" height="1322" viewBox="0 0 2040 1322" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="2040" height="1322" fill="#0d1117" rx="12"/>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5"
+             markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+             <path d="M 0 1 L 9 5 L 0 9 z" fill="#8b949e"/></marker></defs>
+<text x="40" y="54" text-anchor="start" font-size="31" font-weight="700" fill="#e6edf3" opacity="1.0">See the drone, then hit it</text>
+<text x="40" y="82" text-anchor="start" font-size="15" font-weight="400" fill="#9198a1" opacity="1.0">One camera system &#183; no radar, no datalink, no GPS on the target &#183; the target is 3&#8211;14 pixels across</text>
+<text x="2000" y="48" text-anchor="end" font-size="17" font-weight="700" fill="#e6edf3" opacity="1.0">the whole method, end to end</text>
+<text x="2000" y="72" text-anchor="end" font-size="13" font-weight="400" fill="#9198a1" opacity="1.0">github.com/NadavCherry/SpeckLock</text>
+<rect x="20" y="108" width="2000" height="302" rx="14" fill="#11161d" stroke="#30363d" stroke-width="1.5"/>
+<circle cx="58" cy="140" r="17" fill="#30363d"/>
+<text x="58" y="146" text-anchor="middle" font-size="17" font-weight="700" fill="#e6edf3" opacity="1.0">1</text>
+<text x="88" y="147" text-anchor="start" font-size="19.5" font-weight="700" fill="#e6edf3" opacity="1.0">SEE &#8212; a drone 4 pixels wide is invisible in any single frame</text>
+<rect x="1793" y="124" width="207" height="30" rx="15" fill="none" stroke="#2ea043" stroke-width="1.6"/>
+<circle cx="1812" cy="139" r="5.5" fill="#2ea043"/>
+<text x="1825" y="144" text-anchor="start" font-size="13" font-weight="600" fill="#2ea043" opacity="1.0">measured on real video</text>
+<rect x="44" y="174" width="200" height="162" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="44" y="174" width="200" height="30" rx="10" fill="#388bfd"/>
+<rect x="44" y="192" width="200" height="12" fill="#388bfd"/>
+<text x="144.0" y="194" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">INPUT</text>
+<text x="144.0" y="230" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3" opacity="1.0">video</text>
+<text x="144.0" y="256" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">1280 &#215; 720, 30 fps</text>
+<text x="144.0" y="276" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">drone 3&#8211;14 px</text>
+<text x="144.0" y="296" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">the camera moves too</text>
+<rect x="292" y="174" width="218" height="162" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="292" y="174" width="218" height="30" rx="10" fill="#30363d"/>
+<rect x="292" y="192" width="218" height="12" fill="#30363d"/>
+<text x="401.0" y="194" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">STAGE 0</text>
+<text x="401.0" y="230" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3" opacity="1.0">stabilise</text>
+<text x="401.0" y="256" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">phase correlation</text>
+<text x="401.0" y="276" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">global camera motion</text>
+<text x="401.0" y="296" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">removed, frame by frame</text>
+<rect x="558" y="174" width="384" height="162" rx="10" fill="#161b22" stroke="#2ea043" stroke-width="3"/>
+<rect x="558" y="174" width="384" height="30" rx="10" fill="#2ea043"/>
+<rect x="558" y="192" width="384" height="12" fill="#2ea043"/>
+<text x="750.0" y="194" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">STAGE 1 &#183; THE CORE IDEA</text>
+<rect x="580" y="236.0" width="52" height="52" rx="7" fill="none" stroke="#e3b341" stroke-width="3.5"/>
+<rect x="596" y="244.8" width="52" height="52" rx="7" fill="none" stroke="#db61a2" stroke-width="3.5"/>
+<rect x="612" y="253.6" width="52" height="52" rx="7" fill="none" stroke="#39c5cf" stroke-width="3.5"/>
+<text x="788" y="236" text-anchor="middle" font-size="16" font-weight="700" fill="#e6edf3" opacity="1.0">three moments, one image</text>
+<text x="710" y="262" text-anchor="start" font-size="14.5" font-weight="700" fill="#e3b341" opacity="1.0">t-12</text>
+<text x="762" y="262" text-anchor="start" font-size="14.5" font-weight="700" fill="#db61a2" opacity="1.0">t-6</text>
+<text x="814" y="262" text-anchor="start" font-size="14.5" font-weight="700" fill="#39c5cf" opacity="1.0">now</text>
+<text x="868" y="262" text-anchor="start" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.85">= R, G, B</text>
+<text x="788" y="290" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">the static world cancels to grey;</text>
+<text x="788" y="310" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">only what moved keeps its colour</text>
+<text x="750.0" y="354" text-anchor="middle" font-size="12.5" font-weight="400" fill="#9198a1" opacity="1.0">this is also how the human labeller found it: flip frames, watch what moves</text>
+<rect x="990" y="174" width="296" height="162" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="990" y="174" width="296" height="30" rx="10" fill="#30363d"/>
+<rect x="990" y="192" width="296" height="12" fill="#30363d"/>
+<text x="1138.0" y="194" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">STAGE 2</text>
+<text x="1138.0" y="230" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3" opacity="1.0">tiny-object detector</text>
+<text x="1138.0" y="256" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">YOLOv8 with a P2 head</text>
+<text x="1138.0" y="276" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">NWD loss for tiny boxes</text>
+<text x="1138.0" y="296" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">labels inflated to 24 px</text>
+<rect x="1334" y="174" width="296" height="162" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="1334" y="174" width="296" height="30" rx="10" fill="#30363d"/>
+<rect x="1334" y="192" width="296" height="12" fill="#30363d"/>
+<text x="1482.0" y="194" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">STAGE 3</text>
+<text x="1482.0" y="230" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3" opacity="1.0">track, then decide</text>
+<text x="1482.0" y="256" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">Kalman tracker feeding a</text>
+<text x="1482.0" y="276" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">track-level classifier</text>
+<text x="1482.0" y="296" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">announced at the 8th hit</text>
+<rect x="1678" y="174" width="318" height="162" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="1678" y="174" width="318" height="30" rx="10" fill="#388bfd"/>
+<rect x="1678" y="192" width="318" height="12" fill="#388bfd"/>
+<text x="1837.0" y="194" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">RESULT</text>
+<text x="1837.0" y="230" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3" opacity="1.0">AP / F1 = 1.000</text>
+<text x="1837.0" y="256" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6edf3" opacity="1.0">on the unseen test video</text>
+<text x="1837.0" y="276" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">zero false positives</text>
+<text x="1837.0" y="296" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">4 fps desktop &#183; 74 fps edge</text>
+<path d="M 251 255 L 283 255" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<path d="M 517 255 L 549 255" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<path d="M 949 255 L 981 255" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<path d="M 1293 255 L 1325 255" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<path d="M 1637 255 L 1669 255" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<text x="1020.0" y="388" text-anchor="middle" font-size="14" font-weight="400" fill="#9198a1" opacity="1.0">Same network, same recipe: single-frame input scores mAP50 0.06 and the temporal stack scores 0.83. The representation is the breakthrough, not the network.</text>
+<path d="M 750 410 L 750 444" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<text x="768" y="436" text-anchor="start" font-size="13" font-weight="400" fill="#9198a1" opacity="1.0">the same finding on a different mount: at 3 px, only motion sees it</text>
+<rect x="20" y="444" width="2000" height="330" rx="14" fill="#11161d" stroke="#30363d" stroke-width="1.5"/>
+<circle cx="58" cy="476" r="17" fill="#30363d"/>
+<text x="58" y="482" text-anchor="middle" font-size="17" font-weight="700" fill="#e6edf3" opacity="1.0">2</text>
+<text x="88" y="483" text-anchor="start" font-size="19.5" font-weight="700" fill="#e6edf3" opacity="1.0">SEEK &#8212; the same idea on an interceptor: four cameras, 360&#176;, one drone among ~50 contacts</text>
+<rect x="1748" y="460" width="252" height="30" rx="15" fill="none" stroke="#d29922" stroke-width="1.6"/>
+<circle cx="1767" cy="475" r="5.5" fill="#d29922"/>
+<text x="1780" y="480" text-anchor="start" font-size="13" font-weight="600" fill="#d29922" opacity="1.0">simulated sensor (Isaac Sim)</text>
+<rect x="44" y="510" width="240" height="196" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="44" y="510" width="240" height="30" rx="10" fill="#388bfd"/>
+<rect x="44" y="528" width="240" height="12" fill="#388bfd"/>
+<text x="164.0" y="530" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">SENSOR</text>
+<text x="164.0" y="566" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3" opacity="1.0">four cameras</text>
+<text x="164.0" y="592" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">96&#176; each, 90&#176; apart</text>
+<text x="164.0" y="612" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">384&#176; of 360 &#8212; every seam</text>
+<text x="164.0" y="632" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">overlaps by 6&#176; on purpose</text>
+<text x="164.0" y="652" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">16.1 px/deg, same as one</text>
+<rect x="324" y="510" width="306" height="196" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="324" y="510" width="306" height="30" rx="10" fill="#30363d"/>
+<rect x="324" y="528" width="306" height="12" fill="#30363d"/>
+<text x="477.0" y="530" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">MOTION &#183; PROPOSES</text>
+<text x="477.0" y="566" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3" opacity="1.0">background model</text>
+<text x="477.0" y="592" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">it holds station, so the four</text>
+<text x="477.0" y="612" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">cameras are stationary &#8212; and a</text>
+<text x="477.0" y="632" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">per-pixel model sees the whole</text>
+<text x="477.0" y="652" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">contrast, not the moving sliver</text>
+<text x="477.0" y="672" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6edf3" opacity="1.0">finds 3 px at 140 m</text>
+<rect x="670" y="510" width="250" height="196" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="670" y="510" width="250" height="30" rx="10" fill="#30363d"/>
+<rect x="670" y="528" width="250" height="12" fill="#30363d"/>
+<text x="795.0" y="530" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">FUSE</text>
+<text x="795.0" y="566" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3" opacity="1.0">merge by angle</text>
+<text x="795.0" y="592" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">a target in a seam is seen</text>
+<text x="795.0" y="612" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">twice, by two cameras, and</text>
+<text x="795.0" y="632" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">both are right &#8212; it is still</text>
+<text x="795.0" y="652" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">one drone</text>
+<rect x="960" y="510" width="348" height="196" rx="10" fill="#161b22" stroke="#2ea043" stroke-width="3"/>
+<rect x="960" y="510" width="348" height="30" rx="10" fill="#2ea043"/>
+<rect x="960" y="528" width="348" height="12" fill="#2ea043"/>
+<text x="1134.0" y="530" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">DISCRIMINATE &#183; THE HARD PART</text>
+<text x="1134.0" y="568" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3" opacity="1.0">watched flying</text>
+<text x="1134.0" y="594" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">a rendered sky returns ~50 motion</text>
+<text x="1134.0" y="614" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">contacts a frame and no confidence</text>
+<text x="1134.0" y="634" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">threshold ranks the drone first.</text>
+<text x="1134.0" y="654" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">Physics does: a fixed object has a</text>
+<text x="1134.0" y="674" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">bearing rate of exactly zero.</text>
+<text x="1134.0" y="694" text-anchor="middle" font-size="13.5" font-weight="600" fill="#2ea043" opacity="1.0">85% of clutter survives the best one-frame gate</text>
+<rect x="1348" y="510" width="272" height="196" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="1348" y="510" width="272" height="30" rx="10" fill="#30363d"/>
+<rect x="1348" y="528" width="272" height="12" fill="#30363d"/>
+<text x="1484.0" y="530" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">APPEARANCE &#183; DISPOSES</text>
+<text x="1484.0" y="566" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3" opacity="1.0">YOLO on a crop</text>
+<text x="1484.0" y="592" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">640 px, aimed by motion,</text>
+<text x="1484.0" y="612" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">at native scale &#8212; a whole-</text>
+<text x="1484.0" y="632" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">frame pass would shrink a</text>
+<text x="1484.0" y="652" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">9 px drone to 8</text>
+<text x="1484.0" y="672" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6edf3" opacity="1.0">and only it may set the range</text>
+<rect x="1660" y="510" width="336" height="196" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="1660" y="510" width="336" height="30" rx="10" fill="#388bfd"/>
+<rect x="1660" y="528" width="336" height="12" fill="#388bfd"/>
+<text x="1828.0" y="530" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">THE INTERFACE</text>
+<text x="1828.0" y="566" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3" opacity="1.0">TargetEstimate</text>
+<text x="1828.0" y="592" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">a direction in body axes</text>
+<text x="1828.0" y="612" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">a pixel span</text>
+<text x="1828.0" y="632" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">a validity flag</text>
+<text x="1828.0" y="652" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">&#8212; and nothing else</text>
+<text x="1828.0" y="672" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6edf3" opacity="1.0">guidance never sees an image</text>
+<path d="M 291 608 L 315 608" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<path d="M 637 608 L 661 608" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<path d="M 927 608 L 951 608" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<path d="M 1315 608 L 1339 608" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<path d="M 1627 608 L 1651 608" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<text x="1020.0" y="752" text-anchor="middle" font-size="14" font-weight="400" fill="#9198a1" opacity="1.0">Motion proposes, appearance disposes. Every metre of detection range buys 0.6 m of defended radius &#8212; nothing else in the system trades that steeply.</text>
+<rect x="20" y="808" width="2000" height="268" rx="14" fill="#11161d" stroke="#30363d" stroke-width="1.5"/>
+<circle cx="58" cy="840" r="17" fill="#30363d"/>
+<text x="58" y="846" text-anchor="middle" font-size="17" font-weight="700" fill="#e6edf3" opacity="1.0">3</text>
+<text x="88" y="847" text-anchor="start" font-size="19.5" font-weight="700" fill="#e6edf3" opacity="1.0">HIT &#8212; a bearing alone is enough to collide with something</text>
+<rect x="1603" y="824" width="397" height="30" rx="15" fill="none" stroke="#d29922" stroke-width="1.6"/>
+<circle cx="1622" cy="839" r="5.5" fill="#d29922"/>
+<text x="1635" y="844" text-anchor="start" font-size="13" font-weight="600" fill="#d29922" opacity="1.0">simulated flight (Isaac Sim, 20 Hz closed loop)</text>
+<rect x="44" y="872" width="466" height="158" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="44" y="872" width="466" height="30" rx="10" fill="#30363d"/>
+<rect x="44" y="890" width="466" height="12" fill="#30363d"/>
+<text x="277.0" y="892" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">MISSION STATE</text>
+<text x="68" y="928" text-anchor="start" font-size="14" font-weight="700" fill="#a371f7" opacity="1.0">SEARCH</text>
+<text x="176" y="928" text-anchor="start" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.85">watch; do not move</text>
+<text x="68" y="953" text-anchor="start" font-size="14" font-weight="700" fill="#a371f7" opacity="1.0">ACQUIRE</text>
+<text x="176" y="953" text-anchor="start" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.85">hold station until proven</text>
+<text x="68" y="978" text-anchor="start" font-size="14" font-weight="700" fill="#a371f7" opacity="1.0">PURSUE</text>
+<text x="176" y="978" text-anchor="start" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.85">close under PN</text>
+<text x="68" y="1003" text-anchor="start" font-size="14" font-weight="700" fill="#a371f7" opacity="1.0">TERMINAL</text>
+<text x="176" y="1003" text-anchor="start" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.85">commit</text>
+<text x="277.0" y="1052" text-anchor="middle" font-size="12.5" font-weight="400" fill="#9198a1" opacity="1.0">ACQUIRE holds still on purpose &#8212; moving destroys the evidence</text>
+<rect x="550" y="872" width="466" height="158" rx="10" fill="#161b22" stroke="#a371f7" stroke-width="3"/>
+<rect x="550" y="872" width="466" height="30" rx="10" fill="#a371f7"/>
+<rect x="550" y="890" width="466" height="12" fill="#a371f7"/>
+<text x="783.0" y="892" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">THE CLOSURE LAW</text>
+<text x="783.0" y="930" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3" opacity="1.0">proportional navigation</text>
+<rect x="620" y="944" width="326" height="34" rx="7" fill="#1c2430" stroke="#30363d"/>
+<text x="783.0" y="967" text-anchor="middle" font-size="16" font-weight="400" fill="#39c5cf" opacity="1.0" font-family="DejaVu Sans Mono, monospace">a&#8869;  =  N &#183; Vc &#183; d&#955;/dt</text>
+<text x="783.0" y="1000" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">a line of sight that does not rotate while</text>
+<text x="783.0" y="1020" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">the range shrinks is a collision course</text>
+<text x="783.0" y="1052" text-anchor="middle" font-size="12.5" font-weight="400" fill="#9198a1" opacity="1.0">bearing steers (a pixel is a ray); range only schedules speed</text>
+<rect x="1056" y="872" width="320" height="158" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="1056" y="872" width="320" height="30" rx="10" fill="#30363d"/>
+<rect x="1056" y="890" width="320" height="12" fill="#30363d"/>
+<text x="1216.0" y="892" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">AIRFRAME</text>
+<text x="1216.0" y="928" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3" opacity="1.0">body command</text>
+<text x="1216.0" y="954" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">20 Hz; speed, acceleration</text>
+<text x="1216.0" y="974" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">and yaw rate all limited</text>
+<text x="1216.0" y="994" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">bearings stamped at capture</text>
+<text x="1216.0" y="1052" text-anchor="middle" font-size="12.5" font-weight="400" fill="#9198a1" opacity="1.0">sensor latency is declared, not inherited</text>
+<rect x="1416" y="872" width="580" height="158" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="1416" y="872" width="580" height="30" rx="10" fill="#388bfd"/>
+<rect x="1416" y="890" width="580" height="12" fill="#388bfd"/>
+<text x="1706.0" y="892" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">RESULT &#183; CITY DEFENCE</text>
+<text x="1706.0" y="928" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3" opacity="1.0">24 / 24 intercepted &#183; 0 buildings hit</text>
+<text x="1706.0" y="954" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6edf3" opacity="1.0">mean true closest approach 0.080 m &#8212; a sixth of the airframe</text>
+<text x="1706.0" y="974" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">median 4.29 s to spare before the strike would have landed</text>
+<text x="1706.0" y="994" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">24 arrival bearings, one every 15&#176; of the compass</text>
+<path d="M 517 951 L 541 951" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<path d="M 1023 951 L 1047 951" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<path d="M 1383 951 L 1407 951" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<rect x="20" y="1104" width="2000" height="194" rx="14" fill="#11161d" stroke="#30363d" stroke-width="1.5"/>
+<circle cx="58" cy="1136" r="17" fill="#30363d"/>
+<text x="58" y="1142" text-anchor="middle" font-size="17" font-weight="700" fill="#e6edf3" opacity="1.0">4</text>
+<text x="88" y="1143" text-anchor="start" font-size="19.5" font-weight="700" fill="#e6edf3" opacity="1.0">HOW EVERY NUMBER HERE WAS MEASURED</text>
+<rect x="1748" y="1120" width="252" height="30" rx="15" fill="none" stroke="#388bfd" stroke-width="1.6"/>
+<circle cx="1767" cy="1135" r="5.5" fill="#388bfd"/>
+<text x="1780" y="1140" text-anchor="start" font-size="13" font-weight="600" fill="#388bfd" opacity="1.0">no claim without an artifact</text>
+<rect x="44" y="1162" width="620" height="122" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="44" y="1162" width="620" height="30" rx="10" fill="#2ea043"/>
+<rect x="44" y="1180" width="620" height="12" fill="#2ea043"/>
+<text x="354.0" y="1182" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">DETECTION &#183; REAL VIDEO</text>
+<text x="354.0" y="1214" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3" opacity="1.0">centre distance, &#964; = 12 px</text>
+<text x="354.0" y="1238" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">IoU is meaningless on a 6 px box &#8212; a pixel of shift swings it wildly</text>
+<text x="354.0" y="1257" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">scored on a video never trained on and never used to pick a model</text>
+<rect x="700" y="1162" width="620" height="122" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="700" y="1162" width="620" height="30" rx="10" fill="#d29922"/>
+<rect x="700" y="1180" width="620" height="12" fill="#d29922"/>
+<text x="1010.0" y="1182" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">INTERCEPTION &#183; ISAAC SIM</text>
+<text x="1010.0" y="1214" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3" opacity="1.0">true closest approach &lt; 1.0 m</text>
+<text x="1010.0" y="1238" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">two Iris airframes touching are ~0.5 m centre to centre</text>
+<text x="1010.0" y="1257" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">arriving after the building is hit is a separate, scored failure</text>
+<rect x="1356" y="1162" width="640" height="122" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="1356" y="1162" width="640" height="30" rx="10" fill="#30363d"/>
+<rect x="1356" y="1180" width="640" height="12" fill="#30363d"/>
+<text x="1676.0" y="1182" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">THE HARNESSES</text>
+<text x="1676.0" y="1214" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3" opacity="1.0">two loops and a test suite</text>
+<text x="1676.0" y="1238" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">Isaac Sim at 20 Hz, and an arithmetic sandbox: 120 scenarios in 1.2 s</text>
+<text x="1676.0" y="1257" text-anchor="middle" font-size="13.5" font-weight="400" fill="#e6edf3" opacity="0.88">540 unit tests over geometry, guidance, dynamics and the ring, in 22 s</text>
+<text x="1020.0" y="1306" text-anchor="middle" font-size="13" font-weight="400" fill="#9198a1" opacity="1.0">Detection is measured on real, hand-labelled video. Interception is measured in a closed-loop Isaac Sim renderer &#8212; there is no flight test here, and this figure says so on purpose.</text>
+</svg>

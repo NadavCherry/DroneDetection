@@ -1,0 +1,53 @@
+{
+ "weights": "work/runs/sim-n-p2/weights/best.pt",
+ "conf": 0.15,
+ "imgsz": 1280,
+ "buckets": {
+  "0-4": {
+   "n": 3,
+   "recall": 0.3333,
+   "median_err_px": 0.52
+  },
+  "4-6": {
+   "n": 16,
+   "recall": 0.0625,
+   "median_err_px": 1.96
+  },
+  "6-9": {
+   "n": 70,
+   "recall": 0.2571,
+   "median_err_px": 1.03
+  },
+  "9-14": {
+   "n": 169,
+   "recall": 0.7396,
+   "median_err_px": 0.79
+  },
+  "14-25": {
+   "n": 217,
+   "recall": 0.9862,
+   "median_err_px": 0.89
+  },
+  "25-60": {
+   "n": 105,
+   "recall": 0.981,
+   "median_err_px": 1.15
+  },
+  "60-150": {
+   "n": 82,
+   "recall": 0.9878,
+   "median_err_px": 1.56
+  },
+  "150-+": {
+   "n": 107,
+   "recall": 1.0,
+   "median_err_px": 3.0
+  }
+ },
+ "fp_total": 253,
+ "images": 900,
+ "bg_frames": 131,
+ "bg_frames_with_fp": 6,
+ "img_per_s": 101.03,
+ "floor_px": 14
+}

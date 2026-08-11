@@ -1,0 +1,418 @@
+{
+ "city": [
+  {
+   "id": "city-000",
+   "mp4": "pursuit/city/city-000.mp4",
+   "poster": "pursuit/city/city-000.jpg",
+   "title": "Due north, 0&deg;",
+   "blurb": "Straight over the nose. Acquired in 0.20 s, intercepted at 6.0 s.",
+   "tags": [
+    "ring",
+    "hit"
+   ],
+   "speed": 2.0,
+   "bytes": 552708,
+   "source_clip": "work/pursuit/city_clips/city-000.mp4",
+   "facts": {
+    "outcome": "intercept",
+    "cpa_m": 0.0762,
+    "t_intercept_s": 6.0,
+    "acquire_s": 0.2,
+    "margin_s": 4.47,
+    "detect_rate": 0.975,
+    "track_rate": 0.9833,
+    "policy": "weave",
+    "struck_asset": false
+   }
+  },
+  {
+   "id": "city-030",
+   "mp4": "pursuit/city/city-030.mp4",
+   "poster": "pursuit/city/city-030.jpg",
+   "title": "030&deg; &mdash; off the bow",
+   "blurb": "Outside a single camera's 76&deg; cone; the ring never has to turn.",
+   "tags": [
+    "ring",
+    "hit"
+   ],
+   "speed": 2.0,
+   "bytes": 568836,
+   "source_clip": "work/pursuit/city_clips/city-030.mp4",
+   "facts": {
+    "outcome": "intercept",
+    "cpa_m": 0.081,
+    "t_intercept_s": 6.65,
+    "acquire_s": 0.9,
+    "margin_s": 4.22,
+    "detect_rate": 0.8797,
+    "track_rate": 0.8797,
+    "policy": "weave",
+    "struck_asset": false
+   }
+  },
+  {
+   "id": "city-075",
+   "mp4": "pursuit/city/city-075.mp4",
+   "poster": "pursuit/city/city-075.jpg",
+   "title": "075&deg; &mdash; near a seam",
+   "blurb": "Arrives close to the forward/right seam and is handed between cameras mid-track.",
+   "tags": [
+    "ring",
+    "hit",
+    "seam"
+   ],
+   "speed": 2.0,
+   "bytes": 551933,
+   "source_clip": "work/pursuit/city_clips/city-075.mp4",
+   "facts": {
+    "outcome": "intercept",
+    "cpa_m": 0.1441,
+    "t_intercept_s": 6.5,
+    "acquire_s": 0.9,
+    "margin_s": 3.79,
+    "detect_rate": 0.8692,
+    "track_rate": 0.8769,
+    "policy": "weave",
+    "struck_asset": false
+   }
+  },
+  {
+   "id": "city-105",
+   "mp4": "pursuit/city/city-105.mp4",
+   "poster": "pursuit/city/city-105.jpg",
+   "title": "105&deg; &mdash; the headline engagement",
+   "blurb": "170 m out and 2.7 px across, diving on a plaza block. Passed 0.13 m from it.",
+   "tags": [
+    "ring",
+    "hit",
+    "headline"
+   ],
+   "speed": 2.0,
+   "bytes": 620405,
+   "source_clip": "work/pursuit/city_clips/city-105.mp4",
+   "facts": {
+    "outcome": "intercept",
+    "cpa_m": 0.1251,
+    "t_intercept_s": 7.0,
+    "acquire_s": 0.9,
+    "margin_s": 3.33,
+    "detect_rate": 0.8786,
+    "track_rate": 0.8857,
+    "policy": "weave",
+    "struck_asset": false
+   }
+  },
+  {
+   "id": "city-150",
+   "mp4": "pursuit/city/city-150.mp4",
+   "poster": "pursuit/city/city-150.jpg",
+   "title": "150&deg; &mdash; over the shoulder",
+   "blurb": "Well behind the beam. A forward camera would still be slewing.",
+   "tags": [
+    "ring",
+    "hit"
+   ],
+   "speed": 2.0,
+   "bytes": 530678,
+   "source_clip": "work/pursuit/city_clips/city-150.mp4",
+   "facts": {
+    "outcome": "intercept",
+    "cpa_m": 0.0458,
+    "t_intercept_s": 6.65,
+    "acquire_s": 0.9,
+    "margin_s": 2.86,
+    "detect_rate": 0.8797,
+    "track_rate": 0.8797,
+    "policy": "weave",
+    "struck_asset": false
+   }
+  },
+  {
+   "id": "city-180",
+   "mp4": "pursuit/city/city-180.mp4",
+   "poster": "pursuit/city/city-180.jpg",
+   "title": "180&deg; &mdash; dead astern",
+   "blurb": "The exact bearing one nose camera cannot see. Acquired in 0.20 s.",
+   "tags": [
+    "ring",
+    "hit",
+    "astern"
+   ],
+   "speed": 2.0,
+   "bytes": 532136,
+   "source_clip": "work/pursuit/city_clips/city-180.mp4",
+   "facts": {
+    "outcome": "intercept",
+    "cpa_m": 0.036,
+    "t_intercept_s": 6.55,
+    "acquire_s": 0.2,
+    "margin_s": 5.05,
+    "detect_rate": 0.9847,
+    "track_rate": 0.9847,
+    "policy": "weave",
+    "struck_asset": false
+   }
+  },
+  {
+   "id": "city-210",
+   "mp4": "pursuit/city/city-210.mp4",
+   "poster": "pursuit/city/city-210.jpg",
+   "title": "210&deg; &mdash; astern quarter",
+   "blurb": "Closest approach 8 mm &mdash; about a sixtieth of the airframe's rotor span.",
+   "tags": [
+    "ring",
+    "hit"
+   ],
+   "speed": 2.0,
+   "bytes": 611862,
+   "source_clip": "work/pursuit/city_clips/city-210.mp4",
+   "facts": {
+    "outcome": "intercept",
+    "cpa_m": 0.0081,
+    "t_intercept_s": 6.85,
+    "acquire_s": 0.9,
+    "margin_s": 4.91,
+    "detect_rate": 0.8832,
+    "track_rate": 0.8832,
+    "policy": "weave",
+    "struck_asset": false
+   }
+  },
+  {
+   "id": "city-255",
+   "mp4": "pursuit/city/city-255.mp4",
+   "poster": "pursuit/city/city-255.jpg",
+   "title": "255&deg; &mdash; from the port quarter",
+   "blurb": "Aft camera first, then two seam crossings into the chase.",
+   "tags": [
+    "ring",
+    "hit",
+    "seam"
+   ],
+   "speed": 2.0,
+   "bytes": 602069,
+   "source_clip": "work/pursuit/city_clips/city-255.mp4",
+   "facts": {
+    "outcome": "intercept",
+    "cpa_m": 0.0309,
+    "t_intercept_s": 6.7,
+    "acquire_s": 0.9,
+    "margin_s": 4.35,
+    "detect_rate": 0.8806,
+    "track_rate": 0.8806,
+    "policy": "weave",
+    "struck_asset": false
+   }
+  },
+  {
+   "id": "city-285",
+   "mp4": "pursuit/city/city-285.mp4",
+   "poster": "pursuit/city/city-285.jpg",
+   "title": "285&deg; &mdash; abeam to port",
+   "blurb": "90&deg; off the nose: the worst case for a single sensor, ordinary for a ring.",
+   "tags": [
+    "ring",
+    "hit"
+   ],
+   "speed": 2.0,
+   "bytes": 590014,
+   "source_clip": "work/pursuit/city_clips/city-285.mp4",
+   "facts": {
+    "outcome": "intercept",
+    "cpa_m": 0.081,
+    "t_intercept_s": 6.5,
+    "acquire_s": 0.9,
+    "margin_s": 3.45,
+    "detect_rate": 0.8769,
+    "track_rate": 0.8769,
+    "policy": "weave",
+    "struck_asset": false
+   }
+  },
+  {
+   "id": "city-330",
+   "mp4": "pursuit/city/city-330.mp4",
+   "poster": "pursuit/city/city-330.jpg",
+   "title": "330&deg; &mdash; closing the circle",
+   "blurb": "Tenth of ten recorded arrivals; the full 24 cover every 15&deg;.",
+   "tags": [
+    "ring",
+    "hit"
+   ],
+   "speed": 2.0,
+   "bytes": 545026,
+   "source_clip": "work/pursuit/city_clips/city-330.mp4",
+   "facts": {
+    "outcome": "intercept",
+    "cpa_m": 0.021,
+    "t_intercept_s": 6.45,
+    "acquire_s": 0.9,
+    "margin_s": 3.05,
+    "detect_rate": 0.876,
+    "track_rate": 0.876,
+    "policy": "weave",
+    "struck_asset": false
+   }
+  }
+ ],
+ "chase": [
+  {
+   "id": "skydome-in-crossing",
+   "mp4": "pursuit/chase/skydome-in-crossing.mp4",
+   "poster": "pursuit/chase/skydome-in-crossing.jpg",
+   "title": "Best pass of the campaign &mdash; 2.5 cm",
+   "blurb": "A crossing target at 115 m, open sky. Proportional navigation drives the line-of-sight rate to zero and the closure does the rest.",
+   "tags": [
+    "chase",
+    "skydome",
+    "hit"
+   ],
+   "speed": 1.5,
+   "bytes": 370854,
+   "source_clip": "work/pursuit/final/skydome/in-crossing.mp4",
+   "facts": {
+    "outcome": "intercept",
+    "cpa_m": 0.0251,
+    "t_intercept_s": 8.9,
+    "acquire_s": 5.75,
+    "margin_s": null,
+    "detect_rate": 0.9231,
+    "track_rate": 0.5169,
+    "policy": "evasive",
+    "struck_asset": false
+   }
+  },
+  {
+   "id": "rivermark-in-high-left",
+   "mp4": "pursuit/chase/rivermark-in-high-left.mp4",
+   "poster": "pursuit/chase/rivermark-in-high-left.jpg",
+   "title": "Urban clutter, 115 m, high on the left",
+   "blurb": "Rivermark rooftops behind the target for the whole run. 0.114 m.",
+   "tags": [
+    "chase",
+    "rivermark",
+    "hit"
+   ],
+   "speed": 1.5,
+   "bytes": 1137179,
+   "source_clip": "work/pursuit/final/rivermark/in-high-left.mp4",
+   "facts": {
+    "outcome": "intercept",
+    "cpa_m": 0.1136,
+    "t_intercept_s": 9.1,
+    "acquire_s": 3.65,
+    "margin_s": null,
+    "detect_rate": 0.9569,
+    "track_rate": 0.9011,
+    "policy": "weave",
+    "struck_asset": false
+   }
+  },
+  {
+   "id": "rivermark-break-turn",
+   "mp4": "pursuit/chase/rivermark-break-turn.mp4",
+   "poster": "pursuit/chase/rivermark-break-turn.jpg",
+   "title": "It breaks; the law does not care",
+   "blurb": "A hard break turn at close range. PN is driven by bearing rate, so a manoeuvre is just a new rate to null.",
+   "tags": [
+    "chase",
+    "rivermark",
+    "hit",
+    "evasion"
+   ],
+   "speed": 1.0,
+   "bytes": 853459,
+   "source_clip": "work/pursuit/final/rivermark/L5-break_turn.mp4",
+   "facts": {
+    "outcome": "intercept",
+    "cpa_m": 0.1979,
+    "t_intercept_s": 5.0,
+    "acquire_s": 0.35,
+    "margin_s": null,
+    "detect_rate": 0.98,
+    "track_rate": 0.98,
+    "policy": "break_turn",
+    "struck_asset": false
+   }
+  },
+  {
+   "id": "rivermark-outbound-60m",
+   "mp4": "pursuit/chase/rivermark-outbound-60m.mp4",
+   "poster": "pursuit/chase/rivermark-outbound-60m.jpg",
+   "title": "A fleeing target has no bearing rate",
+   "blurb": "Running straight away, which is the geometry a constant-rate test cannot help with &mdash; and the reason that test is only demanded of motion contacts.",
+   "tags": [
+    "chase",
+    "rivermark",
+    "hit"
+   ],
+   "speed": 1.5,
+   "bytes": 1020404,
+   "source_clip": "work/pursuit/final/rivermark/outbound-60m.mp4",
+   "facts": {
+    "outcome": "intercept",
+    "cpa_m": 0.1814,
+    "t_intercept_s": 8.95,
+    "acquire_s": 0.2,
+    "margin_s": null,
+    "detect_rate": 0.9822,
+    "track_rate": 0.9888,
+    "policy": "flee",
+    "struck_asset": false
+   }
+  },
+  {
+   "id": "skydome-in-behind",
+   "mp4": "pursuit/chase/skydome-in-behind.mp4",
+   "poster": "pursuit/chase/skydome-in-behind.jpg",
+   "title": "Why the ring exists",
+   "blurb": "One forward camera, target arriving from behind: 21.0 s to acquire and 30.5 s to intercept, nearly all of it spent turning to look. The ring does this in 0.2 s.",
+   "tags": [
+    "chase",
+    "skydome",
+    "hit",
+    "slow"
+   ],
+   "speed": 3.0,
+   "bytes": 869196,
+   "source_clip": "work/pursuit/final/skydome/in-behind.mp4",
+   "facts": {
+    "outcome": "intercept",
+    "cpa_m": 0.4606,
+    "t_intercept_s": 30.45,
+    "acquire_s": 21.0,
+    "margin_s": null,
+    "detect_rate": 0.9193,
+    "track_rate": 0.6059,
+    "policy": "flee",
+    "struck_asset": false
+   }
+  },
+  {
+   "id": "rivermark-miss",
+   "mp4": "pursuit/chase/rivermark-miss.mp4",
+   "poster": "pursuit/chase/rivermark-miss.jpg",
+   "title": "A failure, shown in full",
+   "blurb": "Detection rate 0.00: the target crosses low against Rivermark's roofline and is never acquired, so there is nothing to steer at. Every one of the eight failures looks like this &mdash; perception, not guidance.",
+   "tags": [
+    "chase",
+    "rivermark",
+    "miss"
+   ],
+   "speed": 3.0,
+   "bytes": 2675485,
+   "source_clip": "work/pursuit/final/rivermark/right-to-left-45m.mp4",
+   "facts": {
+    "outcome": "timeout",
+    "cpa_m": null,
+    "t_intercept_s": null,
+    "acquire_s": null,
+    "margin_s": null,
+    "detect_rate": 0.0,
+    "track_rate": 0.342,
+    "policy": "weave",
+    "struck_asset": false
+   }
+  }
+ ]
+}

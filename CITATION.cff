@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this software, or quote a number measured in it, please cite it as below."
+title: "See the drone, then hit it (SpeckLock)"
+abstract: >-
+  Two halves of one problem. Detection: find a drone that occupies 3-14 pixels in 720p
+  video from a moving camera, by stabilising and stacking three grayscale moments so that
+  the static world cancels and movers leave colour trails — measured on real, hand-labelled
+  video. Pursuit: close on that drone with camera-only proportional-navigation guidance,
+  a four-camera 360-degree ring and a mission FSM — measured closed-loop in NVIDIA Isaac
+  Sim. There is no flight test in this repository.
+type: software
+authors:
+  - family-names: Cherry
+    given-names: Nadav
+license: AGPL-3.0-only
+repository-code: "https://github.com/NadavCherry/SpeckLock"
+url: "https://nadavcherry.github.io/SpeckLock/"
+date-released: 2026-08-10
+keywords:
+  - small-object detection
+  - drone detection
+  - counter-UAS
+  - temporal stacking
+  - multi-object tracking
+  - proportional navigation
+  - Isaac Sim

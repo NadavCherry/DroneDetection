@@ -1,0 +1,20 @@
+# Torch built for CUDA 12.8 (RTX 5070 / Blackwell sm_120 needs cu128+ wheels):
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+torch==2.11.0
+torchvision==0.26.0
+ultralytics==8.4.84
+opencv-contrib-python==5.0.0.93  # contrib: dnn_superres for the SR ablation
+numpy==2.5.0
+scipy==1.18.0
+imageio-ffmpeg==0.6.0  # bundled ffmpeg: edit-list recovery (tools/recover_full_video.py), H.264 exports
+cairosvg==2.9.0        # only to redraw docs/media/architecture_*.svg as PNG (tools/make_arch_figure*.py)
+matplotlib==3.11.1     # only to redraw the README's result charts (tools/make_result_charts.py)
+pytest==9.1.1          # the pursuit suite; pytest.ini pins testpaths and disables the ROS 2 plugins
+
+# Deliberately absent, so that a plain install is not gated on either:
+#   tensorrt      only to build a .engine on the machine you will run it on. No engine
+#                 ships (they are architecture-specific), and every FP16 rate quoted in
+#                 final/README.md and realtime/README.md assumes one exists; without it
+#                 the runners load the .pt and are correct but slower.
+#   onnxruntime   only to run an exported .onnx, which is how the CPU column in
+#                 realtime/README.md's component table was measured.

@@ -1,0 +1,110 @@
+# ---------------------------------------------------------------------------
+# NOTE: git does not support inline comments — every comment must be on its
+# own line, or the '#' becomes part of the pattern above it.
+# ---------------------------------------------------------------------------
+
+# --- Python / tooling ---
+.venv/
+.idea/
+__pycache__/
+*.pyc
+# ultralytics writes training runs here (see docs/guides/retrain.md gotcha)
+runs/
+
+# --- Model weights ---
+# Ignore weights by default: pretrained base weights at the repo root
+# (yolov8n/s.pt, yolo11n/s.pt, yolo26n.pt) auto-download and stay local.
+*.pt
+# ...but keep everything we trained or ship:
+!work/models/*.pt
+!baseline/*.pt
+!realtime/work/models/*.pt
+!final/pc_max/*.pt
+!final/edge_rt/*.pt
+
+# Arch-specific / regenerable model artifacts (rebuilt on the target device)...
+*.onnx
+*.engine
+# ...except the portable ONNX that ships with the EDGE-RT deliverable:
+!final/edge_rt/*.onnx
+# two duplicate edge-weight copies that are regenerable:
+realtime/work/models/v3_full_temporal_n640.pt
+realtime/work/models/v3_full_temporal_n1280_int8.pt
+
+# --- Videos & docs ---
+# Ignore videos by default, keep the two sources and the showcase media:
+*.mp4
+!data/videos/*.mp4
+!docs/media/*.mp4
+!docs/media/**/*.mp4
+# Ignore Word docs by default, keep the research source:
+*.docx
+!docs/references/*.docx
+
+# --- Regenerable experiment artifacts (rebuilt by tools/*) ---
+work/runs/
+work/dataset/
+work/dataset_*/
+work/dsv3_*/
+work/vis/
+work/vis2/
+work/frames/
+work/frames_all/
+work/train_*.log
+# edit-list-recovered full videos (tools/recover_full_video.py)
+work/video/
+# external drone datasets (downloaded, not part of this repo) + converted YOLO layouts
+data/external/
+work/ext_datasets/
+# training logs and scratch inference outputs
+work/logs/
+work/infer/
+
+# --- realtime: datasets, engines and demo outputs are regenerable ---
+realtime/work/dataset_*/
+realtime/work/*.log
+realtime/work/outv3cpu/
+realtime/work/outfinal/
+realtime/work/gt1006_verify/sheet_*.png
+
+# --- final: demo run outputs are regenerable ---
+final/out/
+
+# --- assistant guidance stays local-only ---
+CLAUDE.md
+
+# Simulator recordings: MP4s plus per-frame JPEG dumps, hundreds of MB per run.
+# Regenerate with simulators/pegasus/scripts/run_in_container.sh
+simulators/pegasus/recordings/
+
+# pursuit-half artifacts: all regenerable, and large.
+# work/simdata_fusion is ~18 GB of 4-channel .npy tiles (make_sim_fusion).
+work/simdata/
+work/simdata_fusion/
+work/simdata_neg/
+work/*.log
+
+# work/pursuit is video and per-frame telemetry -- hundreds of MB a campaign --
+# so it is ignored wholesale. The exceptions are the *scorecards*: the READMEs
+# link to them as the evidence behind every pursuit number, and a link to an
+# ignored file is a 404 for everyone who did not run the campaign themselves.
+# NOTE: git cannot re-include a file whose parent directory is excluded, which
+# is why this is a '/**' glob with the directories let back through, not
+# 'work/pursuit/'.
+work/pursuit/**
+!work/pursuit/
+!work/pursuit/*/
+!work/pursuit/*/*/
+!work/pursuit/**/METRICS.md
+!work/pursuit/**/ANALYSIS.md
+!work/pursuit/**/results.json
+!work/pursuit/ring_probe.json
+!work/pursuit/ring_detect_range.json
+!work/pursuit/motion_bg2.json
+!work/pursuit/motion_gate.json
+!work/pursuit/detector_eval.json
+!work/pursuit/detcmp-town.json
+!work/pursuit/detcmp-hn.json
+!work/pursuit/flicker.json
+!work/pursuit/robustness.json
+work/linkedin/

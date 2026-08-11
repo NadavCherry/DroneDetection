@@ -1,0 +1,93 @@
+{
+ "args": {
+  "socket": "~/isaac_dev_root/pursuit/sim.sock",
+  "bearings": "30",
+  "start_range": 60.0,
+  "stop_range": 56.0,
+  "speed": 12.0,
+  "altitude": 30.0,
+  "intruder_agl": 20.0,
+  "chaser_yaw_deg": 23.0,
+  "weights": null,
+  "imgsz": 2048,
+  "conf": 0.05,
+  "gate_deg": 1.2,
+  "k_static": null,
+  "min_area": null,
+  "sweep": "flicker_alpha=0.01,0.06,0.15",
+  "quiet_frames": 90,
+  "out": "work/pursuit/flicker.json"
+ },
+ "rows": [
+  {
+   "bearing": 30.0,
+   "range_m": 60.23586203923706,
+   "span_px": 7.194160484619388,
+   "camera": "fwd",
+   "yolo": false,
+   "flicker_alpha=0.01": false,
+   "flicker_alpha=0.06": false,
+   "flicker_alpha=0.15": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 59.64428419630838,
+   "span_px": 7.265515284136579,
+   "camera": "fwd",
+   "yolo": false,
+   "flicker_alpha=0.01": false,
+   "flicker_alpha=0.06": false,
+   "flicker_alpha=0.15": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 59.05287602894544,
+   "span_px": 7.338278634003442,
+   "camera": "fwd",
+   "yolo": false,
+   "flicker_alpha=0.01": false,
+   "flicker_alpha=0.06": false,
+   "flicker_alpha=0.15": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 58.46164268655132,
+   "span_px": 7.412491995189053,
+   "camera": "fwd",
+   "yolo": false,
+   "flicker_alpha=0.01": false,
+   "flicker_alpha=0.06": false,
+   "flicker_alpha=0.15": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 57.87050422762878,
+   "span_px": 7.48820948120881,
+   "camera": "fwd",
+   "yolo": false,
+   "flicker_alpha=0.01": false,
+   "flicker_alpha=0.06": false,
+   "flicker_alpha=0.15": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 57.27963685673994,
+   "span_px": 7.565454011579922,
+   "camera": "fwd",
+   "yolo": false,
+   "flicker_alpha=0.01": false,
+   "flicker_alpha=0.06": false,
+   "flicker_alpha=0.15": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 56.68896105627621,
+   "span_px": 7.644282949717018,
+   "camera": "fwd",
+   "yolo": false,
+   "flicker_alpha=0.01": false,
+   "flicker_alpha=0.06": false,
+   "flicker_alpha=0.15": false
+  }
+ ]
+}

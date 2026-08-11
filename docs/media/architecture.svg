@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1840" height="720" viewBox="0 0 1840 720" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="1840" height="720" fill="#0d1117" rx="12"/>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5"
+        markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M 0 1 L 9 5 L 0 9 z" fill="#8b949e"/></marker></defs>
+<rect x="30" y="90" width="170" height="130" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="30" y="90" width="170" height="30" rx="10" fill="#388bfd"/>
+<rect x="30" y="108" width="170" height="12" fill="#388bfd"/>
+<text x="115.0" y="110" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">INPUT</text>
+<text x="115.0" y="146" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3">frame t</text>
+<text x="115.0" y="170" text-anchor="middle" font-size="13.5" fill="#e6edf3" opacity="0.87">1280 &#215; 720 RGB</text>
+<text x="115.0" y="190" text-anchor="middle" font-size="13.5" fill="#e6edf3" opacity="0.87">30 fps video</text>
+<rect x="280" y="90" width="230" height="130" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="280" y="90" width="230" height="30" rx="10" fill="#30363d"/>
+<rect x="280" y="108" width="230" height="12" fill="#30363d"/>
+<text x="395.0" y="110" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">STAGE 0</text>
+<text x="395.0" y="146" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3">stabilize</text>
+<text x="395.0" y="170" text-anchor="middle" font-size="13.5" fill="#e6edf3" opacity="0.87">camera motion removed</text>
+<text x="395.0" y="190" text-anchor="middle" font-size="13.5" fill="#e6edf3" opacity="0.87">(aligned to frame 0)</text>
+<text x="395.0" y="241" text-anchor="middle" font-size="12.5" fill="#9198a1">phase correlation &#183; keeps a buffer of aligned grays</text>
+<rect x="590" y="70" width="350" height="190" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="590" y="70" width="350" height="30" rx="10" fill="#30363d"/>
+<rect x="590" y="88" width="350" height="12" fill="#30363d"/>
+<text x="765.0" y="90" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">STAGE 1 &#183; MOTION PROPOSALS</text>
+<rect x="608" y="114" width="314" height="54" rx="7" fill="#1c2430" stroke="#30363d"/>
+<text x="765.0" y="137" text-anchor="middle" font-size="14.5" font-weight="600" fill="#e6edf3">slow-mover channel</text>
+<text x="765.0" y="157" text-anchor="middle" font-size="12.5" fill="#9198a1">lagged background &#8212; catches 0.5 px/frame drifters</text>
+<rect x="608" y="176" width="314" height="54" rx="7" fill="#1c2430" stroke="#30363d"/>
+<text x="765.0" y="199" text-anchor="middle" font-size="14.5" font-weight="600" fill="#e6edf3">fast channel (MOG2)</text>
+<text x="765.0" y="219" text-anchor="middle" font-size="12.5" fill="#9198a1">maximum recall &#8212; precision comes later</text>
+<text x="765.0" y="281" text-anchor="middle" font-size="12.5" fill="#9198a1">union of both &#8250; top-20 moving candidates per frame</text>
+<rect x="1020" y="70" width="400" height="190" rx="10" fill="#161b22" stroke="#2ea043" stroke-width="3"/>
+<rect x="1020" y="70" width="400" height="30" rx="10" fill="#2ea043"/>
+<rect x="1020" y="88" width="400" height="12" fill="#2ea043"/>
+<text x="1220.0" y="90" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">STAGE 2 &#183; TEMPORAL VERIFIER</text>
+<rect x="1054" y="126.0" width="52" height="52" rx="7" fill="none" stroke="#e3b341" stroke-width="3.5"/>
+<rect x="1070" y="134.8" width="52" height="52" rx="7" fill="none" stroke="#db61a2" stroke-width="3.5"/>
+<rect x="1086" y="143.6" width="52" height="52" rx="7" fill="none" stroke="#39c5cf" stroke-width="3.5"/>
+<text x="1275" y="140" text-anchor="middle" font-size="15.5" font-weight="700" fill="#e6edf3">three moments, one image</text>
+<text x="1185" y="167" font-size="14.5" font-weight="700" fill="#e3b341">t-12</text>
+<text x="1225" y="167" font-size="14.5" font-weight="700" fill="#db61a2">t-6</text>
+<text x="1258" y="167" font-size="14.5" font-weight="700" fill="#39c5cf">now</text>
+<text x="1298" y="167" font-size="13.5" fill="#e6edf3" opacity="0.85">= color channels</text>
+<text x="1220.0" y="206" text-anchor="middle" font-size="14" fill="#e6edf3" opacity="0.9">YOLO reads the motion trail of each candidate</text>
+<text x="1220.0" y="230" text-anchor="middle" font-size="15" font-weight="700" fill="#e6edf3">&#8250; drone / bird / nothing</text>
+<text x="1220.0" y="281" text-anchor="middle" font-size="12.5" fill="#9198a1">static world cancels to gray &#8212; only movers get color (see picture above)</text>
+<rect x="280" y="430" width="230" height="140" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="280" y="430" width="230" height="30" rx="10" fill="#30363d"/>
+<rect x="280" y="448" width="230" height="12" fill="#30363d"/>
+<text x="395.0" y="450" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">STAGE 3</text>
+<text x="395.0" y="486" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3">full-frame expert</text>
+<text x="395.0" y="510" text-anchor="middle" font-size="13.5" fill="#e6edf3" opacity="0.87">separate YOLO @ 1280</text>
+<text x="395.0" y="530" text-anchor="middle" font-size="13.5" fill="#e6edf3" opacity="0.87">large / hovering /</text>
+<text x="395.0" y="550" text-anchor="middle" font-size="13.5" fill="#e6edf3" opacity="0.87">landed drones</text>
+<text x="395.0" y="591" text-anchor="middle" font-size="12.5" fill="#9198a1">covers what motion cannot see</text>
+<rect x="590" y="430" width="230" height="140" rx="10" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="590" y="430" width="230" height="30" rx="10" fill="#30363d"/>
+<rect x="590" y="448" width="230" height="12" fill="#30363d"/>
+<text x="705.0" y="450" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">STAGE 4</text>
+<text x="705.0" y="486" text-anchor="middle" font-size="16.5" font-weight="700" fill="#e6edf3">fuse</text>
+<text x="705.0" y="510" text-anchor="middle" font-size="13.5" fill="#e6edf3" opacity="0.87">confirmed drone: high score</text>
+<text x="705.0" y="530" text-anchor="middle" font-size="13.5" fill="#e6edf3" opacity="0.87">bird: suppressed</text>
+<text x="705.0" y="550" text-anchor="middle" font-size="13.5" fill="#e6edf3" opacity="0.87">+ expert detections</text>
+<text x="705.0" y="591" text-anchor="middle" font-size="12.5" fill="#9198a1">one scored list per frame</text>
+<rect x="900" y="430" width="330" height="140" rx="10" fill="#161b22" stroke="#2ea043" stroke-width="2"/>
+<rect x="900" y="430" width="330" height="30" rx="10" fill="#2ea043"/>
+<rect x="900" y="448" width="330" height="12" fill="#2ea043"/>
+<text x="1065.0" y="450" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">STAGE 5 &#183; TRACKING</text>
+<text x="1065.0" y="486" text-anchor="middle" font-size="13.5" fill="#e6edf3" opacity="0.87">Kalman tracker, camera-compensated</text>
+<text x="1065.0" y="506" text-anchor="middle" font-size="13.5" fill="#e6edf3" opacity="0.87">coasts through fades, re-locks with</text>
+<text x="1065.0" y="526" text-anchor="middle" font-size="13.5" fill="#e6edf3" opacity="0.87">a strict local search</text>
+<text x="1065.0" y="591" text-anchor="middle" font-size="12.5" fill="#9198a1">foliage jitters in place &#8212; real aircraft travel &#8250; clutter tracks die</text>
+<rect x="1490" y="400" width="320" height="200" rx="10" fill="#161b22" stroke="#388bfd" stroke-width="2.5"/>
+<rect x="1490" y="400" width="320" height="30" rx="10" fill="#388bfd"/>
+<rect x="1490" y="418" width="320" height="12" fill="#388bfd"/>
+<text x="1650.0" y="420" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff" letter-spacing="0.8">OUTPUT</text>
+<circle cx="1526" cy="461" r="8.5" fill="#f85149"/>
+<text x="1546" y="466" font-size="15.5" font-weight="700" fill="#e6edf3">DRONE alarm</text>
+<text x="1546" y="485" font-size="12.5" fill="#9198a1">track confirmed by the verifier, repeatedly</text>
+<circle cx="1526" cy="505" r="8.5" fill="#d29922"/>
+<text x="1546" y="510" font-size="15.5" font-weight="700" fill="#e6edf3">flying object</text>
+<text x="1546" y="529" font-size="12.5" fill="#9198a1">directed mover, unconfirmed (birds)</text>
+<circle cx="1526" cy="549" r="8.5" fill="#6e7681"/>
+<text x="1546" y="554" font-size="15.5" font-weight="700" fill="#e6edf3">discarded</text>
+<text x="1546" y="573" font-size="12.5" fill="#9198a1">everything else never surfaces</text>
+<path d="M 200 155 L 278 155" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<path d="M 510 155 L 588 155" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<text x="588" y="143" text-anchor="middle" font-size="12.5" fill="#9198a1">aligned</text>
+<path d="M 940 165 L 1018 165" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<text x="1018" y="153" text-anchor="middle" font-size="12.5" fill="#9198a1">movers</text>
+<path d="M 115 220 L 115 500 L 278 500" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<text x="55" y="488" text-anchor="middle" font-size="12.5" fill="#9198a1">raw frame</text>
+<path d="M 1220 290 L 1220 370 L 705 370 L 705 428" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<text x="705" y="360" text-anchor="middle" font-size="12.5" fill="#9198a1">verified candidates</text>
+<path d="M 510 500 L 588 500" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<path d="M 820 500 L 898 500" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<text x="898" y="486" text-anchor="middle" font-size="12.5" fill="#9198a1">detections</text>
+<path d="M 1230 500 L 1488 500" fill="none" stroke="#8b949e" stroke-width="2.4" marker-end="url(#ar)"/>
+<text x="1488" y="491" text-anchor="middle" font-size="12.5" fill="#9198a1">tracks</text>
+</svg>

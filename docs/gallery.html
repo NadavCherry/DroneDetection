@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Video gallery &mdash; SpeckLock</title>
+<meta name="description" content="Every recorded engagement: the four-camera city defence ring, the one-camera pursuit campaign, and the full-length detection runs on real video.">
+<meta property="og:title" content="SpeckLock — video gallery">
+<meta property="og:description" content="Every recorded engagement: the four-camera city defence ring, the one-camera pursuit campaign, and the full-length detection runs on real video.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nadavcherry.github.io/SpeckLock/gallery.html">
+<meta property="og:image" content="https://nadavcherry.github.io/SpeckLock/media/social_card.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#127981;</text></svg>">
+<style>
+:root{
+  color-scheme: light;
+  --plane:#f9f9f7; --surface:#fcfcfb; --surface-2:#f2f1ed;
+  --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781; --hair:rgba(11,11,11,.10);
+  --s1:#2a78d6; --good:#0ca30c; --crit:#d03b3b; --sim:#eda100; --real:#0ca30c;
+  --shadow:0 1px 2px rgba(11,11,11,.05), 0 8px 24px rgba(11,11,11,.05);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  color-scheme: dark;
+  --plane:#0d0d0d; --surface:#1a1a19; --surface-2:#232322;
+  --ink:#fff; --ink-2:#c3c2b7; --muted:#898781; --hair:rgba(255,255,255,.10);
+  --s1:#3987e5; --sim:#c98500;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --plane:#0d0d0d; --surface:#1a1a19; --surface-2:#232322;
+  --ink:#fff; --ink-2:#c3c2b7; --muted:#898781; --hair:rgba(255,255,255,.10);
+  --s1:#3987e5; --sim:#c98500;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--plane);color:var(--ink);
+  font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;padding:0 22px}
+a{color:var(--s1)}
+nav{position:sticky;top:0;z-index:40;backdrop-filter:blur(10px);
+  background:color-mix(in srgb, var(--plane) 88%, transparent);border-bottom:1px solid var(--hair)}
+nav .wrap{display:flex;align-items:center;gap:20px;height:56px}
+nav a.brand{font-weight:700;color:var(--ink);text-decoration:none}
+nav .sp{flex:1}
+nav a.l{color:var(--ink-2);text-decoration:none;font-size:14.5px}
+nav a.l:hover{color:var(--ink)}
+header{padding:48px 0 10px}
+h1{font-size:clamp(30px,4.4vw,44px);letter-spacing:-.02em;margin:0 0 12px}
+.lede{color:var(--ink-2);max-width:76ch;font-size:17.5px;margin:0 0 8px}
+h2{font-size:24px;letter-spacing:-.015em;margin:52px 0 4px}
+h2 + p{color:var(--ink-2);max-width:80ch;margin:0 0 22px}
+.chip{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;
+  border:1px solid var(--hair);border-radius:999px;padding:5px 13px 5px 10px;background:var(--surface);
+  vertical-align:middle;margin-left:10px}
+.chip .dot{width:9px;height:9px;border-radius:50%}
+.grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fill,minmax(400px,1fr))}
+.grid.wide{grid-template-columns:repeat(auto-fill,minmax(520px,1fr))}
+.card{background:var(--surface);border:1px solid var(--hair);border-radius:14px;
+  overflow:hidden;box-shadow:var(--shadow)}
+video{width:100%;display:block;background:#000}
+.m{padding:14px 17px 16px}
+.m .t{font-weight:650;font-size:15.5px;display:flex;justify-content:space-between;
+  align-items:baseline;gap:10px}
+.m .b{font-size:14px;color:var(--ink-2);margin-top:6px}
+.m .f{font-size:12.5px;color:var(--muted);margin-top:9px;font-variant-numeric:tabular-nums;
+  border-top:1px solid var(--hair);padding-top:9px}
+.tag{font-size:11px;font-weight:800;letter-spacing:.05em;padding:3px 9px;border-radius:999px;flex:none}
+.tag.hit{background:var(--good);color:#052e05}
+.tag.miss{background:var(--crit);color:#2e0505}
+footer{border-top:1px solid var(--hair);margin-top:56px;padding:34px 0 60px;
+  color:var(--ink-2);font-size:14.5px}
+footer a{text-decoration:none}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <a class="brand" href="index.html">SpeckLock</a>
+  <a class="l" href="index.html#method">Method</a>
+  <a class="l" href="index.html#results">Results</a>
+  <span class="sp"></span>
+  <a class="l" href="https://github.com/NadavCherry/SpeckLock">GitHub &#8599;</a>
+</div></nav>
+<div class="wrap">
+<header>
+  <h1>Video gallery</h1>
+  <p class="lede">Every recorded engagement, with the facts taken from the run that produced
+  it. Interception clips are Isaac Sim, closed loop at 20&nbsp;Hz; detection clips are real
+  video. Nothing here is a re-cut of a good moment &mdash; each clip is one engagement,
+  start to finish.</p>
+</header>
+
+<h2>City defence &mdash; the four-camera ring<span class="chip"><span class="dot" style="background:var(--sim)"></span>Isaac Sim</span></h2>
+<p>The interceptor rises over the town and holds station, watching all four quarters at once. An intruder arrives from a bearing drawn from the whole circle, commits to the nearest surveyed building, and does not break off when it is seen. Ten of the twenty-four scored engagements were recorded. Each frame shows all four camera feeds with the owning camera outlined, a contrast-stretched magnified inset of the target, and a top-down map with both flight paths and a red cross on the wall the intruder was aiming at.</p>
+<div class="grid">
+<div class="card"><video src="media/pursuit/city/city-000.mp4" poster="media/pursuit/city/city-000.jpg" controls preload="none" playsinline></video><div class="m"><div class="t"><span>Due north, 0&deg;</span><span class="tag hit">HIT</span></div><div class="b">Straight over the nose. Acquired in 0.20 s, intercepted at 6.0 s.</div><div class="f">closest approach <b>0.076 m</b> &#183; intercepted at 6.00 s &#183; acquired in 0.20 s &#183; 4.47 s before the strike &#183; detection rate 0.97 &#183; played 2&#215;</div></div></div>
+<div class="card"><video src="media/pursuit/city/city-030.mp4" poster="media/pursuit/city/city-030.jpg" controls preload="none" playsinline></video><div class="m"><div class="t"><span>030&deg; &mdash; off the bow</span><span class="tag hit">HIT</span></div><div class="b">Outside a single camera's 76&deg; cone; the ring never has to turn.</div><div class="f">closest approach <b>0.081 m</b> &#183; intercepted at 6.65 s &#183; acquired in 0.90 s &#183; 4.22 s before the strike &#183; detection rate 0.88 &#183; played 2&#215;</div></div></div>
+<div class="card"><video src="media/pursuit/city/city-075.mp4" poster="media/pursuit/city/city-075.jpg" controls preload="none" playsinline></video><div class="m"><div class="t"><span>075&deg; &mdash; near a seam</span><span class="tag hit">HIT</span></div><div class="b">Arrives close to the forward/right seam and is handed between cameras mid-track.</div><div class="f">closest approach <b>0.144 m</b> &#183; intercepted at 6.50 s &#183; acquired in 0.90 s &#183; 3.79 s before the strike &#183; detection rate 0.87 &#183; played 2&#215;</div></div></div>
+<div class="card"><video src="media/pursuit/city/city-105.mp4" poster="media/pursuit/city/city-105.jpg" controls preload="none" playsinline></video><div class="m"><div class="t"><span>105&deg; &mdash; the headline engagement</span><span class="tag hit">HIT</span></div><div class="b">170 m out and 2.7 px across, diving on a plaza block. Passed 0.13 m from it.</div><div class="f">closest approach <b>0.125 m</b> &#183; intercepted at 7.00 s &#183; acquired in 0.90 s &#183; 3.33 s before the strike &#183; detection rate 0.88 &#183; played 2&#215;</div></div></div>
+<div class="card"><video src="media/pursuit/city/city-150.mp4" poster="media/pursuit/city/city-150.jpg" controls preload="none" playsinline></video><div class="m"><div class="t"><span>150&deg; &mdash; over the shoulder</span><span class="tag hit">HIT</span></div><div class="b">Well behind the beam. A forward camera would still be slewing.</div><div class="f">closest approach <b>0.046 m</b> &#183; intercepted at 6.65 s &#183; acquired in 0.90 s &#183; 2.86 s before the strike &#183; detection rate 0.88 &#183; played 2&#215;</div></div></div>
+<div class="card"><video src="media/pursuit/city/city-180.mp4" poster="media/pursuit/city/city-180.jpg" controls preload="none" playsinline></video><div class="m"><div class="t"><span>180&deg; &mdash; dead astern</span><span class="tag hit">HIT</span></div><div class="b">The exact bearing one nose camera cannot see. Acquired in 0.20 s.</div><div class="f">closest approach <b>0.036 m</b> &#183; intercepted at 6.55 s &#183; acquired in 0.20 s &#183; 5.05 s before the strike &#183; detection rate 0.98 &#183; played 2&#215;</div></div></div>
+<div class="card"><video src="media/pursuit/city/city-210.mp4" poster="media/pursuit/city/city-210.jpg" controls preload="none" playsinline></video><div class="m"><div class="t"><span>210&deg; &mdash; astern quarter</span><span class="tag hit">HIT</span></div><div class="b">Closest approach 8 mm &mdash; about a sixtieth of the airframe's rotor span.</div><div class="f">closest approach <b>0.008 m</b> &#183; intercepted at 6.85 s &#183; acquired in 0.90 s &#183; 4.91 s before the strike &#183; detection rate 0.88 &#183; played 2&#215;</div></div></div>
+<div class="card"><video src="media/pursuit/city/city-255.mp4" poster="media/pursuit/city/city-255.jpg" controls preload="none" playsinline></video><div class="m"><div class="t"><span>255&deg; &mdash; from the port quarter</span><span class="tag hit">HIT</span></div><div class="b">Aft camera first, then two seam crossings into the chase.</div><div class="f">closest approach <b>0.031 m</b> &#183; intercepted at 6.70 s &#183; acquired in 0.90 s &#183; 4.35 s before the strike &#183; detection rate 0.88 &#183; played 2&#215;</div></div></div>
+<div class="card"><video src="media/pursuit/city/city-285.mp4" poster="media/pursuit/city/city-285.jpg" controls preload="none" playsinline></video><div class="m"><div class="t"><span>285&deg; &mdash; abeam to port</span><span class="tag hit">HIT</span></div><div class="b">90&deg; off the nose: the worst case for a single sensor, ordinary for a ring.</div><div class="f">closest approach <b>0.081 m</b> &#183; intercepted at 6.50 s &#183; acquired in 0.90 s &#183; 3.45 s before the strike &#183; detection rate 0.88 &#183; played 2&#215;</div></div></div>
+<div class="card"><video src="media/pursuit/city/city-330.mp4" poster="media/pursuit/city/city-330.jpg" controls preload="none" playsinline></video><div class="m"><div class="t"><span>330&deg; &mdash; closing the circle</span><span class="tag hit">HIT</span></div><div class="b">Tenth of ten recorded arrivals; the full 24 cover every 15&deg;.</div><div class="f">closest approach <b>0.021 m</b> &#183; intercepted at 6.45 s &#183; acquired in 0.90 s &#183; 3.05 s before the strike &#183; detection rate 0.88 &#183; played 2&#215;</div></div></div>
+</div>
+<h2>One camera, chase and intercept<span class="chip"><span class="dot" style="background:var(--sim)"></span>Isaac Sim</span></h2>
+<p>The earlier campaign: one forward-facing camera, an intruder crossing or fleeing, and nothing to defend. 54 of 62 engagements intercepted (87.1%). These six are chosen to show the range of the campaign &mdash; including the engagement that motivated building the ring, and one of the eight failures in full.</p>
+<div class="grid">
+<div class="card"><video src="media/pursuit/chase/skydome-in-crossing.mp4" poster="media/pursuit/chase/skydome-in-crossing.jpg" controls preload="none" playsinline></video><div class="m"><div class="t"><span>Best pass of the campaign &mdash; 2.5 cm</span><span class="tag hit">HIT</span></div><div class="b">A crossing target at 115 m, open sky. Proportional navigation drives the line-of-sight rate to zero and the closure does the rest.</div><div class="f">closest approach <b>0.025 m</b> &#183; intercepted at 8.90 s &#183; acquired in 5.75 s &#183; detection rate 0.92 &#183; played 1.5&#215;</div></div></div>
+<div class="card"><video src="media/pursuit/chase/rivermark-in-high-left.mp4" poster="media/pursuit/chase/rivermark-in-high-left.jpg" controls preload="none" playsinline></video><div class="m"><div class="t"><span>Urban clutter, 115 m, high on the left</span><span class="tag hit">HIT</span></div><div class="b">Rivermark rooftops behind the target for the whole run. 0.114 m.</div><div class="f">closest approach <b>0.114 m</b> &#183; intercepted at 9.10 s &#183; acquired in 3.65 s &#183; detection rate 0.96 &#183; played 1.5&#215;</div></div></div>
+<div class="card"><video src="media/pursuit/chase/rivermark-break-turn.mp4" poster="media/pursuit/chase/rivermark-break-turn.jpg" controls preload="none" playsinline></video><div class="m"><div class="t"><span>It breaks; the law does not care</span><span class="tag hit">HIT</span></div><div class="b">A hard break turn at close range. PN is driven by bearing rate, so a manoeuvre is just a new rate to null.</div><div class="f">closest approach <b>0.198 m</b> &#183; intercepted at 5.00 s &#183; acquired in 0.35 s &#183; detection rate 0.98 &#183; played 1&#215;</div></div></div>
+<div class="card"><video src="media/pursuit/chase/rivermark-outbound-60m.mp4" poster="media/pursuit/chase/rivermark-outbound-60m.jpg" controls preload="none" playsinline></video><div class="m"><div class="t"><span>A fleeing target has no bearing rate</span><span class="tag hit">HIT</span></div><div class="b">Running straight away, which is the geometry a constant-rate test cannot help with &mdash; and the reason that test is only demanded of motion contacts.</div><div class="f">closest approach <b>0.181 m</b> &#183; intercepted at 8.95 s &#183; acquired in 0.20 s &#183; detection rate 0.98 &#183; played 1.5&#215;</div></div></div>
+<div class="card"><video src="media/pursuit/chase/skydome-in-behind.mp4" poster="media/pursuit/chase/skydome-in-behind.jpg" controls preload="none" playsinline></video><div class="m"><div class="t"><span>Why the ring exists</span><span class="tag hit">HIT</span></div><div class="b">One forward camera, target arriving from behind: 21.0 s to acquire and 30.5 s to intercept, nearly all of it spent turning to look. The ring does this in 0.2 s.</div><div class="f">closest approach <b>0.461 m</b> &#183; intercepted at 30.45 s &#183; acquired in 21.00 s &#183; detection rate 0.92 &#183; played 3&#215;</div></div></div>
+<div class="card"><video src="media/pursuit/chase/rivermark-miss.mp4" poster="media/pursuit/chase/rivermark-miss.jpg" controls preload="none" playsinline></video><div class="m"><div class="t"><span>A failure, shown in full</span><span class="tag miss">MISS</span></div><div class="b">Detection rate 0.00: the target crosses low against Rivermark's roofline and is never acquired, so there is nothing to steer at. Every one of the eight failures looks like this &mdash; perception, not guidance.</div><div class="f">detection rate 0.00 &#183; played 3&#215;</div></div></div>
+</div>
+<h2>Detection on real video<span class="chip"><span class="dot" style="background:var(--real)"></span>real video</span></h2>
+<p>Full-length runs on the hand-labelled source footage. The source files hide their opening seconds behind an MP4 edit list that every decoder honours silently &mdash; <code>tools/recover_full_video.py</code> remuxes them back losslessly, which is why the test video is 591 frames and not 361.</p>
+<div class="grid wide">
+<div class="card"><video src="media/10_06_baseline_vs_pcmax_vs_edgert.mp4" controls preload="none" playsinline></video><div class="m"><div class="t"><span>Baseline &#124; PC-MAX &#124; EDGE-RT, side by side</span></div><div class="b">The same 19.7 s of unseen test video through three systems at once. Left: a YOLO26n trained on a real multi-scene drone dataset. Middle and right: the two shipped models.</div><div class="f">1280&#215;720 &#183; 591 frames &#183; the drone is 3&#8211;14 px throughout</div></div></div>
+<div class="card"><video src="media/10_06_pcmax_tracks.mp4" controls preload="none" playsinline></video><div class="m"><div class="t"><span>PC-MAX on the unseen test video</span></div><div class="b">The accuracy-first desktop profile: three detection streams fused by centre agreement, then a Kalman tracker and a track-level classifier.</div><div class="f">AP / F1 = 1.000 &#183; zero false positives &#183; ~4 fps on an RTX 5070</div></div></div>
+<div class="card"><video src="media/10_06_edgert_tracks.mp4" controls preload="none" playsinline></video><div class="m"><div class="t"><span>EDGE-RT on the unseen test video</span></div><div class="b">The whole pipeline distilled into one YOLOv8-nano-P2 reading the stabilised 3-moment stack full-frame, under TensorRT FP16. One network is the pipeline.</div><div class="f">AP / F1 = 1.000 &#183; ~74 fps end to end</div></div></div>
+<div class="card"><video src="media/10_06_baseline_dets.mp4" controls preload="none" playsinline></video><div class="m"><div class="t"><span>The baseline on the same video</span></div><div class="b">Single-frame appearance. Excellent against open sky in the final second (conf 0.6&#8211;0.84, zero false positives) and silent everywhere else, even at conf 0.02.</div><div class="f">12.5% flight coverage &#183; nothing below the treeline</div></div></div>
+<div class="card"><video src="media/07_05_round2_tracks.mp4" controls preload="none" playsinline></video><div class="m"><div class="t"><span>The training video, with the hand labels painted</span></div><div class="b">Every frame of 07_05 was labelled by hand; this is the authoritative ground truth the detection numbers are scored against.</div><div class="f">the labeller's method is the algorithm's: flip frames, watch what moves</div></div></div>
+</div>
+
+<footer>
+  <div><b>Nadav Cherry</b> &mdash; <a href="index.html">back to the project page</a> &middot;
+  <a href="https://github.com/NadavCherry/SpeckLock">GitHub</a></div>
+</footer>
+</div>
+</body>
+</html>

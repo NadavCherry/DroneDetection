@@ -1,0 +1,8825 @@
+{
+ "args": {
+  "socket": "~/isaac_dev_root/pursuit/sim.sock",
+  "bearings": "30,150,300",
+  "start_range": 220.0,
+  "stop_range": 25.0,
+  "speed": 12.0,
+  "altitude": 30.0,
+  "intruder_agl": 20.0,
+  "chaser_yaw_deg": 23.0,
+  "weights": null,
+  "imgsz": 2048,
+  "conf": 0.05,
+  "gate_deg": 1.2,
+  "k_static": null,
+  "min_area": null,
+  "sweep": "background=1,0",
+  "quiet_frames": 40,
+  "out": "work/pursuit/motion_bg2.json"
+ },
+ "rows": [
+  {
+   "bearing": 30.0,
+   "range_m": 219.62779886890456,
+   "span_px": 1.973094756999901,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 219.02843601907037,
+   "span_px": 1.9784940545433731,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 218.4289900834823,
+   "span_px": 1.9839237377513024,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 217.82963411439226,
+   "span_px": 1.9893824832487867,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 217.23028162816067,
+   "span_px": 1.994871319006233,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 216.6309326536956,
+   "span_px": 2.0003904942439976,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 216.03158722022573,
+   "span_px": 2.0059402609392705,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 215.43224535730485,
+   "span_px": 2.0115208738642543,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 214.83290709481636,
+   "span_px": 2.017132590624988,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 214.23348595483387,
+   "span_px": 2.022776488503881,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 213.63415498473083,
+   "span_px": 2.028451201871897,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 213.03482770673907,
+   "span_px": 2.0341578093334265,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 212.4355041521073,
+   "span_px": 2.0398965802316225,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 211.83618435243778,
+   "span_px": 2.045667786947549,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 211.2368683396911,
+   "span_px": 2.051471704943086,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 210.637469641301,
+   "span_px": 2.057309457702939,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 210.03816130029801,
+   "span_px": 2.0631796420084614,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 209.4388568443067,
+   "span_px": 2.069083382945538,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 208.83955630677346,
+   "span_px": 2.0750209687435985,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 208.24025972152936,
+   "span_px": 2.0809926909386287,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 207.64096712279587,
+   "span_px": 2.0869988444206653,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 207.0416785451905,
+   "span_px": 2.0930397274821106,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 206.4423075228525,
+   "span_px": 2.099116521412135,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 205.8430270935598,
+   "span_px": 2.105227777488424,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 205.24375079168672,
+   "span_px": 2.1113746789761785,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 204.6444786534931,
+   "span_px": 2.117557538277945,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 204.0452107156647,
+   "span_px": 2.1237766714531174,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 203.44594701531904,
+   "span_px": 2.1300323982715383,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 202.8466010927716,
+   "span_px": 2.1363259532333694,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 202.24734598112775,
+   "span_px": 2.1426558471630135,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 201.64809522098142,
+   "span_px": 2.1490233169064656,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 201.04884885124312,
+   "span_px": 2.1554286976310877,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 200.4496069112883,
+   "span_px": 2.161872328497245,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 199.8503694409645,
+   "span_px": 2.1683545527178736,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 199.25113648059826,
+   "span_px": 2.1748757176191096,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 198.65182157825788,
+   "span_px": 2.1814371244964885,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 198.05259776140278,
+   "span_px": 2.1880372352486077,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 197.4533785784381,
+   "span_px": 2.1946773540140665,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 196.85416407168026,
+   "span_px": 2.20135784520093,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 196.25495428396198,
+   "span_px": 2.2080790776504617,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 195.65574925864047,
+   "span_px": 2.2148414247046566,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 195.0564625509496,
+   "span_px": 2.221646249359579,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 194.4572671833326,
+   "span_px": 2.2284919700692343,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 193.85807671141794,
+   "span_px": 2.235379953164164,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 193.25889118074232,
+   "span_px": 2.242310590690412,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 192.65971063740855,
+   "span_px": 2.249284279551502,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 192.06053512809444,
+   "span_px": 2.2563014215837973,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 191.4613647000616,
+   "span_px": 2.2633624236332675,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 190.862112917572,
+   "span_px": 2.2704687264298204,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 190.26295279701722,
+   "span_px": 2.277618695963274,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 189.66379790313175,
+   "span_px": 2.2848137769601675,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 189.06464828560627,
+   "span_px": 2.292054397102515,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 188.4655039947629,
+   "span_px": 2.299340989487955,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 187.86636508156536,
+   "span_px": 2.306673992715618,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 187.26723159762895,
+   "span_px": 2.3140538509736324,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 186.6680171170466,
+   "span_px": 2.3214820896069344,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 186.06889464993873,
+   "span_px": 2.3289570202206122,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 185.4697777709619,
+   "span_px": 2.3364801729304236,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 184.87066653444512,
+   "span_px": 2.3440520151904316,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 184.27156099542327,
+   "span_px": 2.3516730205070946,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 183.67246120964896,
+   "span_px": 2.3593436685373885,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 183.07328076035566,
+   "span_px": 2.3670655632534285,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 182.47419265211178,
+   "span_px": 2.37483696812865,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 181.87511046880493,
+   "span_px": 2.382659492674186,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 181.27603426917744,
+   "span_px": 2.390533642170187,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 180.6769641127501,
+   "span_px": 2.398459928567527,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 180.07790005983523,
+   "span_px": 2.406438870598083,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 179.47884217154956,
+   "span_px": 2.4144709938871953,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 178.87970404271692,
+   "span_px": 2.4225580020871464,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 178.2806586712367,
+   "span_px": 2.4306981007894337,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 177.68161965270914,
+   "span_px": 2.4388930002251756,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 177.0825870516071,
+   "span_px": 2.4471432547649328,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 176.48356093327786,
+   "span_px": 2.455449426269777,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 175.88454136395842,
+   "span_px": 2.4638120842180165,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 175.28544194929594,
+   "span_px": 2.472233025290352,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 174.6864356813087,
+   "span_px": 2.4807104040421613,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 174.08743616654246,
+   "span_px": 2.4892460247682617,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 173.48844347494733,
+   "span_px": 2.4978404887368875,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 172.88945767744198,
+   "span_px": 2.506494405507097,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 172.29047884593044,
+   "span_px": 2.5152083930719202,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 171.69150705331933,
+   "span_px": 2.5239830780044774,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 171.09245591904397,
+   "span_px": 2.5328203754624425,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 170.49349842809255,
+   "span_px": 2.541718378911867,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 169.89454820096495,
+   "span_px": 2.550679012531157,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 169.29560531475707,
+   "span_px": 2.5597029387383077,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 168.6966698476588,
+   "span_px": 2.56879082930918,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 168.0977418789735,
+   "span_px": 2.577943365543029,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 167.49873504107427,
+   "span_px": 2.587162573695846,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 166.8998223127874,
+   "span_px": 2.5964464936788763,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 166.3009173277165,
+   "span_px": 2.6057971621750085,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 165.7020201698217,
+   "span_px": 2.615215300305597,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 165.10313092428018,
+   "span_px": 2.624701639597654,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 164.50424967750834,
+   "span_px": 2.63425692217186,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 163.90537651718446,
+   "span_px": 2.643881900934657,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 163.306425092248,
+   "span_px": 2.653578744344425,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 162.70756837421547,
+   "span_px": 2.6633454286711435,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 162.10872001348355,
+   "span_px": 2.6731841347190968,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 161.50988010301413,
+   "span_px": 2.683095660545767,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 160.91104873715167,
+   "span_px": 2.693080816019888,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 160.3122260116489,
+   "span_px": 2.703140423040322,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 159.7133255910727,
+   "span_px": 2.713276784112537,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 159.11452044059337,
+   "span_px": 2.723487820217248,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 158.5157242264628,
+   "span_px": 2.7337758481333108,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 157.91693705033668,
+   "span_px": 2.744141740170235,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 157.3181590154169,
+   "span_px": 2.7545863818378216,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 156.71939022648093,
+   "span_px": 2.765110672096283,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 156.12063078991193,
+   "span_px": 2.7757155236120528,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 155.5217943904005,
+   "span_px": 2.7864034114205953,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 154.92305398568027,
+   "span_px": 2.797172191555939,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 154.32432326243975,
+   "span_px": 2.8080243559709452,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 153.72560233380125,
+   "span_px": 2.8189608748365265,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 153.12689131465447,
+   "span_px": 2.8299827333998286,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 152.52819032169103,
+   "span_px": 2.8410909322775737,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 151.92949947344,
+   "span_px": 2.8522864877562575,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 151.33073247704843,
+   "span_px": 2.863572067262595,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 150.73206228284678,
+   "span_px": 2.874945462011229,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 150.13340260035406,
+   "span_px": 2.886409359502802,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 149.5347535558206,
+   "span_px": 2.897964841851284,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 148.93611527752427,
+   "span_px": 2.9096130084511476,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 148.33748789581142,
+   "span_px": 2.9213549763228843,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 147.73878513921113,
+   "span_px": 2.9331935959222295,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 147.1401799518065,
+   "span_px": 2.945126603634713,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 146.54158606487783,
+   "span_px": 2.957156873188273,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 145.9430036174739,
+   "span_px": 2.969285595734987,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 145.34443275093133,
+   "span_px": 2.9815139819098957,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 144.74587360892193,
+   "span_px": 2.993843262229988,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 144.14732633750097,
+   "span_px": 3.0062746875030046,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 143.54870469300656,
+   "span_px": 3.0188113460613915,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 142.95018161247646,
+   "span_px": 3.031450912139608,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 142.35167085552595,
+   "span_px": 3.044196501771108,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 141.75317257825307,
+   "span_px": 3.057049451224387,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 141.1546869393999,
+   "span_px": 3.0700111192603,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 140.55621410040894,
+   "span_px": 3.0830828876060594,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 139.95766784428068,
+   "span_px": 3.0962680724418266,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 139.35922110233682,
+   "span_px": 3.10956429730216,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 138.7607876613923,
+   "span_px": 3.1229749105858904,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 138.1623676942821,
+   "span_px": 3.1365013908747494,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 137.56396137684462,
+   "span_px": 3.1501452422742395,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 136.96556888798733,
+   "span_px": 3.163907994965232,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 136.36719040975362,
+   "span_px": 3.177791205769899,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 135.7687397600788,
+   "span_px": 3.1917984891473874,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 135.17038986420064,
+   "span_px": 3.2059274140958474,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 134.5720545446193,
+   "span_px": 3.2201816335945295,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 133.97373399663084,
+   "span_px": 3.234562816996368,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 133.37542841903075,
+   "span_px": 3.249072663355974,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 132.7771380141928,
+   "span_px": 3.2637129020911955,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 132.1787766338076,
+   "span_px": 3.2784874355451294,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 131.58051719859594,
+   "span_px": 3.2933937916174147,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 130.98227356558596,
+   "span_px": 3.308435917648638,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 130.38404595229434,
+   "span_px": 3.323615671492658,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 129.78583458024224,
+   "span_px": 3.33893494495149,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 129.18763967504785,
+   "span_px": 3.354395664551829,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 128.5894614665214,
+   "span_px": 3.3699997923429144,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 127.9912138509515,
+   "span_px": 3.385751610609034,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 127.39306974494335,
+   "span_px": 3.401648608572487,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 126.79494305121163,
+   "span_px": 3.417695122625187,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 126.19683401733975,
+   "span_px": 3.43389326534231,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 125.59874289561978,
+   "span_px": 3.4502451891560866,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 125.00066994316471,
+   "span_px": 3.4667530872970382,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 124.402615422024,
+   "span_px": 3.4834191947619253,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 123.80449327972714,
+   "span_px": 3.5002482297677995,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 123.20647643046206,
+   "span_px": 3.5172376566117105,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 122.60847882952469,
+   "span_px": 3.5343922588109993,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 122.01050075993459,
+   "span_px": 3.5517144486793653,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 121.41254251027773,
+   "span_px": 3.569206685569417,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 120.81460437484368,
+   "span_px": 3.586871477020677,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 120.21660035136578,
+   "span_px": 3.6047139677306728,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 119.61870335378158,
+   "span_px": 3.622731615456561,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 119.02082738899104,
+   "span_px": 3.640929641863229,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 118.42297277555568,
+   "span_px": 3.659310759416383,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 117.82513983849118,
+   "span_px": 3.6778777350374803,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 117.22732890943136,
+   "span_px": 3.69663339147191,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 116.62954032679714,
+   "span_px": 3.7155806086984757,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 116.03168815564997,
+   "span_px": 3.7347251024940227,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 115.43394531250328,
+   "span_px": 3.754064346206888,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 114.8362258735892,
+   "span_px": 3.773604149240229,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 114.23853020627497,
+   "span_px": 3.793347635488584,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 113.64085868564175,
+   "span_px": 3.813297993799977,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 113.0432116946878,
+   "span_px": 3.833458479665864,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 112.44550336514128,
+   "span_px": 3.853835373322755,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 111.84790661894392,
+   "span_px": 3.874426187662483,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 111.25033560111179,
+   "span_px": 3.895237314100594,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 110.65279072847643,
+   "span_px": 3.9162722926981983,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 110.05527242690376,
+   "span_px": 3.9375347394417957,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 109.45778113153949,
+   "span_px": 3.959028348280656,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 108.86031728706287,
+   "span_px": 3.980756893229852,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 108.26279511563517,
+   "span_px": 4.002727418748133,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 107.6653875505494,
+   "span_px": 4.024937524477922,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 107.06800883032241,
+   "span_px": 4.047394391413559,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 106.47065944047684,
+   "span_px": 4.07010213627849,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 105.87333987746868,
+   "span_px": 4.093064967452552,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 105.27605064899615,
+   "span_px": 4.116287187524701,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 104.67870606785317,
+   "span_px": 4.139776605174766,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 104.0814790826879,
+   "span_px": 4.163530939980116,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 103.48428402593315,
+   "span_px": 4.187558164204603,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 102.88712145356192,
+   "span_px": 4.211862984574363,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 102.28999193449962,
+   "span_px": 4.2364502161379916,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 101.69289605100249,
+   "span_px": 4.261324785384479,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 101.0958343990493,
+   "span_px": 4.286491733468887,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 100.49872141599613,
+   "span_px": 4.3119599168421825,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 99.90173007716132,
+   "span_px": 4.337727265633534,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 99.30477484436486,
+   "span_px": 4.363802839479022,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 98.7078563726819,
+   "span_px": 4.390192172784293,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 98.11097533308902,
+   "span_px": 4.416900932525063,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 97.51413241294823,
+   "span_px": 4.4439349222177285,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 96.91724217619898,
+   "span_px": 4.471304060136432,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 96.32047763087557,
+   "span_px": 4.4990065362877205,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 95.72375337062375,
+   "span_px": 4.527052514978505,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 95.12707015355828,
+   "span_px": 4.555448388562136,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 94.53042875688229,
+   "span_px": 4.584200708050999,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 93.93382997749,
+   "span_px": 4.61331618803907,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 93.33727463259252,
+   "span_px": 4.6428017118076825,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 92.74067746275094,
+   "span_px": 4.672668674581517,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 92.14421152959093,
+   "span_px": 4.702915693195775,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 91.54779161121256,
+   "span_px": 4.733554472619185,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 90.95141861285067,
+   "span_px": 4.764592625919043,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 90.35509346356741,
+   "span_px": 4.796037963420362,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 89.75881711703872,
+   "span_px": 4.827898499092443,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 89.16259055237234,
+   "span_px": 4.860182457183377,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 88.56632872621512,
+   "span_px": 4.892903032926511,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 87.9702047761627,
+   "span_px": 4.9260594486769715,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 87.37413370672124,
+   "span_px": 4.959665292868355,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 86.77811660758718,
+   "span_px": 4.99372970260772,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 86.18215459850143,
+   "span_px": 5.028262062587137,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 85.58624883028816,
+   "span_px": 5.063272013462835,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 84.99031448494587,
+   "span_px": 5.098774619976514,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 84.3945247892895,
+   "span_px": 5.134769815004163,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 83.79879498471324,
+   "span_px": 5.17127314919882,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 83.2031263576676,
+   "span_px": 5.208295377950413,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 82.60752023157457,
+   "span_px": 5.245847559941994,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 82.01197796816022,
+   "span_px": 5.283941067826749,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 81.41650096884537,
+   "span_px": 5.322587599355168,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 80.82100473911468,
+   "span_px": 5.3618048901827,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 80.22566264830724,
+   "span_px": 5.40159400539159,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 79.6303902790888,
+   "span_px": 5.44197330844255,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 79.03518920683369,
+   "span_px": 5.482955918604867,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 78.44006105454024,
+   "span_px": 5.524555343453312,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 77.84500749463642,
+   "span_px": 5.566785493206128,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 77.24994437700263,
+   "span_px": 5.60966693160069,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 76.65504523780544,
+   "span_px": 5.653202044239908,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 76.06022602444723,
+   "span_px": 5.697412183608005,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 75.46548862685513,
+   "span_px": 5.742313027115997,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 74.87083499474278,
+   "span_px": 5.7879207366939704,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 74.27626713998221,
+   "span_px": 5.8342519774583295,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 73.68178713908885,
+   "span_px": 5.881323937238896,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 73.08731134772984,
+   "span_px": 5.92916130650802,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 72.49301356930887,
+   "span_px": 5.977768575248316,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 71.8988102891835,
+   "span_px": 6.027171474697645,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 71.3047038698009,
+   "span_px": 6.077389497766304,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 70.71069675261303,
+   "span_px": 6.128442772325681,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 70.11679146138961,
+   "span_px": 6.180352086964649,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 69.52290490370781,
+   "span_px": 6.233146601682821,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 68.92921119822857,
+   "span_px": 6.28683327295643,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 68.33562742003618,
+   "span_px": 6.341442594446804,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 67.7421564588108,
+   "span_px": 6.396998281316178,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 67.14880130583121,
+   "span_px": 6.453524858410725,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 66.55556505845323,
+   "span_px": 6.5110476946454074,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 65.9624509248254,
+   "span_px": 6.5695930391296535,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 65.36937664564348,
+   "span_px": 6.629196738233613,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 64.7765168510935,
+   "span_px": 6.68986971676525,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 64.18378951105957,
+   "span_px": 6.751649625876234,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 63.59119832932856,
+   "span_px": 6.814566635392415,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 62.99874714817747,
+   "span_px": 6.878652005894706,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 62.406439954863636,
+   "span_px": 6.943938137684003,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 61.81419542669791,
+   "span_px": 7.010468314734378,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 61.22218880773539,
+   "span_px": 7.078258175325336,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 60.63033907945758,
+   "span_px": 7.147353371581065,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 60.03865088166122,
+   "span_px": 7.217791407302089,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 59.44712903757422,
+   "span_px": 7.28961121344923,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 58.85577856294147,
+   "span_px": 7.362853215444861,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 58.26460467565193,
+   "span_px": 7.437559404239029,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 57.673527515143384,
+   "span_px": 7.513784523165853,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 57.08272334393305,
+   "span_px": 7.591551927694107,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 56.492112732663834,
+   "span_px": 7.670919664314532,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 55.90170181631325,
+   "span_px": 7.751936781166205,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 55.31149698968561,
+   "span_px": 7.834654312836155,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 54.72150492119164,
+   "span_px": 7.919125379752579,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 54.13173256750609,
+   "span_px": 8.005405293452426,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 53.542102110488706,
+   "span_px": 8.093564528815415,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 52.952791322932164,
+   "span_px": 8.183637682042189,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 52.363723012119756,
+   "span_px": 8.275699921859355,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 51.774905454380125,
+   "span_px": 8.369816509302838,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 51.18634730326047,
+   "span_px": 8.466055525944142,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 50.59805761103878,
+   "span_px": 8.564488023847042,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 50.00996099818515,
+   "span_px": 8.665202887388581,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 49.4222371343103,
+   "span_px": 8.768248536827628,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 48.83481151801449,
+   "span_px": 8.873720302571636,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 48.24769504297589,
+   "span_px": 8.981702816138007,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 47.66089913377632,
+   "span_px": 9.092284583707327,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 47.074435778243796,
+   "span_px": 9.205558203205111,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 46.488317562157484,
+   "span_px": 9.321620595545447,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 45.90247318402354,
+   "span_px": 9.440590634460444,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 45.31708563985553,
+   "span_px": 9.562540316108596,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 44.73208496918068,
+   "span_px": 9.687598034793806,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 44.1474865514448,
+   "span_px": 9.815880637614292,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 43.56330658076818,
+   "span_px": 9.947510702297633,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 42.97956211980294,
+   "span_px": 10.082616878034662,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 42.3961869988328,
+   "span_px": 10.221354539539007,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 41.81336858422196,
+   "span_px": 10.363825568533246,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 41.231042686306154,
+   "span_px": 10.51019887458702,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 40.64923047192898,
+   "span_px": 10.660631293842552,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 40.06795431813309,
+   "span_px": 10.815287823255547,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 39.48723789833875,
+   "span_px": 10.97434212935657,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 38.907106275846324,
+   "span_px": 11.13797709259831,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 38.327502402452474,
+   "span_px": 11.306410052222335,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 37.748621734972,
+   "span_px": 11.47979551365164,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 37.170410458992784,
+   "span_px": 11.658371621097423,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 36.5929003060703,
+   "span_px": 11.842364360711185,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 36.01612500325375,
+   "span_px": 12.03201228340126,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 35.440120428830376,
+   "span_px": 12.227567321897105,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 34.86484181865738,
+   "span_px": 12.429325240987202,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 34.29049593342156,
+   "span_px": 12.637509217745055,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 33.717043108789944,
+   "span_px": 12.852445484067138,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 33.14452969888093,
+   "span_px": 13.074448857070237,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 32.5730052380802,
+   "span_px": 13.303852539005243,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 32.002522710561436,
+   "span_px": 13.541009324763383,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 31.433138846764887,
+   "span_px": 13.786292885104745,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 30.864832518742094,
+   "span_px": 14.040136397193239,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 30.297833006503943,
+   "span_px": 14.302886227758902,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 29.732128273805092,
+   "span_px": 14.57502316850475,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 29.167793656874363,
+   "span_px": 14.857018790570462,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 28.604910247193583,
+   "span_px": 15.149373121426933,
+   "camera": "fwd",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 28.0435654297024,
+   "span_px": 15.452616377398451,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 27.48385347963418,
+   "span_px": 15.767310750684162,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 26.925795816651362,
+   "span_px": 16.09410029662617,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 30.0,
+   "range_m": 26.369663649732058,
+   "span_px": 16.43352240649712,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 219.62779886890456,
+   "span_px": 1.973094756999901,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 219.02843601907037,
+   "span_px": 1.9784940545433731,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 218.4289900834823,
+   "span_px": 1.9839237377513024,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 217.82963411439226,
+   "span_px": 1.9893824832487867,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 217.23028162816067,
+   "span_px": 1.994871319006233,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 216.6309326536956,
+   "span_px": 2.0003904942439976,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 216.03158722022576,
+   "span_px": 2.00594026093927,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 215.43224535730485,
+   "span_px": 2.0115208738642543,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 214.8329070948164,
+   "span_px": 2.0171325906249877,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 214.2334859548339,
+   "span_px": 2.022776488503881,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 213.63415498473083,
+   "span_px": 2.028451201871897,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 213.03482770673907,
+   "span_px": 2.0341578093334265,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 212.4355041521073,
+   "span_px": 2.0398965802316225,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 211.83618435243778,
+   "span_px": 2.045667786947549,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 211.2368683396911,
+   "span_px": 2.051471704943086,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 210.637469641301,
+   "span_px": 2.057309457702939,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 210.038161300298,
+   "span_px": 2.063179642008462,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 209.4388568443067,
+   "span_px": 2.069083382945538,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 208.83955630677346,
+   "span_px": 2.0750209687435985,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 208.24025972152938,
+   "span_px": 2.0809926909386287,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 207.64096712279587,
+   "span_px": 2.0869988444206653,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 207.0416785451905,
+   "span_px": 2.0930397274821106,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 206.4423075228525,
+   "span_px": 2.099116521412135,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 205.8430270935598,
+   "span_px": 2.105227777488424,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 205.24375079168672,
+   "span_px": 2.1113746789761785,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 204.6444786534931,
+   "span_px": 2.117557538277945,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 204.04521071566467,
+   "span_px": 2.123776671453118,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 203.44594701531904,
+   "span_px": 2.1300323982715383,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 202.8466010927716,
+   "span_px": 2.1363259532333694,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 202.24734598112775,
+   "span_px": 2.1426558471630135,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 201.64809522098145,
+   "span_px": 2.1490233169064656,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 201.04884885124312,
+   "span_px": 2.1554286976310877,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 200.4496069112883,
+   "span_px": 2.161872328497245,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 199.8503694409645,
+   "span_px": 2.1683545527178736,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 199.25113648059826,
+   "span_px": 2.1748757176191096,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 198.65182157825788,
+   "span_px": 2.1814371244964885,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 198.05259776140278,
+   "span_px": 2.1880372352486077,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 197.45337857843808,
+   "span_px": 2.194677354014067,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 196.85416407168026,
+   "span_px": 2.20135784520093,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 196.25495428396195,
+   "span_px": 2.208079077650462,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 195.6557492586405,
+   "span_px": 2.214841424704656,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 195.05646255094962,
+   "span_px": 2.2216462493595786,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 194.4572671833326,
+   "span_px": 2.2284919700692343,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 193.85807671141794,
+   "span_px": 2.235379953164164,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 193.25889118074232,
+   "span_px": 2.242310590690412,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 192.65971063740855,
+   "span_px": 2.249284279551502,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 192.06053512809444,
+   "span_px": 2.2563014215837973,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 191.4613647000616,
+   "span_px": 2.2633624236332675,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 190.862112917572,
+   "span_px": 2.2704687264298204,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 190.26295279701722,
+   "span_px": 2.277618695963274,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 189.66379790313172,
+   "span_px": 2.2848137769601675,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 189.06464828560627,
+   "span_px": 2.292054397102515,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 188.4655039947629,
+   "span_px": 2.299340989487955,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 187.86636508156536,
+   "span_px": 2.306673992715618,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 187.26723159762895,
+   "span_px": 2.3140538509736324,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 186.6680171170466,
+   "span_px": 2.3214820896069344,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 186.06889464993873,
+   "span_px": 2.3289570202206122,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 185.4697777709619,
+   "span_px": 2.3364801729304236,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 184.87066653444512,
+   "span_px": 2.3440520151904316,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 184.27156099542327,
+   "span_px": 2.3516730205070946,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 183.67246120964893,
+   "span_px": 2.3593436685373885,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 183.07328076035563,
+   "span_px": 2.367065563253429,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 182.47419265211178,
+   "span_px": 2.37483696812865,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 181.87511046880493,
+   "span_px": 2.382659492674186,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 181.27603426917747,
+   "span_px": 2.3905336421701864,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 180.6769641127501,
+   "span_px": 2.398459928567527,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 180.07790005983523,
+   "span_px": 2.406438870598083,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 179.47884217154956,
+   "span_px": 2.4144709938871953,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 178.87970404271692,
+   "span_px": 2.4225580020871464,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 178.2806586712367,
+   "span_px": 2.4306981007894337,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 177.68161965270914,
+   "span_px": 2.4388930002251756,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 177.08258705160708,
+   "span_px": 2.447143254764933,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 176.48356093327786,
+   "span_px": 2.455449426269777,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 175.88454136395842,
+   "span_px": 2.4638120842180165,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 175.28544194929594,
+   "span_px": 2.472233025290352,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 174.6864356813087,
+   "span_px": 2.4807104040421613,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 174.08743616654246,
+   "span_px": 2.4892460247682617,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 173.48844347494733,
+   "span_px": 2.4978404887368875,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 172.88945767744198,
+   "span_px": 2.506494405507097,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 172.29047884593044,
+   "span_px": 2.5152083930719202,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 171.69150705331933,
+   "span_px": 2.5239830780044774,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 171.09245591904397,
+   "span_px": 2.5328203754624425,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 170.49349842809255,
+   "span_px": 2.541718378911867,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 169.89454820096495,
+   "span_px": 2.550679012531157,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 169.29560531475704,
+   "span_px": 2.559702938738308,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 168.69666984765882,
+   "span_px": 2.5687908293091795,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 168.0977418789735,
+   "span_px": 2.577943365543029,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 167.49873504107427,
+   "span_px": 2.587162573695846,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 166.8998223127874,
+   "span_px": 2.5964464936788763,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 166.3009173277165,
+   "span_px": 2.6057971621750085,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 165.7020201698217,
+   "span_px": 2.615215300305597,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 165.10313092428018,
+   "span_px": 2.624701639597654,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 164.50424967750834,
+   "span_px": 2.63425692217186,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 163.90537651718446,
+   "span_px": 2.643881900934657,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 163.306425092248,
+   "span_px": 2.653578744344425,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 162.70756837421544,
+   "span_px": 2.6633454286711444,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 162.10872001348355,
+   "span_px": 2.6731841347190968,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 161.50988010301413,
+   "span_px": 2.683095660545767,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 160.91104873715167,
+   "span_px": 2.693080816019888,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 160.3122260116489,
+   "span_px": 2.703140423040322,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 159.7133255910727,
+   "span_px": 2.713276784112537,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 159.11452044059337,
+   "span_px": 2.723487820217248,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 158.5157242264628,
+   "span_px": 2.7337758481333108,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 157.91693705033668,
+   "span_px": 2.744141740170235,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 157.3181590154169,
+   "span_px": 2.7545863818378216,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 156.7193902264809,
+   "span_px": 2.7651106720962835,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 156.12063078991196,
+   "span_px": 2.7757155236120523,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 155.5217943904005,
+   "span_px": 2.7864034114205953,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 154.92305398568027,
+   "span_px": 2.797172191555939,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 154.32432326243975,
+   "span_px": 2.8080243559709452,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 153.72560233380125,
+   "span_px": 2.8189608748365265,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 153.12689131465447,
+   "span_px": 2.8299827333998286,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 152.52819032169103,
+   "span_px": 2.8410909322775737,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 151.92949947344,
+   "span_px": 2.8522864877562575,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 151.33073247704843,
+   "span_px": 2.863572067262595,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 150.73206228284678,
+   "span_px": 2.874945462011229,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 150.13340260035406,
+   "span_px": 2.886409359502802,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 149.5347535558206,
+   "span_px": 2.897964841851284,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 148.93611527752427,
+   "span_px": 2.9096130084511476,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 148.33748789581145,
+   "span_px": 2.921354976322884,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 147.73878513921116,
+   "span_px": 2.933193595922229,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 147.1401799518065,
+   "span_px": 2.945126603634713,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 146.54158606487783,
+   "span_px": 2.957156873188273,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 145.9430036174739,
+   "span_px": 2.969285595734987,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 145.34443275093133,
+   "span_px": 2.9815139819098957,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 144.74587360892193,
+   "span_px": 2.993843262229988,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 144.14732633750097,
+   "span_px": 3.0062746875030046,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 143.54870469300653,
+   "span_px": 3.0188113460613923,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 142.95018161247646,
+   "span_px": 3.031450912139608,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 142.35167085552595,
+   "span_px": 3.044196501771108,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 141.75317257825307,
+   "span_px": 3.057049451224387,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 141.1546869393999,
+   "span_px": 3.0700111192603,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 140.55621410040894,
+   "span_px": 3.0830828876060594,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 139.95766784428068,
+   "span_px": 3.0962680724418266,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 139.35922110233682,
+   "span_px": 3.10956429730216,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 138.7607876613923,
+   "span_px": 3.1229749105858904,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 138.1623676942821,
+   "span_px": 3.1365013908747494,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 137.56396137684462,
+   "span_px": 3.1501452422742395,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 136.96556888798733,
+   "span_px": 3.163907994965232,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 136.36719040975362,
+   "span_px": 3.177791205769899,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 135.7687397600788,
+   "span_px": 3.1917984891473874,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 135.17038986420067,
+   "span_px": 3.205927414095847,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 134.5720545446193,
+   "span_px": 3.2201816335945295,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 133.97373399663084,
+   "span_px": 3.234562816996368,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 133.37542841903075,
+   "span_px": 3.249072663355974,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 132.7771380141928,
+   "span_px": 3.2637129020911955,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 132.1787766338076,
+   "span_px": 3.2784874355451294,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 131.58051719859594,
+   "span_px": 3.2933937916174147,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 130.98227356558596,
+   "span_px": 3.308435917648638,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 130.38404595229434,
+   "span_px": 3.323615671492658,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 129.78583458024224,
+   "span_px": 3.33893494495149,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 129.18763967504788,
+   "span_px": 3.354395664551828,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 128.58946146652144,
+   "span_px": 3.3699997923429135,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 127.99121385095151,
+   "span_px": 3.3857516106090335,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 127.39306974494335,
+   "span_px": 3.401648608572487,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 126.79494305121163,
+   "span_px": 3.417695122625187,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 126.19683401733975,
+   "span_px": 3.43389326534231,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 125.59874289561978,
+   "span_px": 3.4502451891560866,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 125.00066994316471,
+   "span_px": 3.4667530872970382,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 124.402615422024,
+   "span_px": 3.4834191947619253,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 123.80449327972714,
+   "span_px": 3.5002482297677995,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 123.20647643046206,
+   "span_px": 3.5172376566117105,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 122.60847882952467,
+   "span_px": 3.5343922588109997,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 122.01050075993459,
+   "span_px": 3.5517144486793653,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 121.41254251027773,
+   "span_px": 3.569206685569417,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 120.81460437484368,
+   "span_px": 3.586871477020677,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 120.21660035136578,
+   "span_px": 3.6047139677306728,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 119.61870335378158,
+   "span_px": 3.622731615456561,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 119.02082738899104,
+   "span_px": 3.640929641863229,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 118.42297277555568,
+   "span_px": 3.659310759416383,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 117.82513983849118,
+   "span_px": 3.6778777350374803,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 117.22732890943136,
+   "span_px": 3.69663339147191,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 116.62954032679714,
+   "span_px": 3.7155806086984757,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 116.03168815564996,
+   "span_px": 3.734725102494023,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 115.43394531250328,
+   "span_px": 3.754064346206888,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 114.83622587358921,
+   "span_px": 3.7736041492402284,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 114.23853020627497,
+   "span_px": 3.793347635488584,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 113.64085868564175,
+   "span_px": 3.813297993799977,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 113.0432116946878,
+   "span_px": 3.833458479665864,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 112.44550336514128,
+   "span_px": 3.853835373322755,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 111.84790661894392,
+   "span_px": 3.874426187662483,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 111.25033560111179,
+   "span_px": 3.895237314100594,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 110.65279072847643,
+   "span_px": 3.9162722926981983,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 110.05527242690376,
+   "span_px": 3.9375347394417957,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 109.45778113153948,
+   "span_px": 3.9590283482806563,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 108.86031728706288,
+   "span_px": 3.9807568932298514,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 108.26279511563519,
+   "span_px": 4.002727418748132,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 107.6653875505494,
+   "span_px": 4.024937524477922,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 107.06800883032241,
+   "span_px": 4.047394391413559,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 106.47065944047684,
+   "span_px": 4.07010213627849,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 105.87333987746868,
+   "span_px": 4.093064967452552,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 105.27605064899615,
+   "span_px": 4.116287187524701,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 104.67870606785317,
+   "span_px": 4.139776605174766,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 104.0814790826879,
+   "span_px": 4.163530939980116,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 103.48428402593315,
+   "span_px": 4.187558164204603,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 102.88712145356192,
+   "span_px": 4.211862984574363,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 102.28999193449964,
+   "span_px": 4.236450216137991,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 101.6928960510025,
+   "span_px": 4.2613247853844785,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 101.0958343990493,
+   "span_px": 4.286491733468887,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 100.49872141599613,
+   "span_px": 4.3119599168421825,
+   "camera": "left",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 99.90173007716132,
+   "span_px": 4.337727265633534,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 99.30477484436486,
+   "span_px": 4.363802839479022,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 98.7078563726819,
+   "span_px": 4.390192172784293,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 98.11097533308902,
+   "span_px": 4.416900932525063,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 97.51413241294823,
+   "span_px": 4.4439349222177285,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 96.91724217619898,
+   "span_px": 4.471304060136432,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 96.32047763087556,
+   "span_px": 4.4990065362877205,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 95.72375337062374,
+   "span_px": 4.527052514978505,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 95.1270701535583,
+   "span_px": 4.5554483885621355,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 94.5304287568823,
+   "span_px": 4.584200708050998,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 93.93382997749,
+   "span_px": 4.61331618803907,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 93.33727463259252,
+   "span_px": 4.6428017118076825,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 92.74067746275094,
+   "span_px": 4.672668674581517,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 92.14421152959093,
+   "span_px": 4.702915693195775,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 91.54779161121256,
+   "span_px": 4.733554472619185,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 90.95141861285067,
+   "span_px": 4.764592625919043,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 90.35509346356741,
+   "span_px": 4.796037963420362,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 89.7588171170387,
+   "span_px": 4.827898499092444,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 89.16259055237235,
+   "span_px": 4.8601824571833765,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 88.56632872621513,
+   "span_px": 4.89290303292651,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 87.97020477616272,
+   "span_px": 4.926059448676971,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 87.37413370672124,
+   "span_px": 4.959665292868355,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 86.77811660758718,
+   "span_px": 4.99372970260772,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 86.18215459850143,
+   "span_px": 5.028262062587137,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 85.58624883028816,
+   "span_px": 5.063272013462835,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 84.99031448494587,
+   "span_px": 5.098774619976514,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 84.3945247892895,
+   "span_px": 5.134769815004163,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 83.79879498471324,
+   "span_px": 5.17127314919882,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 83.20312635766759,
+   "span_px": 5.208295377950414,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 82.60752023157455,
+   "span_px": 5.2458475599419945,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 82.01197796816024,
+   "span_px": 5.283941067826748,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 81.41650096884538,
+   "span_px": 5.322587599355167,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 80.8210047391147,
+   "span_px": 5.361804890182699,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 80.22566264830724,
+   "span_px": 5.40159400539159,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 79.6303902790888,
+   "span_px": 5.44197330844255,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 79.03518920683369,
+   "span_px": 5.482955918604867,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 78.44006105454024,
+   "span_px": 5.524555343453312,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 77.84500749463642,
+   "span_px": 5.566785493206128,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 77.24994437700263,
+   "span_px": 5.60966693160069,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 76.65504523780544,
+   "span_px": 5.653202044239908,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 76.06022602444723,
+   "span_px": 5.697412183608005,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 75.46548862685513,
+   "span_px": 5.742313027115997,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 74.87083499474278,
+   "span_px": 5.7879207366939704,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 74.2762671399822,
+   "span_px": 5.83425197745833,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 73.68178713908885,
+   "span_px": 5.881323937238896,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 73.08731134772985,
+   "span_px": 5.9291613065080195,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 72.49301356930887,
+   "span_px": 5.977768575248316,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 71.8988102891835,
+   "span_px": 6.027171474697645,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 71.3047038698009,
+   "span_px": 6.077389497766304,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 70.71069675261303,
+   "span_px": 6.128442772325681,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 70.11679146138962,
+   "span_px": 6.180352086964647,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 69.52290490370783,
+   "span_px": 6.2331466016828205,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 68.92921119822857,
+   "span_px": 6.28683327295643,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 68.33562742003618,
+   "span_px": 6.341442594446804,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 67.74215645881078,
+   "span_px": 6.39699828131618,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 67.14880130583121,
+   "span_px": 6.453524858410725,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 66.55556505845323,
+   "span_px": 6.5110476946454074,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 65.9624509248254,
+   "span_px": 6.5695930391296535,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 65.36937664564348,
+   "span_px": 6.629196738233613,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 64.7765168510935,
+   "span_px": 6.68986971676525,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 64.18378951105957,
+   "span_px": 6.751649625876234,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 63.59119832932857,
+   "span_px": 6.814566635392414,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 62.99874714817747,
+   "span_px": 6.878652005894706,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 62.406439954863636,
+   "span_px": 6.943938137684003,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 61.81419542669791,
+   "span_px": 7.010468314734378,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 61.22218880773539,
+   "span_px": 7.078258175325336,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 60.63033907945758,
+   "span_px": 7.147353371581065,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 60.038650881661226,
+   "span_px": 7.217791407302088,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 59.44712903757422,
+   "span_px": 7.28961121344923,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 58.85577856294147,
+   "span_px": 7.362853215444861,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 58.264604675651924,
+   "span_px": 7.43755940423903,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 57.673527515143384,
+   "span_px": 7.513784523165853,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 57.082723343933054,
+   "span_px": 7.591551927694106,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 56.492112732663834,
+   "span_px": 7.670919664314532,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 55.90170181631325,
+   "span_px": 7.751936781166205,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 55.31149698968561,
+   "span_px": 7.834654312836155,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 54.72150492119163,
+   "span_px": 7.91912537975258,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 54.13173256750609,
+   "span_px": 8.005405293452426,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 53.54210211048871,
+   "span_px": 8.093564528815413,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 52.952791322932164,
+   "span_px": 8.183637682042189,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 52.363723012119756,
+   "span_px": 8.275699921859355,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 51.774905454380125,
+   "span_px": 8.369816509302838,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 51.18634730326046,
+   "span_px": 8.466055525944144,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 50.59805761103878,
+   "span_px": 8.564488023847042,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 50.00996099818515,
+   "span_px": 8.665202887388581,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 49.4222371343103,
+   "span_px": 8.768248536827628,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 48.83481151801449,
+   "span_px": 8.873720302571636,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 48.24769504297589,
+   "span_px": 8.981702816138007,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 47.66089913377632,
+   "span_px": 9.092284583707327,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 47.074435778243796,
+   "span_px": 9.205558203205111,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 46.488317562157484,
+   "span_px": 9.321620595545447,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 45.90247318402354,
+   "span_px": 9.440590634460444,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 45.31708563985553,
+   "span_px": 9.562540316108596,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 44.73208496918068,
+   "span_px": 9.687598034793806,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 44.14748655144481,
+   "span_px": 9.81588063761429,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 43.56330658076818,
+   "span_px": 9.947510702297633,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 42.97956211980294,
+   "span_px": 10.082616878034662,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 42.3961869988328,
+   "span_px": 10.221354539539007,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 41.81336858422196,
+   "span_px": 10.363825568533246,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 41.231042686306154,
+   "span_px": 10.51019887458702,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 40.64923047192899,
+   "span_px": 10.66063129384255,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 40.06795431813309,
+   "span_px": 10.815287823255547,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 39.48723789833875,
+   "span_px": 10.97434212935657,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 38.907106275846324,
+   "span_px": 11.13797709259831,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 38.327502402452474,
+   "span_px": 11.306410052222335,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 37.748621734972,
+   "span_px": 11.47979551365164,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 37.170410458992784,
+   "span_px": 11.658371621097423,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 36.5929003060703,
+   "span_px": 11.842364360711185,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 36.01612500325375,
+   "span_px": 12.03201228340126,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 35.440120428830376,
+   "span_px": 12.227567321897105,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 34.864841818657375,
+   "span_px": 12.429325240987204,
+   "camera": "left",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 34.29049593342155,
+   "span_px": 12.637509217745059,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 33.71704310878995,
+   "span_px": 12.852445484067134,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 33.14452969888093,
+   "span_px": 13.074448857070237,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 32.5730052380802,
+   "span_px": 13.303852539005243,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 32.00252271056143,
+   "span_px": 13.541009324763385,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 31.433138846764894,
+   "span_px": 13.786292885104741,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 30.8648325187421,
+   "span_px": 14.040136397193235,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 30.29783300650395,
+   "span_px": 14.302886227758899,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 29.732128273805092,
+   "span_px": 14.57502316850475,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 29.167793656874363,
+   "span_px": 14.857018790570462,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 28.604910247193576,
+   "span_px": 15.149373121426937,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 28.043565429702408,
+   "span_px": 15.452616377398446,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 27.48385347963418,
+   "span_px": 15.767310750684162,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 26.925795816651362,
+   "span_px": 16.09410029662617,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 150.0,
+   "range_m": 26.369663649732058,
+   "span_px": 16.43352240649712,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 219.62779886890456,
+   "span_px": 1.973094756999901,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 219.02843601907037,
+   "span_px": 1.9784940545433731,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 218.4289900834823,
+   "span_px": 1.9839237377513024,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 217.82963411439226,
+   "span_px": 1.9893824832487867,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 217.23028162816067,
+   "span_px": 1.994871319006233,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 216.6309326536956,
+   "span_px": 2.0003904942439976,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 216.03158722022576,
+   "span_px": 2.00594026093927,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 215.43224535730485,
+   "span_px": 2.0115208738642543,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 214.8329070948164,
+   "span_px": 2.0171325906249877,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 214.2334859548339,
+   "span_px": 2.022776488503881,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 213.63415498473083,
+   "span_px": 2.028451201871897,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 213.03482770673907,
+   "span_px": 2.0341578093334265,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 212.4355041521073,
+   "span_px": 2.0398965802316225,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 211.83618435243778,
+   "span_px": 2.045667786947549,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 211.2368683396911,
+   "span_px": 2.051471704943086,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 210.637469641301,
+   "span_px": 2.057309457702939,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 210.038161300298,
+   "span_px": 2.063179642008462,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 209.4388568443067,
+   "span_px": 2.069083382945538,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 208.83955630677346,
+   "span_px": 2.0750209687435985,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 208.24025972152938,
+   "span_px": 2.0809926909386287,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 207.64096712279587,
+   "span_px": 2.0869988444206653,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 207.0416785451905,
+   "span_px": 2.0930397274821106,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 206.4423075228525,
+   "span_px": 2.099116521412135,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 205.8430270935598,
+   "span_px": 2.105227777488424,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 205.24375079168672,
+   "span_px": 2.1113746789761785,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 204.6444786534931,
+   "span_px": 2.117557538277945,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 204.04521071566467,
+   "span_px": 2.123776671453118,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 203.44594701531904,
+   "span_px": 2.1300323982715383,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 202.8466010927716,
+   "span_px": 2.1363259532333694,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 202.24734598112775,
+   "span_px": 2.1426558471630135,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 201.64809522098145,
+   "span_px": 2.1490233169064656,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 201.04884885124312,
+   "span_px": 2.1554286976310877,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 200.4496069112883,
+   "span_px": 2.161872328497245,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 199.8503694409645,
+   "span_px": 2.1683545527178736,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 199.25113648059826,
+   "span_px": 2.1748757176191096,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 198.65182157825788,
+   "span_px": 2.1814371244964885,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 198.05259776140278,
+   "span_px": 2.1880372352486077,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 197.45337857843808,
+   "span_px": 2.194677354014067,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 196.85416407168026,
+   "span_px": 2.20135784520093,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 196.25495428396195,
+   "span_px": 2.208079077650462,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 195.6557492586405,
+   "span_px": 2.214841424704656,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 195.05646255094962,
+   "span_px": 2.2216462493595786,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 194.4572671833326,
+   "span_px": 2.2284919700692343,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 193.85807671141794,
+   "span_px": 2.235379953164164,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 193.25889118074232,
+   "span_px": 2.242310590690412,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 192.65971063740855,
+   "span_px": 2.249284279551502,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 192.06053512809444,
+   "span_px": 2.2563014215837973,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 191.4613647000616,
+   "span_px": 2.2633624236332675,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 190.862112917572,
+   "span_px": 2.2704687264298204,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 190.26295279701722,
+   "span_px": 2.277618695963274,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 189.66379790313172,
+   "span_px": 2.2848137769601675,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 189.06464828560627,
+   "span_px": 2.292054397102515,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 188.4655039947629,
+   "span_px": 2.299340989487955,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 187.86636508156536,
+   "span_px": 2.306673992715618,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 187.26723159762895,
+   "span_px": 2.3140538509736324,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 186.6680171170466,
+   "span_px": 2.3214820896069344,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 186.06889464993873,
+   "span_px": 2.3289570202206122,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 185.4697777709619,
+   "span_px": 2.3364801729304236,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 184.87066653444512,
+   "span_px": 2.3440520151904316,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 184.27156099542327,
+   "span_px": 2.3516730205070946,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 183.67246120964893,
+   "span_px": 2.3593436685373885,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 183.07328076035563,
+   "span_px": 2.367065563253429,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 182.47419265211178,
+   "span_px": 2.37483696812865,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 181.87511046880493,
+   "span_px": 2.382659492674186,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 181.27603426917747,
+   "span_px": 2.3905336421701864,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 180.6769641127501,
+   "span_px": 2.398459928567527,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 180.07790005983523,
+   "span_px": 2.406438870598083,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 179.47884217154956,
+   "span_px": 2.4144709938871953,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 178.87970404271692,
+   "span_px": 2.4225580020871464,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 178.2806586712367,
+   "span_px": 2.4306981007894337,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 177.68161965270914,
+   "span_px": 2.4388930002251756,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 177.08258705160708,
+   "span_px": 2.447143254764933,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 176.48356093327786,
+   "span_px": 2.455449426269777,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 175.88454136395842,
+   "span_px": 2.4638120842180165,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 175.28544194929594,
+   "span_px": 2.472233025290352,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 174.6864356813087,
+   "span_px": 2.4807104040421613,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 174.08743616654246,
+   "span_px": 2.4892460247682617,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 173.48844347494733,
+   "span_px": 2.4978404887368875,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 172.88945767744198,
+   "span_px": 2.506494405507097,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 172.29047884593044,
+   "span_px": 2.5152083930719202,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 171.69150705331933,
+   "span_px": 2.5239830780044774,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 171.09245591904397,
+   "span_px": 2.5328203754624425,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 170.49349842809255,
+   "span_px": 2.541718378911867,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 169.89454820096495,
+   "span_px": 2.550679012531157,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 169.29560531475704,
+   "span_px": 2.559702938738308,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 168.69666984765882,
+   "span_px": 2.5687908293091795,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 168.0977418789735,
+   "span_px": 2.577943365543029,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 167.49873504107427,
+   "span_px": 2.587162573695846,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 166.8998223127874,
+   "span_px": 2.5964464936788763,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 166.3009173277165,
+   "span_px": 2.6057971621750085,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 165.7020201698217,
+   "span_px": 2.615215300305597,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 165.10313092428018,
+   "span_px": 2.624701639597654,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 164.50424967750834,
+   "span_px": 2.63425692217186,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 163.90537651718446,
+   "span_px": 2.643881900934657,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 163.306425092248,
+   "span_px": 2.653578744344425,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 162.70756837421544,
+   "span_px": 2.6633454286711444,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 162.10872001348355,
+   "span_px": 2.6731841347190968,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 161.50988010301413,
+   "span_px": 2.683095660545767,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 160.91104873715167,
+   "span_px": 2.693080816019888,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 160.3122260116489,
+   "span_px": 2.703140423040322,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 159.7133255910727,
+   "span_px": 2.713276784112537,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 159.11452044059337,
+   "span_px": 2.723487820217248,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 158.5157242264628,
+   "span_px": 2.7337758481333108,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 157.91693705033668,
+   "span_px": 2.744141740170235,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 157.3181590154169,
+   "span_px": 2.7545863818378216,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 156.7193902264809,
+   "span_px": 2.7651106720962835,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 156.12063078991196,
+   "span_px": 2.7757155236120523,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 155.5217943904005,
+   "span_px": 2.7864034114205953,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 154.92305398568027,
+   "span_px": 2.797172191555939,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 154.32432326243975,
+   "span_px": 2.8080243559709452,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 153.72560233380125,
+   "span_px": 2.8189608748365265,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 153.12689131465447,
+   "span_px": 2.8299827333998286,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 152.52819032169103,
+   "span_px": 2.8410909322775737,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 151.92949947344,
+   "span_px": 2.8522864877562575,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 151.33073247704843,
+   "span_px": 2.863572067262595,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 150.73206228284678,
+   "span_px": 2.874945462011229,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 150.13340260035406,
+   "span_px": 2.886409359502802,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 149.5347535558206,
+   "span_px": 2.897964841851284,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 148.93611527752427,
+   "span_px": 2.9096130084511476,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 148.33748789581145,
+   "span_px": 2.921354976322884,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 147.73878513921116,
+   "span_px": 2.933193595922229,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 147.1401799518065,
+   "span_px": 2.945126603634713,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 146.54158606487783,
+   "span_px": 2.957156873188273,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 145.9430036174739,
+   "span_px": 2.969285595734987,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 145.34443275093133,
+   "span_px": 2.9815139819098957,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 144.74587360892193,
+   "span_px": 2.993843262229988,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 144.14732633750097,
+   "span_px": 3.0062746875030046,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 143.54870469300653,
+   "span_px": 3.0188113460613923,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 142.95018161247646,
+   "span_px": 3.031450912139608,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 142.35167085552595,
+   "span_px": 3.044196501771108,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 141.75317257825307,
+   "span_px": 3.057049451224387,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 141.1546869393999,
+   "span_px": 3.0700111192603,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 140.55621410040894,
+   "span_px": 3.0830828876060594,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 139.95766784428068,
+   "span_px": 3.0962680724418266,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 139.35922110233682,
+   "span_px": 3.10956429730216,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 138.7607876613923,
+   "span_px": 3.1229749105858904,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 138.1623676942821,
+   "span_px": 3.1365013908747494,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 137.56396137684462,
+   "span_px": 3.1501452422742395,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 136.96556888798733,
+   "span_px": 3.163907994965232,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 136.36719040975362,
+   "span_px": 3.177791205769899,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 135.7687397600788,
+   "span_px": 3.1917984891473874,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 135.17038986420067,
+   "span_px": 3.205927414095847,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 134.5720545446193,
+   "span_px": 3.2201816335945295,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 133.97373399663084,
+   "span_px": 3.234562816996368,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 133.37542841903075,
+   "span_px": 3.249072663355974,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 132.7771380141928,
+   "span_px": 3.2637129020911955,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 132.1787766338076,
+   "span_px": 3.2784874355451294,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 131.58051719859594,
+   "span_px": 3.2933937916174147,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 130.98227356558596,
+   "span_px": 3.308435917648638,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 130.38404595229434,
+   "span_px": 3.323615671492658,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 129.78583458024224,
+   "span_px": 3.33893494495149,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 129.18763967504788,
+   "span_px": 3.354395664551828,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 128.58946146652144,
+   "span_px": 3.3699997923429135,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 127.99121385095151,
+   "span_px": 3.3857516106090335,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 127.39306974494335,
+   "span_px": 3.401648608572487,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 126.79494305121163,
+   "span_px": 3.417695122625187,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 126.19683401733975,
+   "span_px": 3.43389326534231,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 125.59874289561978,
+   "span_px": 3.4502451891560866,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 125.00066994316471,
+   "span_px": 3.4667530872970382,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 124.402615422024,
+   "span_px": 3.4834191947619253,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 123.80449327972714,
+   "span_px": 3.5002482297677995,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 123.20647643046206,
+   "span_px": 3.5172376566117105,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 122.60847882952467,
+   "span_px": 3.5343922588109997,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 122.01050075993459,
+   "span_px": 3.5517144486793653,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 121.41254251027773,
+   "span_px": 3.569206685569417,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 120.81460437484368,
+   "span_px": 3.586871477020677,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 120.21660035136578,
+   "span_px": 3.6047139677306728,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 119.61870335378158,
+   "span_px": 3.622731615456561,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 119.02082738899104,
+   "span_px": 3.640929641863229,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 118.42297277555568,
+   "span_px": 3.659310759416383,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 117.82513983849118,
+   "span_px": 3.6778777350374803,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 117.22732890943136,
+   "span_px": 3.69663339147191,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 116.62954032679714,
+   "span_px": 3.7155806086984757,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 116.03168815564996,
+   "span_px": 3.734725102494023,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 115.43394531250328,
+   "span_px": 3.754064346206888,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 114.83622587358921,
+   "span_px": 3.7736041492402284,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 114.23853020627497,
+   "span_px": 3.793347635488584,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 113.64085868564175,
+   "span_px": 3.813297993799977,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 113.0432116946878,
+   "span_px": 3.833458479665864,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 112.44550336514128,
+   "span_px": 3.853835373322755,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 111.84790661894392,
+   "span_px": 3.874426187662483,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 111.25033560111179,
+   "span_px": 3.895237314100594,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 110.65279072847643,
+   "span_px": 3.9162722926981983,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 110.05527242690376,
+   "span_px": 3.9375347394417957,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 109.45778113153948,
+   "span_px": 3.9590283482806563,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 108.86031728706288,
+   "span_px": 3.9807568932298514,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 108.26279511563519,
+   "span_px": 4.002727418748132,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 107.6653875505494,
+   "span_px": 4.024937524477922,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 107.06800883032241,
+   "span_px": 4.047394391413559,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 106.47065944047684,
+   "span_px": 4.07010213627849,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 105.87333987746868,
+   "span_px": 4.093064967452552,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 105.27605064899615,
+   "span_px": 4.116287187524701,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 104.67870606785317,
+   "span_px": 4.139776605174766,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 104.0814790826879,
+   "span_px": 4.163530939980116,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 103.48428402593315,
+   "span_px": 4.187558164204603,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 102.88712145356192,
+   "span_px": 4.211862984574363,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 102.28999193449964,
+   "span_px": 4.236450216137991,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 101.6928960510025,
+   "span_px": 4.2613247853844785,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 101.0958343990493,
+   "span_px": 4.286491733468887,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 100.49872141599613,
+   "span_px": 4.3119599168421825,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 99.90173007716132,
+   "span_px": 4.337727265633534,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 99.30477484436486,
+   "span_px": 4.363802839479022,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 98.7078563726819,
+   "span_px": 4.390192172784293,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 98.11097533308902,
+   "span_px": 4.416900932525063,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 97.51413241294823,
+   "span_px": 4.4439349222177285,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 96.91724217619898,
+   "span_px": 4.471304060136432,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 96.32047763087556,
+   "span_px": 4.4990065362877205,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 95.72375337062374,
+   "span_px": 4.527052514978505,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 95.1270701535583,
+   "span_px": 4.5554483885621355,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 94.5304287568823,
+   "span_px": 4.584200708050998,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 93.93382997749,
+   "span_px": 4.61331618803907,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 93.33727463259252,
+   "span_px": 4.6428017118076825,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 92.74067746275094,
+   "span_px": 4.672668674581517,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 92.14421152959093,
+   "span_px": 4.702915693195775,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 91.54779161121256,
+   "span_px": 4.733554472619185,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 90.95141861285067,
+   "span_px": 4.764592625919043,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 90.35509346356741,
+   "span_px": 4.796037963420362,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 89.7588171170387,
+   "span_px": 4.827898499092444,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 89.16259055237235,
+   "span_px": 4.8601824571833765,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 88.56632872621513,
+   "span_px": 4.89290303292651,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 87.97020477616272,
+   "span_px": 4.926059448676971,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 87.37413370672124,
+   "span_px": 4.959665292868355,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 86.77811660758718,
+   "span_px": 4.99372970260772,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 86.18215459850143,
+   "span_px": 5.028262062587137,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 85.58624883028816,
+   "span_px": 5.063272013462835,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 84.99031448494587,
+   "span_px": 5.098774619976514,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 84.3945247892895,
+   "span_px": 5.134769815004163,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 83.79879498471324,
+   "span_px": 5.17127314919882,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 83.20312635766759,
+   "span_px": 5.208295377950414,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 82.60752023157455,
+   "span_px": 5.2458475599419945,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 82.01197796816024,
+   "span_px": 5.283941067826748,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 81.41650096884538,
+   "span_px": 5.322587599355167,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 80.8210047391147,
+   "span_px": 5.361804890182699,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 80.22566264830724,
+   "span_px": 5.40159400539159,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 79.6303902790888,
+   "span_px": 5.44197330844255,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 79.03518920683369,
+   "span_px": 5.482955918604867,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 78.44006105454024,
+   "span_px": 5.524555343453312,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 77.84500749463642,
+   "span_px": 5.566785493206128,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 77.24994437700263,
+   "span_px": 5.60966693160069,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 76.65504523780544,
+   "span_px": 5.653202044239908,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 76.06022602444723,
+   "span_px": 5.697412183608005,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 75.46548862685513,
+   "span_px": 5.742313027115997,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 74.87083499474278,
+   "span_px": 5.7879207366939704,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 74.2762671399822,
+   "span_px": 5.83425197745833,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 73.68178713908885,
+   "span_px": 5.881323937238896,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 73.08731134772985,
+   "span_px": 5.9291613065080195,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 72.49301356930887,
+   "span_px": 5.977768575248316,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 71.8988102891835,
+   "span_px": 6.027171474697645,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 71.3047038698009,
+   "span_px": 6.077389497766304,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 70.71069675261303,
+   "span_px": 6.128442772325681,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 70.11679146138962,
+   "span_px": 6.180352086964647,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 69.52290490370783,
+   "span_px": 6.2331466016828205,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 68.92921119822857,
+   "span_px": 6.28683327295643,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 68.33562742003618,
+   "span_px": 6.341442594446804,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 67.74215645881078,
+   "span_px": 6.39699828131618,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 67.14880130583121,
+   "span_px": 6.453524858410725,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 66.55556505845323,
+   "span_px": 6.5110476946454074,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 65.9624509248254,
+   "span_px": 6.5695930391296535,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 65.36937664564348,
+   "span_px": 6.629196738233613,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 64.7765168510935,
+   "span_px": 6.68986971676525,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 64.18378951105957,
+   "span_px": 6.751649625876234,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 63.59119832932857,
+   "span_px": 6.814566635392414,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 62.99874714817747,
+   "span_px": 6.878652005894706,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 62.406439954863636,
+   "span_px": 6.943938137684003,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 61.81419542669791,
+   "span_px": 7.010468314734378,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 61.22218880773539,
+   "span_px": 7.078258175325336,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 60.63033907945758,
+   "span_px": 7.147353371581065,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 60.038650881661226,
+   "span_px": 7.217791407302088,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 59.44712903757422,
+   "span_px": 7.28961121344923,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 58.85577856294147,
+   "span_px": 7.362853215444861,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 58.264604675651924,
+   "span_px": 7.43755940423903,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 57.673527515143384,
+   "span_px": 7.513784523165853,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 57.082723343933054,
+   "span_px": 7.591551927694106,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 56.492112732663834,
+   "span_px": 7.670919664314532,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 55.90170181631325,
+   "span_px": 7.751936781166205,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 55.31149698968561,
+   "span_px": 7.834654312836155,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 54.72150492119163,
+   "span_px": 7.91912537975258,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 54.13173256750609,
+   "span_px": 8.005405293452426,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 53.54210211048871,
+   "span_px": 8.093564528815413,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 52.952791322932164,
+   "span_px": 8.183637682042189,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 52.363723012119756,
+   "span_px": 8.275699921859355,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 51.774905454380125,
+   "span_px": 8.369816509302838,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 51.18634730326046,
+   "span_px": 8.466055525944144,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 50.59805761103878,
+   "span_px": 8.564488023847042,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 50.00996099818515,
+   "span_px": 8.665202887388581,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 49.4222371343103,
+   "span_px": 8.768248536827628,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 48.83481151801449,
+   "span_px": 8.873720302571636,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 48.24769504297589,
+   "span_px": 8.981702816138007,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 47.66089913377632,
+   "span_px": 9.092284583707327,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 47.074435778243796,
+   "span_px": 9.205558203205111,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 46.488317562157484,
+   "span_px": 9.321620595545447,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 45.90247318402354,
+   "span_px": 9.440590634460444,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 45.31708563985553,
+   "span_px": 9.562540316108596,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 44.73208496918068,
+   "span_px": 9.687598034793806,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 44.14748655144481,
+   "span_px": 9.81588063761429,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 43.56330658076818,
+   "span_px": 9.947510702297633,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 42.97956211980294,
+   "span_px": 10.082616878034662,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 42.3961869988328,
+   "span_px": 10.221354539539007,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 41.81336858422196,
+   "span_px": 10.363825568533246,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 41.231042686306154,
+   "span_px": 10.51019887458702,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 40.64923047192899,
+   "span_px": 10.66063129384255,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 40.06795431813309,
+   "span_px": 10.815287823255547,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 39.48723789833875,
+   "span_px": 10.97434212935657,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 38.907106275846324,
+   "span_px": 11.13797709259831,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 38.327502402452474,
+   "span_px": 11.306410052222335,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 37.748621734972,
+   "span_px": 11.47979551365164,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 37.170410458992784,
+   "span_px": 11.658371621097423,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 36.5929003060703,
+   "span_px": 11.842364360711185,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 36.01612500325375,
+   "span_px": 12.03201228340126,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 35.440120428830376,
+   "span_px": 12.227567321897105,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 34.864841818657375,
+   "span_px": 12.429325240987204,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 34.29049593342155,
+   "span_px": 12.637509217745059,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 33.71704310878995,
+   "span_px": 12.852445484067134,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 33.14452969888093,
+   "span_px": 13.074448857070237,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 32.5730052380802,
+   "span_px": 13.303852539005243,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 32.00252271056143,
+   "span_px": 13.541009324763385,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 31.433138846764894,
+   "span_px": 13.786292885104741,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 30.8648325187421,
+   "span_px": 14.040136397193235,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 30.29783300650395,
+   "span_px": 14.302886227758899,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 29.732128273805092,
+   "span_px": 14.57502316850475,
+   "camera": "right",
+   "yolo": false,
+   "background=1": true,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 29.167793656874363,
+   "span_px": 14.857018790570462,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 28.604910247193576,
+   "span_px": 15.149373121426937,
+   "camera": "right",
+   "yolo": false,
+   "background=1": false,
+   "background=0": true
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 28.043565429702408,
+   "span_px": 15.452616377398446,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 27.48385347963418,
+   "span_px": 15.767310750684162,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 26.925795816651362,
+   "span_px": 16.09410029662617,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  },
+  {
+   "bearing": 300.0,
+   "range_m": 26.369663649732058,
+   "span_px": 16.43352240649712,
+   "camera": null,
+   "yolo": false,
+   "background=1": false,
+   "background=0": false
+  }
+ ]
+}

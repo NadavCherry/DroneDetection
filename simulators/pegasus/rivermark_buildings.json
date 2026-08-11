@@ -1,0 +1,217 @@
+{
+ "_comment": "Measured from the loaded Rivermark stage by simulators/pegasus/scripts/find_buildings.py. xy_rel is relative to SCENE_ORIGIN_XY, which is what the scenarios use, so the same numbers work in the renderer and in the headless sandbox.",
+ "scene": "rivermark",
+ "ground_z": 5.2,
+ "origin_xy": [
+  60.0,
+  60.0
+ ],
+ "filter": {
+  "min_footprint_m": 6.0,
+  "max_footprint_m": 150.0,
+  "min_height_m": 8.0,
+  "defended_within_m": 75.0
+ },
+ "buildings": [
+  {
+   "name": "plaza_e",
+   "xy_rel": [
+    -15.32,
+    13.73
+   ],
+   "xy_world": [
+    44.68,
+    73.73
+   ],
+   "range_m": 20.6,
+   "bearing_deg": 138.1,
+   "footprint_m": [
+    53.0,
+    62.3
+   ],
+   "height_agl_m": 13.95,
+   "defended": true,
+   "path": "/World/Scene/main/props/a_57942a0d_0b54_4672_8f11_fb71f65a6772_rivermark_plaza_building_eNode"
+  },
+  {
+   "name": "plaza_a",
+   "xy_rel": [
+    10.75,
+    -46.15
+   ],
+   "xy_world": [
+    70.75,
+    13.85
+   ],
+   "range_m": 47.4,
+   "bearing_deg": -76.9,
+   "footprint_m": [
+    59.0,
+    50.3
+   ],
+   "height_agl_m": 15.44,
+   "defended": true,
+   "path": "/World/Scene/main/props/a_97a8d4eb_0364_44c1_9205_4f72009ffc18_rivermark_plaza_building_aNode"
+  },
+  {
+   "name": "plaza_d",
+   "xy_rel": [
+    32.63,
+    44.35
+   ],
+   "xy_world": [
+    92.63,
+    104.35
+   ],
+   "range_m": 55.1,
+   "bearing_deg": 53.7,
+   "footprint_m": [
+    52.7,
+    70.2
+   ],
+   "height_agl_m": 12.93,
+   "defended": true,
+   "path": "/World/Scene/main/props/a_e2fcf5e8_586b_410b_886a_5172ad6d8580_rivermark_plaza_building_dNode"
+  },
+  {
+   "name": "plaza_f",
+   "xy_rel": [
+    -50.24,
+    50.09
+   ],
+   "xy_world": [
+    9.76,
+    110.09
+   ],
+   "range_m": 70.9,
+   "bearing_deg": 135.1,
+   "footprint_m": [
+    56.8,
+    46.6
+   ],
+   "height_agl_m": 15.01,
+   "defended": true,
+   "path": "/World/Scene/main/props/a_cd9ccba5_2b8f_4447_8cf3_931433ac346f_rivermark_plaza_building_fNode"
+  },
+  {
+   "name": "plaza_c",
+   "xy_rel": [
+    69.31,
+    -16.09
+   ],
+   "xy_world": [
+    129.31,
+    43.91
+   ],
+   "range_m": 71.2,
+   "bearing_deg": -13.1,
+   "footprint_m": [
+    40.2,
+    41.3
+   ],
+   "height_agl_m": 13.78,
+   "defended": true,
+   "path": "/World/Scene/main/props/a_72a6eddb_34b3_4ab2_a981_203b07cc4bb3_rivermark_plaza_building_cNode"
+  },
+  {
+   "name": "rvm_kasa_parking",
+   "xy_rel": [
+    72.95,
+    75.97
+   ],
+   "xy_world": [
+    132.95,
+    135.97
+   ],
+   "range_m": 105.3,
+   "bearing_deg": 46.2,
+   "footprint_m": [
+    78.7,
+    101.8
+   ],
+   "height_agl_m": 9.56,
+   "defended": false,
+   "path": "/World/Scene/main/props/rvm_kasa_parking"
+  },
+  {
+   "name": "plaza_g",
+   "xy_rel": [
+    -24.06,
+    104.78
+   ],
+   "xy_world": [
+    35.94,
+    164.78
+   ],
+   "range_m": 107.5,
+   "bearing_deg": 102.9,
+   "footprint_m": [
+    60.5,
+    51.4
+   ],
+   "height_agl_m": 13.72,
+   "defended": false,
+   "path": "/World/Scene/main/props/a_717715c5_87fa_4e72_9943_c2d3c1745b2a_rivermark_plaza_building_gNode"
+  },
+  {
+   "name": "wyatt_house",
+   "xy_rel": [
+    123.58,
+    15.04
+   ],
+   "xy_world": [
+    183.58,
+    75.04
+   ],
+   "range_m": 124.5,
+   "bearing_deg": 6.9,
+   "footprint_m": [
+    97.7,
+    75.2
+   ],
+   "height_agl_m": 26.89,
+   "defended": false,
+   "path": "/World/Scene/main/props/wyatt_house"
+  },
+  {
+   "name": "plaza_b",
+   "xy_rel": [
+    -80.6,
+    -96.18
+   ],
+   "xy_world": [
+    -20.6,
+    -36.18
+   ],
+   "range_m": 125.5,
+   "bearing_deg": -130.0,
+   "footprint_m": [
+    40.1,
+    37.6
+   ],
+   "height_agl_m": 13.82,
+   "defended": false,
+   "path": "/World/Scene/main/props/a_68ea34fb_4d5b_457b_99f7_b1b1614f8e7a_rivermark_plaza_building_bNode"
+  },
+  {
+   "name": "kasa_residential_house2_",
+   "xy_rel": [
+    61.01,
+    -135.78
+   ],
+   "xy_world": [
+    121.01,
+    -75.78
+   ],
+   "range_m": 148.9,
+   "bearing_deg": -65.8,
+   "footprint_m": [
+    29.3,
+    26.2
+   ],
+   "height_agl_m": 12.27,
+   "defended": false,
+   "path": "/World/Scene/main/props/kasa_residential_house2_stand_in_08"
+  }
+ ]
+}

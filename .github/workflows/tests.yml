@@ -1,0 +1,49 @@
+name: tests
+
+# The pursuit suite is the only automated test suite in the repository, and it is
+# deliberately cheap to run: nothing under pursuit/tests imports torch or
+# ultralytics, so CI installs a minimal set rather than `-r requirements.txt`,
+# which would pull ~2 GB of CUDA wheels to run 540 tests that never touch a GPU.
+# Verified with an import blocker: `pursuit.episode` imports clean without either.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install the test dependencies
+        # headless OpenCV, because a CI runner has no display and the contrib
+        # extras (dnn_superres) are only used by an ablation, not by the tests.
+        run: |
+          python -m pip install --upgrade pip
+          pip install "numpy==2.5.0" "scipy==1.18.0" "opencv-python-headless==5.0.0.93" "pytest==9.1.1"
+
+      - name: Run the suite
+        run: python -m pytest -q
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check every documented link resolves and is tracked
+        # The failure this guards against: a document links to an artifact that
+        # is gitignored, so the link works for the author and 404s for everyone
+        # else. tools/check_docs.py exits non-zero on any such link.
+        run: python tools/check_docs.py

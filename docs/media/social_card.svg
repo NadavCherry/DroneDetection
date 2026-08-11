@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="1280" height="640" fill="#0d1117" rx="12"/>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5"
+             markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+             <path d="M 0 1 L 9 5 L 0 9 z" fill="#8b949e"/></marker></defs>
+<text x="64" y="118" font-size="58" font-weight="700" fill="#e6edf3">See the drone, then hit it</text>
+<text x="64" y="166" font-size="23" fill="#9198a1">Finding a drone <tspan font-weight="700" fill="#e6edf3">3&#8211;14 pixels</tspan> wide in 720p video from a moving camera &#8212;</text>
+<text x="64" y="200" font-size="23" fill="#9198a1">then flying into it, with nothing but that camera.</text>
+<rect x="64.0" y="250" width="270.0" height="190" rx="14" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="64.0" y="250" width="270.0" height="5" rx="2.5" fill="#2ea043"/>
+<text x="199.0" y="326" text-anchor="middle" font-size="42" font-weight="700" fill="#e6edf3">1.000</text>
+<text x="199.0" y="362" text-anchor="middle" font-size="17" font-weight="600" fill="#e6edf3" opacity="0.9">AP / F1, detection</text>
+<text x="199.0" y="390" text-anchor="middle" font-size="14.5" fill="#9198a1">unseen real video</text>
+<rect x="358.0" y="250" width="270.0" height="190" rx="14" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="358.0" y="250" width="270.0" height="5" rx="2.5" fill="#2ea043"/>
+<text x="493.0" y="326" text-anchor="middle" font-size="42" font-weight="700" fill="#e6edf3">0.83</text>
+<text x="493.0" y="362" text-anchor="middle" font-size="17" font-weight="600" fill="#e6edf3" opacity="0.9">mAP50, temporal stack</text>
+<text x="493.0" y="390" text-anchor="middle" font-size="14.5" fill="#9198a1">0.06 from a single frame</text>
+<rect x="652.0" y="250" width="270.0" height="190" rx="14" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="652.0" y="250" width="270.0" height="5" rx="2.5" fill="#d29922"/>
+<text x="787.0" y="326" text-anchor="middle" font-size="42" font-weight="700" fill="#e6edf3">24 / 24</text>
+<text x="787.0" y="362" text-anchor="middle" font-size="17" font-weight="600" fill="#e6edf3" opacity="0.9">intruders intercepted</text>
+<text x="787.0" y="390" text-anchor="middle" font-size="14.5" fill="#9198a1">0 buildings hit</text>
+<rect x="946.0" y="250" width="270.0" height="190" rx="14" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+<rect x="946.0" y="250" width="270.0" height="5" rx="2.5" fill="#d29922"/>
+<text x="1081.0" y="326" text-anchor="middle" font-size="42" font-weight="700" fill="#e6edf3">0.080 m</text>
+<text x="1081.0" y="362" text-anchor="middle" font-size="17" font-weight="600" fill="#e6edf3" opacity="0.9">mean closest approach</text>
+<text x="1081.0" y="390" text-anchor="middle" font-size="14.5" fill="#9198a1">airframe span is 0.47 m</text>
+<circle cx="74" cy="495" r="7" fill="#2ea043"/>
+<text x="92" y="500" font-size="18" fill="#e6edf3" opacity="0.9">detection measured on real hand-labelled video</text>
+<circle cx="622" cy="495" r="7" fill="#d29922"/>
+<text x="640" y="500" font-size="18" fill="#e6edf3" opacity="0.9">interception measured closed-loop in Isaac Sim &#8212; no flight test</text>
+<rect x="64" y="534" width="1152" height="1.5" fill="#30363d"/>
+<text x="64" y="584" font-size="20" font-weight="700" fill="#388bfd">github.com/NadavCherry/SpeckLock</text>
+<text x="1216" y="584" text-anchor="end" font-size="18" fill="#9198a1">Nadav Cherry</text>
+</svg>
