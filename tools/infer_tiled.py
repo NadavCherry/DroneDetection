@@ -113,7 +113,17 @@ def frame_source(video: Path, mode: str, dt: int):
         cap.release()
         return
 
-    from dronedet.stabilize import Stabilizer, warp_to_reference
+    # Imported from the builder so training and inference cannot drift apart: the stack
+    # must be assembled by the SAME code that made the training tiles, or the model is
+    # shown a representation at test time that it was never trained on.
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "_mde", Path(__file__).resolve().parent / "make_dataset_external.py")
+    mde = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = mde
+    spec.loader.exec_module(mde)
+
+    from dronedet.stabilize import Stabilizer
     stab = Stabilizer("translation")
     buf: deque = deque(maxlen=2 * dt + 1)
     cap = cv2.VideoCapture(str(video))
@@ -123,12 +133,13 @@ def frame_source(video: Path, mode: str, dt: int):
         if not ok:
             break
         m = stab.update(frame)
-        buf.append(warp_to_reference(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), m))
-        n = len(buf)
-        taps = [buf[max(0, n - 1 - 2 * dt)], buf[max(0, n - 1 - dt)], buf[n - 1]]
-        # Boxes come back in stabilised coordinates; undo the shift so detections are
-        # reported in the ORIGINAL frame, which is where the ground truth lives.
-        yield (idx, np.dstack(taps), float(m[0, 2]), float(m[1, 2]))
+        buf.append((cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY),
+                    float(m[0, 2]), float(m[1, 2])))
+        # Taps are aligned to the CURRENT frame, so the stack is already in original-frame
+        # coordinates and detections need no un-shifting -- which is also why the
+        # stabilisation border is now bounded by dt frames of camera motion rather than by
+        # the whole video's accumulated drift.
+        yield idx, np.dstack(mde._stack_aligned_to_now(buf, dt))
         idx += 1
     cap.release()
 
@@ -138,12 +149,8 @@ def run_video(model, video: Path, mode: str, args) -> DetectionSet:
                       meta={"mode": mode, "tile": args.tile, "overlap": args.overlap,
                             "conf": args.conf, "dt": args.dt, "weights": args.weights})
     origins = None
-    for item in frame_source(video, mode, args.dt):
-        if mode == "rgb":
-            idx, img = item
-            dx = dy = 0.0
-        else:
-            idx, img, dx, dy = item
+    dx = dy = 0.0          # both modes now yield original-frame coordinates
+    for idx, img in frame_source(video, mode, args.dt):
         if args.stop and idx >= args.stop:
             break
         h, w = img.shape[:2]

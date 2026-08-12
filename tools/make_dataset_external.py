@@ -235,8 +235,8 @@ def extract_yolo_tiled(video_path, boxes_by_frame, frame_ids, img_dir, lbl_dir,
     return n_img, n_box
 
 
-def _clamped_taps(buf, dt):
-    """The three taps ``[t-2*dt, t-dt, t]``, clamped to the oldest frame held.
+def _tap_indices(n_held: int, dt: int) -> list[int]:
+    """Buffer positions of the three taps ``[t-2*dt, t-dt, t]``, clamped at the start.
 
     Mirrors `make_datasets_v3.clamp_chans`' ``grays[max(0, t - 2*DT)]`` exactly. Before
     2*dt frames have been seen the older taps repeat the first frame, so the model is
@@ -244,8 +244,50 @@ def _clamped_taps(buf, dt):
     without it the first 12 frames of every sequence are a distribution the model has
     never seen, which is precisely when an interceptor most needs a detection.
     """
-    n = len(buf)
-    return [buf[max(0, n - 1 - 2 * dt)], buf[max(0, n - 1 - dt)], buf[n - 1]]
+    return [max(0, n_held - 1 - 2 * dt), max(0, n_held - 1 - dt), n_held - 1]
+
+
+def _stack_aligned_to_now(buf, dt: int):
+    """The three taps, each warped into the CURRENT frame's coordinates.
+
+    Alignment is to frame *t*, not to frame 0, and that is the whole point.
+
+    `make_datasets_v3` registers every frame to the sequence's first, which is fine on one
+    571-frame clip whose camera barely moves (its recorded shifts stay under ~2 px). On
+    ARD-MAV -- 60 videos, ~1,800 frames each, a genuinely moving camera -- that shift
+    accumulates without bound, and the canvas is the same size as the frame, so content
+    walks off the edge. Measured on the first build: ground-truth boxes shifted outside
+    the canvas were silently dropped, costing **78 % of the labels on phantom23** and 35 %
+    overall (11,831 boxes against the single-frame build's 17,407). Worse than the loss,
+    it broke the experiment: the two arms are supposed to differ only in channel content,
+    and the temporal arm was training on a third fewer targets -- handicapping precisely
+    the claim under test, in the direction that would have made it look false.
+
+    Aligning to *now* bounds every warp by the camera's motion over `dt` frames instead of
+    over the whole video, and leaves the current frame unwarped. So:
+
+      * GT boxes at time t need NO shift and nothing falls off the canvas;
+      * only the two older taps are cropped at the edges, by a bounded amount;
+      * detections at inference are already in original-frame coordinates.
+
+    Translation-only: content at p in frame j sits at p + d_j in reference coordinates, so
+    into frame t's it is p + (d_j - d_t). The relative shift is the difference of the
+    accumulated ones, and for j = t it is exactly zero.
+    """
+    idx = _tap_indices(len(buf), dt)
+    _, dx_now, dy_now = buf[idx[-1]]
+    taps = []
+    for i in idx:
+        gray, dx, dy = buf[i]
+        rx, ry = dx - dx_now, dy - dy_now
+        if rx == 0.0 and ry == 0.0:
+            taps.append(gray)                       # the current frame: never resampled
+        else:
+            m = np.float32([[1.0, 0.0, rx], [0.0, 1.0, ry]])
+            taps.append(cv2.warpAffine(gray, m, (gray.shape[1], gray.shape[0]),
+                                       flags=cv2.INTER_LINEAR,
+                                       borderMode=cv2.BORDER_CONSTANT, borderValue=0))
+    return taps
 
 
 def extract_yolo_tiled_temporal(video_path, boxes_by_frame, frame_ids, img_dir, lbl_dir,
@@ -259,28 +301,25 @@ def extract_yolo_tiled_temporal(video_path, boxes_by_frame, frame_ids, img_dir, 
     groups have since reproduced. The ARD-MAV configs were training on single frames,
     so a number from them described a method this project does not claim.
 
-    Identical to `make_datasets_v3.py`'s recipe on purpose, tap for tap:
+    Same recipe as `make_datasets_v3.py` tap for tap -- three grayscale moments at
+    ``np.dstack([t-2*dt, t-dt, t])``, oldest first (reversing the order silently costs
+    the model its arrow of time), clamped warmup per `_tap_indices` -- with two
+    deliberate differences, both forced by ARD-MAV's scale.
 
-    * grayscale, warped to the sequence's first frame by accumulated phase correlation,
-      so all three channels share one coordinate frame and a static background cancels;
-    * channels ``np.dstack([t-2*dt, t-dt, t])``, oldest first -- the order the shipped
-      weights were trained on, and reversing it silently costs the model its arrow of time;
-    * clamped warmup, per `_clamped_taps`.
-
-    Deliberately *not* identical in one respect: this streams a `2*dt+1` ring buffer
-    rather than holding every frame. `make_datasets_v3` can afford `load_stabilized()`
-    on one 571-frame clip; ARD-MAV is 60 videos of 1920x1080 and the same approach would
-    ask for gigabytes per video.
-
-    Boxes are translated into stabilised coordinates by the same accumulated shift
-    applied to the pixels. Skipping that is the failure that does not announce itself:
-    the stack still looks right, the labels sit a few pixels off the target, and on an
-    11.8 px median box a few pixels is the whole object.
+    1. Streams a `2*dt+1` ring buffer instead of holding every frame. `make_datasets_v3`
+       can afford `load_stabilized()` on one 571-frame clip; 60 videos of 1920x1080 would
+       ask for gigabytes each.
+    2. **Taps are aligned to the current frame, not to frame 0.** See
+       `_stack_aligned_to_now` for why: registering to frame 0 accumulates without bound
+       on a moving camera, walks content off a canvas the size of the frame, and cost 35 %
+       of the labels on the first build. Ground-truth boxes therefore need NO shift here
+       and stay in original-frame coordinates -- which is also where the evaluator's GT
+       lives, so nothing has to be undone downstream.
     """
     import random
     from collections import deque
 
-    from dronedet.stabilize import Stabilizer, warp_to_reference
+    from dronedet.stabilize import Stabilizer
 
     rng = random.Random(1234)
     img_dir.mkdir(parents=True, exist_ok=True)
@@ -291,7 +330,10 @@ def extract_yolo_tiled_temporal(video_path, boxes_by_frame, frame_ids, img_dir, 
     last = max(want)
 
     stab = Stabilizer(stab_mode)
-    buf = deque(maxlen=2 * dt + 1)          # stabilised grayscale, oldest .. newest
+    # (gray, dx, dy) -- RAW grayscale plus its accumulated shift. Storing the frames
+    # unwarped is what makes alignment-to-now possible: the warp for each tap is decided
+    # at emit time, once the current frame's shift is known.
+    buf = deque(maxlen=2 * dt + 1)
     cap = cv2.VideoCapture(str(video_path))
     idx, n_img, n_box = 0, 0, 0
     try:
@@ -299,16 +341,15 @@ def extract_yolo_tiled_temporal(video_path, boxes_by_frame, frame_ids, img_dir, 
             ok, frame = cap.read()
             if not ok:
                 break
-            # Every frame is stabilised, not only the selected ones: the accumulator is
-            # a running registration to frame 0, so skipping frames would break the
-            # chain and quietly misregister everything after the first gap.
+            # Every frame is registered, not only the selected ones: the accumulator is a
+            # running chain, so skipping frames would break it and quietly misregister
+            # everything after the first gap.
             m = stab.update(frame)
-            buf.append(warp_to_reference(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), m))
+            buf.append((cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY),
+                        float(m[0, 2]), float(m[1, 2])))
             if idx in want:
-                dx, dy = float(m[0, 2]), float(m[1, 2])
-                boxes = [(x1 + dx, y1 + dy, x2 + dx, y2 + dy)
-                         for (x1, y1, x2, y2) in boxes_by_frame.get(idx, [])]
-                ni, nb = _emit_tiles(np.dstack(_clamped_taps(buf, dt)), boxes,
+                ni, nb = _emit_tiles(np.dstack(_stack_aligned_to_now(buf, dt)),
+                                     boxes_by_frame.get(idx, []),
                                      img_dir, lbl_dir, f"{prefix}_{idx:05d}",
                                      min_side, tile, rng, jitter, neg_per_frame,
                                      quality, chroma_444)

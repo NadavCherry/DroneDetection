@@ -35,15 +35,13 @@ M = _load_builder()
 
 # --------------------------------------------------------------------------- taps
 
-def test_clamped_taps_are_oldest_middle_newest():
+def test_taps_are_oldest_middle_newest():
     """Channel order is the shipped one: dstack([t-2dt, t-dt, t]), oldest first.
 
     Reversing it does not crash and does not look wrong; it hands the model the arrow
     of time backwards, against weights trained the other way round.
     """
-    dt = 6
-    buf = list(range(13))                       # 0 .. 12, newest last
-    assert M._clamped_taps(buf, dt) == [0, 6, 12]
+    assert M._tap_indices(13, 6) == [0, 6, 12]
 
 
 @pytest.mark.parametrize("held,expected", [
@@ -59,14 +57,68 @@ def test_warmup_clamps_to_the_oldest_frame_held(held, expected):
     Without this the first 12 frames of every sequence are a regime the model never
     saw in training -- which is exactly when an interceptor most needs a detection.
     """
-    assert M._clamped_taps(list(range(held)), 6) == expected
+    assert M._tap_indices(held, 6) == expected
 
 
 def test_taps_span_the_declared_aperture():
     """dt is the aperture, so a changed dt must move the taps and nothing else."""
     for dt in (1, 3, 6, 10):
-        buf = list(range(2 * dt + 1))
-        assert M._clamped_taps(buf, dt) == [0, dt, 2 * dt]
+        assert M._tap_indices(2 * dt + 1, dt) == [0, dt, 2 * dt]
+
+
+# ------------------------------------------------- alignment is to NOW, not to frame 0
+
+def _buf(shifts):
+    """A ring buffer of (gray, dx, dy), each frame carrying a bright marker at x 30..33."""
+    out = []
+    for dx, dy in shifts:
+        g = np.zeros((64, 64), np.uint8)
+        g[30:34, 30:34] = 255
+        out.append((g, float(dx), float(dy)))
+    return out
+
+
+def test_the_current_frame_is_never_resampled():
+    """The newest tap comes through untouched, bit for bit.
+
+    It is the frame the labels belong to. Resampling it would blur a 6 px target for no
+    reason, and would degrade exactly the channel the detector relies on most.
+    """
+    buf = _buf([(100, -50), (60, -30), (0, 0)])
+    assert np.array_equal(M._stack_aligned_to_now(buf, dt=1)[-1], buf[-1][0])
+
+
+def test_a_huge_accumulated_drift_does_not_move_the_current_frame():
+    """THE regression this refactor exists for.
+
+    Registering every frame to frame 0 accumulates without bound on a moving camera,
+    walks content off a canvas the size of the frame, and takes the ground-truth boxes
+    with it -- 78 % of the labels on phantom23, 35 % overall, silently, and only on the
+    arm whose claim was under test. Aligning to *now* makes the current frame's warp
+    identically zero however far the camera has travelled.
+    """
+    for drift in (0, 500, 5000):
+        buf = _buf([(drift + 8, drift - 4), (drift + 4, drift - 2), (drift, drift)])
+        taps = M._stack_aligned_to_now(buf, dt=1)
+        assert np.array_equal(taps[-1], buf[-1][0]), f"drift {drift} disturbed frame t"
+        assert taps[-1].max() == 255, "the target vanished from the current frame"
+
+
+def test_older_taps_are_warped_by_the_relative_shift():
+    """A tap k frames behind moves by exactly the camera's motion since then."""
+    buf = _buf([(10, 0), (5, 0), (0, 0)])       # t at 0, t-1 at +5, t-2 at +10
+    taps = M._stack_aligned_to_now(buf, dt=1)
+    newest_x = int(np.argmax(taps[-1].max(axis=0)))
+    oldest_x = int(np.argmax(taps[0].max(axis=0)))
+    assert newest_x == 30
+    assert oldest_x == 40, f"expected +10 px of relative warp, got {oldest_x - newest_x}"
+
+
+def test_a_static_camera_leaves_no_trail():
+    """No camera motion, no warp: all three taps land identically. Otherwise a static
+    scene would show a trail and the stack would report movement that never happened."""
+    taps = M._stack_aligned_to_now(_buf([(0, 0)] * 3), dt=1)
+    assert np.array_equal(taps[0], taps[1]) and np.array_equal(taps[1], taps[2])
 
 
 # --------------------------------------------------------------------------- fixtures
