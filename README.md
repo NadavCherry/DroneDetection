@@ -32,18 +32,23 @@ using nothing but that camera. No radar, no datalink, no GPS on the target.
 
 ## Results
 
-| | result | measured on |
-|---|---|---|
-| Detection, unseen test video | **AP / F1 = 1.000**, zero false positives | 🟢 real video, causal |
-| The one change that mattered | mAP50 **0.06 → 0.83** | 🟢 real video, identical recipe |
-| Speed | **4 fps** (PC-MAX) · **74 fps** (EDGE-RT, TensorRT FP16) | 🟢 RTX 5070 |
-| Generalist model, one for all datasets | ARD-MAV AP **0.994** · NPS AP **0.801** | 🟢 public data, moving cameras |
-| Versus published SOTA | specialist-class on **every** set, **one** set of weights — [no published method does both](#one-model-against-the-specialist-state-of-the-art) | 🟢 held-out splits |
-| City defence | **24 / 24** intercepted, **0** buildings hit | 🟡 Isaac Sim, 24 bearings |
-| How close | mean closest approach **0.080 m** (airframe span 0.47 m) | 🟡 Isaac Sim |
-| One-camera pursuit campaign | **54 / 62** — 87.1 %, CI [76.6, 93.3] | 🟡 Isaac Sim, 62 engagements |
-| Seeing 3 pixels | reliable to **140 m**, target ~3 px | 🟡 Isaac Sim, live town |
-| Tests | **540** unit tests, 22 s | `python -m pytest` |
+Every row carries its **n** and its **sensor**, because a number without them cannot be
+checked. Where this project's own audit disputes a figure, the row says so and links to the
+correction rather than leaving you to find it.
+
+| | result | n | measured on |
+|---|---|---|---|
+| Detection, **development** test video | **AP / F1 = 1.000**, zero false positives | 1 video · 337 boxes · 1 flight | 🟢 real video, causal. ⚠️ **not "unseen"**: no dataset builder reads `10_06`, so the *weights* are clean — but six track-classifier constants were hand-set against it. That is a development set |
+| The one change that mattered | mAP50 **0.06 → 0.83** | same 2 videos | 🟢 real video, identical recipe |
+| Speed | **4 fps** (PC-MAX) · **74 fps** (EDGE-RT, TensorRT FP16) | — | 🟢 RTX 5070. ⚠️ no `.engine` ships — they are architecture-specific, and without one the runner loads the `.pt`: **52.6 fps** measured on an RTX 4080 Laptop |
+| Generalist model, one for all datasets | ARD-MAV AP **0.994** · NPS AP 0.801 | — | ⚠️ **DISPUTED — do not quote.** 0.994 is **one clip** (`phantom16`), whose 39.1 px median target is the 3rd-largest of 60 against a dataset median of 11.2 px. Rounds 5–7 also trained through a [split leak](docs/research/internal-audit-2026-08.md). Being recomputed on the official 15-video split |
+| Versus published SOTA | specialist-class on **every** set, **one** set of weights — [no published method does both](#one-model-against-the-specialist-state-of-the-art) | — | ⚠️ rests on the disputed ARD-MAV row above |
+| City defence, **perfect sensor** | **24 / 24** intercepted, **0** buildings hit | 24 bearings | 🟡 Isaac Sim, `detector: "oracle"` — the simulator's own box, zero latency |
+| City defence, **our own seeker** | **0 / 3**, all three buildings struck | 3 engagements | 🟡 Isaac Sim, `detector: "yolo"`, detection rate **4.4 %**. The honest counterpart to the row above |
+| One-camera pursuit, **real detector** | **54 / 62** — 87.1 %, Wilson CI [76.6, 93.3] | 62 engagements | 🟡 Isaac Sim, `detector: "fusion"`, trained weights. **This is the closed-loop number to quote** |
+| How close | mean closest approach **0.080 m** (airframe span 0.47 m) | 24 engagements | 🟡 Isaac Sim, oracle sensor |
+| Seeing 3 pixels | reliable to **140 m**, target ~3 px | — | 🟡 Isaac Sim, live town |
+| Tests | **836** unit tests, ~35 s | — | `python -m pytest` |
 
 <p align="center">
   <img src="docs/media/chart_cpa.png" width="900" alt="Closest approach for all 24 city engagements against arrival bearing"/>
@@ -120,7 +125,16 @@ until the training corpus was combined:
 | GLAD ([2312.11008](https://arxiv.org/abs/2312.11008)) | ARD-MAV | 0.80 | — |
 | YOLOMG ([2503.07115](https://arxiv.org/abs/2503.07115)) | per dataset | 0.95 NPS · 0.85 ARD100 | separate weights per set |
 | our round-4 specialist | ARD-MAV | 0.76 | 0.15 NPS · **0.00** on our drone |
-| **this generalist (rounds 5–7)** | **all sets at once** | — | **0.84 ARD-MAV · 0.81 NPS · black drone tracked 1.000** — same weights, all held-out |
+| **this generalist (rounds 5–7)** | **all sets at once** | — | 0.84 ARD-MAV · 0.81 NPS · black drone tracked 1.000 — ⚠️ see below |
+
+> ⚠️ **The ARD-MAV column of the last row is void, and this section's headline claim is
+> suspended until it is replaced.** `combined_splits()` ignored the published 15-video test
+> list and re-split by position, so rounds 5–7 trained on most of the official test set —
+> "all held-out" was not true of ARD-MAV. The code is fixed and a test now pins the old path
+> as provably leaky so nobody mistakes it, but **every ARD-MAV number from those rounds must
+> be recomputed on the official split**, and until that lands the generalist claim rests on
+> one leg. The NPS column and the black-drone result are unaffected. Full account:
+> [internal audit](docs/research/internal-audit-2026-08.md).
 
 Published numbers are AP@0.5 IoU on each paper's own split; ours are centre-distance AP on
 whole-video held-out splits (τ = 12 px — IoU swings wildly on a 6 px box, which is why this repo
@@ -319,8 +333,21 @@ data/videos/         the two source videos (07_05 = train, 10_06 = unseen test)
 - **Latency must be calibrated on hardware.** At 3 frames of latency, declaring it is worth 32/42
   intercepts against 18/42 ignored.
 - **Drone-vs-bird is the frontier for detection.** At a few pixels only appearance can separate
-  them, and appearance is what is weakest at that scale.
-- **No flight test.** Interception is Isaac Sim throughout.
+  them, and appearance is what is weakest at that scale. What this repo can show is that
+  *track-level* evidence does the job where a frame cannot: at matched 0.95 drone recall,
+  per-frame decisions take **151 false alarms across 934 bird instances**; the track classifier
+  takes **0**. The caveat is as important as the number — **all 934 of those bird boxes are in
+  `07_05`, frames 2–304, which is the training video**, and the bird patches are pasted into
+  training as an explicit class. It demonstrates the mechanism; it is not a held-out result.
+- **PC-MAX raises three false drone alarms that the metric never sees.** On `10_06` the shipped
+  run writes four `[drone]` tracks: one real, and three sustained ~150 frames each at 133–212 px
+  from the target. AP stays 1.000 because their scores fall below the operating threshold — so
+  the metric is right and the *system* still cries wolf three times. EDGE-RT is clean (one track).
+- **No flight test.** Interception is Isaac Sim throughout, and the simulator models neither wind
+  nor airframe drift.
+- **Range assumes a known target size.** Closure is monocular: `range = f · S / s`, focal length
+  times the drone's *assumed* physical span over its pixel span. No GPS on the target, no
+  rangefinder — but also no way to range an aircraft whose size you have guessed wrong.
 
 ## Citation
 

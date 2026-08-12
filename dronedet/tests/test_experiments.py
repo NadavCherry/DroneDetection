@@ -491,6 +491,38 @@ def test_git_provenance_reports_this_repo():
     assert isinstance(g["dirty"], bool)
 
 
+def test_git_output_that_cannot_be_read_is_unknown_and_not_empty(monkeypatch):
+    """`out.stdout` can be None while returncode is 0, and it must not become "".
+
+    Windows `subprocess.run(capture_output=True, timeout=...)` reads the pipes on helper
+    threads; under heavy disk load one can die and hand back None. Observed for real while
+    a 40,000-tile build saturated the disk -- `out.stdout.strip()` raised AttributeError
+    inside build_manifest() and took eight tests with it.
+
+    None must mean "unknown", never "empty": `git status --porcelain` returning "" means
+    the tree is CLEAN, so collapsing an unreadable result to "" would stamp a manifest with
+    clean provenance for a dirty tree -- silently, and exactly on the checkpoints produced
+    under load.
+    """
+    class _Broken:
+        returncode = 0
+        stdout = None
+        stderr = ""
+
+    monkeypatch.setattr(T.subprocess, "run", lambda *a, **k: _Broken())
+    assert T._run_git(REPO, "status", "--porcelain") is None
+
+
+def test_provenance_survives_git_being_unreadable(monkeypatch):
+    """A training run must not die because provenance bookkeeping could not read git."""
+    monkeypatch.setattr(T, "_run_git", lambda *a, **k: None)
+    g = T.git_provenance(REPO)
+    assert g["sha"] is None
+    assert g["dirty"] is False and g["dirty_file_count"] == 0
+    assert g["uncommitted_diff_sha256"] is None
+    json.dumps(g)                                   # still serialisable into the manifest
+
+
 # ============================================================= train_one, with a fake GPU
 def test_manifest_is_written_before_the_trainer_is_called(tmp_path, demo_cfg):
     """A run that crashes in epoch 3 must still be traceable. This is the whole point."""

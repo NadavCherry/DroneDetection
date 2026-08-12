@@ -86,12 +86,27 @@ def sha256_text(text: str) -> str:
 
 
 def _run_git(repo: Path, *args: str) -> str | None:
+    """Run a git command, or return None if its output could not be read.
+
+    None means "unknown", never "empty". The distinction matters: `git status
+    --porcelain` returning "" means the tree is CLEAN, and reporting a failed read as ""
+    would stamp a manifest with a clean-tree provenance for a dirty tree.
+
+    `out.stdout` can be None even when returncode is 0. `capture_output` with a `timeout`
+    reads the pipes on helper threads, and under heavy disk load one of those threads can
+    die -- pytest surfaced it as PytestUnhandledThreadExceptionWarning while a 40,000-tile
+    dataset build saturated the disk, and `out.stdout.strip()` then raised AttributeError
+    from inside build_manifest(). That is a crash in provenance bookkeeping taking down a
+    training run that was otherwise fine, which is the wrong way round.
+    """
     try:
         out = subprocess.run(["git", "-C", str(repo), *args],
                              capture_output=True, text=True, timeout=20)
     except (OSError, subprocess.SubprocessError):
         return None
-    return out.stdout.strip() if out.returncode == 0 else None
+    if out.returncode != 0 or out.stdout is None:
+        return None
+    return out.stdout.strip()
 
 
 def git_provenance(repo: Path = REPO) -> dict[str, Any]:
