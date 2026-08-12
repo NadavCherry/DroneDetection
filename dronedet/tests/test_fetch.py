@@ -79,13 +79,32 @@ def test_open_with_a_direct_url_dispatches_to_http():
 
 
 def test_open_without_a_url_is_manual_and_not_a_pretend_download():
-    """Four OPEN entries have no archive URL recorded. Guessing one is how a login page
-    gets saved as the dataset."""
-    ds = DATASETS["halmstad"]
-    assert ds.gate is Gate.OPEN and not ds.download_id
+    """An OPEN gate means "no human needed", not "a URL exists". Guessing one is how a
+    login page ends up saved as the dataset.
+
+    Pinned against a synthetic entry rather than a named key: real entries get their
+    routes wired one at a time -- halmstad was this test's example until its Zenodo
+    archive was checksum-verified on 2026-08-12 -- and a test that names a key fails for
+    the good news as loudly as for the bad.
+    """
+    ds = tiny_ardmav(gate=Gate.OPEN, download_id="")
     plan = F.plan_for(ds)
     assert plan.action == "manual" and plan.blocked
     assert ds.url in plan.message
+
+
+def test_every_real_open_entry_either_downloads_or_says_a_human_is_needed():
+    """The same invariant walked over the real catalogue, so a half-wired entry -- a URL
+    recorded against a gate that cannot use it, or a gate relaxed to OPEN before the
+    route was confirmed -- fails here rather than part-way through a 15 GB fetch."""
+    for ds in (d for d in DATASETS.values() if d.gate is Gate.OPEN):
+        plan = F.plan_for(ds)
+        if ds.download_id:
+            assert plan.action == "http" and not plan.blocked, ds.key
+            assert plan.target == ds.download_id, ds.key
+        else:
+            assert plan.action == "manual" and plan.blocked, ds.key
+            assert ds.url in plan.message, ds.key
 
 
 @pytest.mark.parametrize("gate", [Gate.FORM, Gate.AGREEMENT, Gate.BAIDU, Gate.UNKNOWN])

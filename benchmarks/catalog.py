@@ -116,14 +116,44 @@ DATASETS: dict[str, Dataset] = {d.key: d for d in [
     Dataset(
         key="halmstad", name="Halmstad Drone Detection Dataset", year=2021, modality="rgb-video",
         url="https://github.com/DroneDetectionThesis/Drone-detection-dataset",
-        licence="CC0-1.0 (public domain)", gate=Gate.OPEN, verified=True,
+        licence="CC0-1.0 per the repo LICENSE; the Data in Brief paper says CC BY 4.0 -- "
+                "attribute Svanstrom/Alonso-Fernandez/Englund either way",
+        gate=Gate.OPEN, verified=True,
         classes=("drone", "bird", "airplane", "helicopter"),
         conditions=(Condition.NIGHT, Condition.CLEAR, Condition.CLUTTER),
         frames=203328, sequences=650, has_birds=True, priority=2,
-        notes="The ONLY set that is simultaneously video, bird-labelled, night-inclusive and "
-              "CC0 with no form. 365 IR + 285 visible. Friction: MATLAB-format labels "
-              "(mcos-decoder), an .xlsx manifest, and NO official split or metric -- you must "
-              "define and PUBLISH a split file or the number is not reproducible by anyone."),
+        size_gb=0.311,
+        download_id="https://zenodo.org/api/records/5500576/files/"
+                    "DroneDetectionThesis/Drone-detection-dataset-v1.0.0.zip/content",
+        sha256="53deda08127dc7896e96454cf35e866e8d6bee336f25d290b26e1f5324e23c81",
+        target_px_median=31.4,
+        notes="ACQUIRED and measured 2026-08-12. The whole dataset is ONE 311,348,350-byte "
+              "Zenodo zip (md5 matches the published 5d9b891a...). It looks like a bare "
+              "GitHub snapshot because it is one -- the videos are committed to the repo, so "
+              "the snapshot IS the data; do not go hunting for a separate data deposit. "
+              "Unpacks to a COMMIT-SUFFIXED root "
+              "(DroneDetectionThesis-Drone-detection-dataset-e7a6eaf), so match it by glob, "
+              "never by literal name.\n"
+              "285 visible + 365 IR clips, 640x512, 30 fps, ~10 s each. Visible split by "
+              "class: drone 114, helicopter 61, airplane 59, bird 51.\n"
+              "LABELS ARE READABLE. mcos-decoder 0.1.0 decoded 285/285 visible files with "
+              "ZERO failures -- 84,767 boxes as (x, y, w, h) in pixels. The list is 1-BASED "
+              "WITH A NULL AT INDEX 0 (302 entries for a 301-frame clip); an off-by-one here "
+              "shifts every box one frame and would NOT crash, which is the exact failure "
+              "benchmarks/adapters/halmstad.py refuses to risk.\n"
+              "THE LIMIT, MEASURED, AND IT DECIDES WHAT THIS SET CAN PROVE: sqrt(area) "
+              "median 31.4 px overall -- drone 30.0, bird 26.5, airplane 35.6, helicopter "
+              "69.3. AI-TOD bins: very-tiny 0.0 %, tiny 0.4 %, small 51.8 %, medium 47.9 %. "
+              "Only 78 of 84,767 boxes (0.1 %) reach this project's <=14 px scale. Halmstad "
+              "is therefore a DISCRIMINATION corpus at 16-70 px, NOT a tiny-object "
+              "benchmark: scope every claim from it to that band and keep the few-pixel "
+              "claim on ARD-MAV and 07_05. Rule 4 applies here as much as to UAV_SMID.\n"
+              "What survives at this scale, and it is the point: drone (p25-p75 24.7-35.7 "
+              "px) and bird (24.4-29.8 px) overlap almost completely, so size cannot "
+              "separate them here either -- an independent replication of the 8.0-vs-6.0 px "
+              "finding at 3x the scale, on 51 bird clips instead of 8 tracks.\n"
+              "Still open: NO official split and NO official metric, so define and PUBLISH a "
+              "split file or the number is reproducible by nobody."),
 
     Dataset(
         key="uav_smid", name="UAV_SMID (UAV Sky Monitoring Image Dataset) v2", year=2026,
