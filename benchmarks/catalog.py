@@ -65,6 +65,13 @@ class Dataset:
     target_px_median: float | None = None
     size_gb: float | None = None
     download_id: str = ""                # gdrive file id, zenodo doi, or direct URL
+    sha256: str = ""
+    """Expected checksum of the downloaded archive, when the host publishes one.
+
+    Worth recording wherever it exists: a truncated 3 GB download extracts without
+    complaint and produces a dataset that is quietly missing its tail, which then shows
+    up as a mysteriously poor model rather than as a failed download. `tools/fetch_data.py`
+    verifies against this and refuses to proceed on a mismatch."""
     official_protocol: Protocol | None = None
     official_test: tuple[str, ...] = ()  # sequence ids, when the split is published
     official_val: tuple[str, ...] = ()
@@ -124,10 +131,21 @@ DATASETS: dict[str, Dataset] = {d.key: d for d in [
         licence="CC BY 4.0", gate=Gate.OPEN, verified=True,
         classes=("helicopter", "bomb", "drone", "bird", "aeroplane"),
         conditions=(Condition.CLEAR,), frames=13928, has_birds=True, priority=2,
-        notes="13,928 images / 16,229 objects, five DELIBERATELY BALANCED classes "
-              "(3,162-3,440 each). Direct download, no form. Stills, so it cannot support "
-              "a temporal claim -- its value is as hard negatives: most anti-UAV training "
-              "sets are drone-only, so their detectors have never been shown a bird."),
+        size_gb=3.1,
+        download_id="https://data.mendeley.com/public-files/datasets/3k3hjc7rkt/"
+                    "files/4a8325b1-42d1-4336-b0a1-202ef5490544/file_downloaded",
+        sha256="cb098dc22882d554f523cec42f57594053430814fbea6f3c444ba9c278b19379",
+        target_px_median=289.0,
+        notes="ACQUIRED and measured 2026-08-12 (checksum verified). 13,928 images / "
+              "16,229 objects: bird 3,440, aeroplane 3,246, helicopter 3,219, drone 3,162, "
+              "bomb 3,162. Pascal VOC XML, with an official split carried in the directory "
+              "names: 9,749 train / 2,786 val / 1,393 test. Direct download, no form.\n"
+              "TWO LIMITS, both measured rather than assumed: it is STILLS, so it cannot "
+              "support the temporal claim; and its targets are LARGE -- median 289 px "
+              "(min 19, max 4,132) -- so it is not a tiny-object benchmark and an AP from "
+              "here must not sit beside an ARD-MAV number. Its value is appearance "
+              "diversity for the confuser classes: most anti-UAV training sets are "
+              "drone-only, so their detectors have never been shown a bird."),
 
     Dataset(
         key="dvb", name="Drone-vs-Bird (DDS, WOSDETC)", year=2025, modality="rgb-video",

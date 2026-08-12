@@ -651,6 +651,17 @@ def fetch_one(ds: Dataset, root: Path, args, log=print) -> str:
             for a in archives:
                 shas[a.name] = sha256_file(a)
                 log(f"    sha256 {a.name} {shas[a.name]}")
+                # A truncated download extracts without complaint and yields a dataset
+                # quietly missing its tail, which surfaces later as a mysteriously poor
+                # model rather than as a failed fetch. Refuse before extracting.
+                if ds.sha256 and len(archives) == 1 and shas[a.name] != ds.sha256:
+                    log(f"    FAILED: checksum mismatch for {a.name}\n"
+                        f"      expected {ds.sha256}\n"
+                        f"      got      {shas[a.name]}\n"
+                        f"      The download is corrupt or the host changed the file. "
+                        f"Delete it and retry; if it persists, verify the URL and the "
+                        f"expected sha256 in benchmarks/catalog.py.")
+                    return "failed"
                 extract(a, directory, log=log)
         except (OSError, RuntimeError, zipfile.BadZipFile, tarfile.TarError) as exc:
             log(f"    FAILED to extract: {exc}")

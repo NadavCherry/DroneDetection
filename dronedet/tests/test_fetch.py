@@ -525,3 +525,48 @@ def test_module_imports_without_torch_or_gdown():
         for name in modules:
             assert name.split(".")[0] not in banned, \
                 f"line {node.lineno}: {name} must be imported inside the function that needs it"
+
+
+def test_a_checksum_mismatch_refuses_to_extract(tmp_path):
+    """A truncated 3 GB download extracts without complaint and yields a dataset quietly
+    missing its tail, which surfaces later as a mysteriously poor model rather than as a
+    failed fetch. Where the host publishes a checksum, a mismatch must stop the run."""
+    from dataclasses import replace
+    d = tmp_path / "uav_smid"
+    d.mkdir()
+    with zipfile.ZipFile(d / "UAV_SMID.zip", "w") as zf:
+        zf.writestr("images/a.jpg", "x")
+    ds = replace(DATASETS["uav_smid"], sha256="0" * 64)     # cannot match real content
+
+    lines: list[str] = []
+    status = F.fetch_one(ds, tmp_path, Args(dry_run=False), log=lines.append)
+
+    assert status == "failed"
+    assert any("checksum mismatch" in ln for ln in lines)
+    assert not (d / "images").exists(), "nothing may be extracted after a mismatch"
+
+
+def test_a_matching_checksum_extracts_normally(tmp_path):
+    from dataclasses import replace
+    d = tmp_path / "uav_smid"
+    d.mkdir()
+    archive = d / "UAV_SMID.zip"
+    with zipfile.ZipFile(archive, "w") as zf:
+        zf.writestr("images/a.jpg", "x")
+    ds = replace(DATASETS["uav_smid"], sha256=F.sha256_file(archive))
+
+    status = F.fetch_one(ds, tmp_path, Args(dry_run=False), log=lambda s: None)
+    assert status == "ok"
+    assert (d / "images" / "a.jpg").is_file()
+
+
+def test_no_recorded_checksum_means_no_check(tmp_path):
+    """Most hosts publish nothing; absence must not block the fetch."""
+    from dataclasses import replace
+    d = tmp_path / "uav_smid"
+    d.mkdir()
+    with zipfile.ZipFile(d / "UAV_SMID.zip", "w") as zf:
+        zf.writestr("images/a.jpg", "x")
+    ds = replace(DATASETS["uav_smid"], sha256="")
+
+    assert F.fetch_one(ds, tmp_path, Args(dry_run=False), log=lambda s: None) == "ok"

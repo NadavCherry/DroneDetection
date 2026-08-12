@@ -661,8 +661,11 @@ class TestPerception:
         for i in range(5):
             per.step(None, i, i * DT, self.GT)
         assert per.n == 5
-        assert per.timings["track_ms"] > 0.0
-
+        # Evidence that the counters accumulated, without asserting a wall-clock reading
+        # is strictly positive: the tracker step here is ~0.09 ms, so `> 0.0` is a
+        # statement about the platform clock, not about this code. It failed once under
+        # heavy I/O and passed on every re-run, which is the worst kind of test.
+        assert per.timings["track_ms"] >= 0.0
         assert len(per.samples["track_ms"]) == 5
 
         per.reset()
@@ -683,8 +686,12 @@ class TestPerception:
             round(per.timings["track_ms"] / 1.0, 2), abs=1e-12)
         assert report["perception_ms"] == pytest.approx(
             report["detect_ms"] + report["track_ms"], abs=1e-9)
-        assert report["perception_fps"] == pytest.approx(
-            round(1000.0 / report["perception_ms"], 1), abs=1e-9)
+        # `perception_ms` is rounded to 2 dp, so on a fast machine a single oracle step
+        # can round to 0.00 and this assertion would divide by zero -- in the test, not
+        # in the code, which already guards it (perception.py:731). Mirror that guard.
+        expected_fps = (round(1000.0 / report["perception_ms"], 1)
+                        if report["perception_ms"] > 0 else 0.0)
+        assert report["perception_fps"] == pytest.approx(expected_fps, abs=1e-9)
 
 
 class TestCorroboratedSeeding:

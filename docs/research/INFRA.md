@@ -157,13 +157,29 @@ Everything lands under `data/external/`. ARD-MAV is aliased to `data/external/ar
 is where it already lives; an existing tree is never deleted and an interrupted HTTP fetch resumes
 from `.part`.
 
-**An open licence is not a URL.** Measured 2026-08-12: `ardmav` is the only entry with a
-`download_id` recorded, and it is already on disk — so *every other* key, including the
-open-licence ones, prints the page to open and exits **2**. `--priority 2 --dry-run` reports
-`halmstad` and `uav_smid` as blocked for exactly that reason, not because of their licence. When
-you have the archive link, record it as `download_id=` in `benchmarks/catalog.py` (or drop the
-archive into the dataset directory, which is extracted and verified even for a gated set) so the
-next machine does not repeat the hunt.
+**An open licence is not a URL.** A dataset can be CC0 and still have no machine-fetchable
+archive link, in which case the fetcher prints the page to open and exits **2** rather than
+guessing. When you find the link, record it as `download_id=` in `benchmarks/catalog.py` — with
+its `sha256=` if the host publishes one — so the next machine does not repeat the hunt. You can
+also just drop the archive into the dataset directory: it is extracted, checksummed and verified
+even for a gated set.
+
+**Already fetched and verified on this machine (2026-08-12):**
+
+| key | state |
+|---|---|
+| `ardmav` | 14.6 GB, 60 videos, **107,497 annotations — matches the catalogue exactly** |
+| `uav_smid` | 3.1 GB, **sha256 verified against Mendeley's published hash**, 13,928 images / 16,229 objects — matches exactly |
+
+Neither travels in git. `halmstad` still has no recorded archive URL; `extremetrack` and
+`tricross` need a human (§2.1).
+
+> **What acquiring `uav_smid` taught, which is why the fetcher checksums:** the adapter for it was
+> originally written against a *guessed* layout (Roboflow YOLO with a `data.yaml`). The real
+> release is **Pascal VOC XML with an official 9,749 / 2,786 / 1,393 split**, and its targets have
+> a **median of 289 px** — it is an *appearance* corpus for the confuser classes, not a
+> tiny-target benchmark, and an AP from it must never sit beside an ARD-MAV number. Open a
+> dataset before you write its adapter, and put what you measured in the catalogue.
 
 ### 2.3 Priority order
 

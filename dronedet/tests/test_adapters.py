@@ -105,6 +105,35 @@ def yolo_root(tmp_path: Path) -> Path:
     return root
 
 
+@pytest.fixture
+def smid_root(tmp_path: Path) -> Path:
+    """The real UAV_SMID shape, verified against the 2026-08-12 download: Pascal VOC XML
+    under `dataset/<split>/annotations`, images beside it, split carried in the directory
+    name. An earlier fixture here used a Roboflow YOLO layout, which the release does not
+    ship -- the adapter was written against a guess and the guess was wrong."""
+    root = tmp_path / "smid"
+    spec = {
+        "train": [("0000", [("drone", 40, 40, 60, 50)]), ("0001", [("bird", 10, 10, 30, 30)])],
+        "val": [("0002", [("drone", 20, 30, 40, 45)])],
+        "test": [("0003", [("helicopter", 5, 5, 55, 45)])],
+    }
+    for split, items in spec.items():
+        ann = root / "dataset" / split / "annotations"
+        img = root / "dataset" / split / "images"
+        ann.mkdir(parents=True, exist_ok=True)
+        for stem, objects in items:
+            _img(img / f"{stem}.png")
+            body = "".join(
+                f"<object><name>{c}</name><bndbox><xmin>{x1}</xmin><ymin>{y1}</ymin>"
+                f"<xmax>{x2}</xmax><ymax>{y2}</ymax></bndbox></object>"
+                for c, x1, y1, x2, y2 in objects)
+            (ann / f"{stem}.xml").write_text(
+                f"<annotation><filename>{stem}.png</filename>"
+                f"<size><width>100</width><height>80</height><depth>3</depth></size>"
+                f"{body}</annotation>")
+    return root
+
+
 # ====================================================================== centre conversion
 def test_ground_truth_is_centre_format_not_corners(ardmav_root):
     """The single easiest bug in this package: xyxy straight into a cx,cy,w,h store."""
@@ -162,20 +191,20 @@ def test_image_size_header_parse_agrees_with_a_full_decode(tmp_path):
 
 
 # ============================================================================== distractors
-def test_non_target_classes_survive_as_ignore_objects(yolo_root):
+def test_non_target_classes_survive_as_ignore_objects(smid_root):
     """`dronedet.metrics` scores a hit on an ignore object as a counted *distractor*.
     Dropping birds at parse time is what makes a bird false-alarm rate unpublishable."""
-    gt = build("uav_smid", yolo_root).ground_truth("train")
+    gt = build("uav_smid", smid_root).ground_truth("train")
     assert gt.objects["drone_0"].ignore is False
     assert gt.objects["bird_0"].ignore is True
     assert gt.meta["target_boxes"] == 1 and gt.meta["distractor_boxes"] == 1
 
 
-def test_uav_smid_keeps_bird_images_as_negatives_not_as_a_bird_class(yolo_root, tmp_path):
+def test_uav_smid_keeps_bird_images_as_negatives_not_as_a_bird_class(smid_root, tmp_path):
     """The bird image must be exported with an EMPTY label: that is what teaches
     'bird = background'. A bird class would teach the detector to locate birds instead."""
     out = tmp_path / "prep"
-    prepare_data.main(["uav_smid", "--root", str(yolo_root), "--out", str(out)])
+    prepare_data.main(["uav_smid", "--root", str(smid_root), "--out", str(out)])
     labels = sorted((out / "yolo/labels/train").glob("*.txt"))
     bodies = {p.name: p.read_text().strip() for p in labels}
     assert len(bodies) == 2
@@ -460,9 +489,35 @@ def test_halmstad_reads_a_converted_sidecar_when_one_exists(tmp_path):
     assert "self-chosen" in gt.meta["split_source"]
 
 
-def test_conditions_are_empty_rather_than_inherited_from_the_catalog(ardmav_root, yolo_root):
+def test_conditions_are_empty_rather_than_inherited_from_the_catalog(ardmav_root, smid_root):
     """A corpus-level condition asserted of one clip is an unverified claim, and a
     condition-stratified table built from unverified claims is worse than no table."""
     assert build("ardmav", ardmav_root).conditions("phantom01") == ()
-    assert build("uav_smid", yolo_root).conditions("train") == ()
+    assert build("uav_smid", smid_root).conditions("train") == ()
     assert DATASETS["ardmav"].conditions                # the corpus-level answer still exists
+
+
+def test_uav_smid_uses_the_releases_own_split_as_its_sequences(smid_root):
+    """One split is one sequence, not one image. 13,928 images treated as independent
+    units would hand the bootstrap an absurdly tight interval for a corpus of unordered
+    stills that carry no temporal structure at all."""
+    ad = build("uav_smid", smid_root)
+    assert ad.sequences() == ["train", "val", "test"]
+    assert ad.split_of("val") == "val"
+    assert "9,749" in ad.split_source()
+
+
+def test_uav_smid_parses_voc_xml_not_yolo(smid_root):
+    """Regression: this adapter was originally written against a Roboflow YOLO layout the
+    release does not ship. Corner XML in, centre GT out."""
+    gt = build("uav_smid", smid_root).ground_truth("train")
+    cx, cy, w, h = gt.objects["drone_0"].frames[0]
+    assert (cx, cy, w, h) == pytest.approx((50.0, 45.0, 20.0, 10.0))
+
+
+def test_uav_smid_class_counts_name_every_distractor_actually_present(smid_root):
+    """A false-alarm rate must say which distractors it was measured against and how many
+    were on offer, rather than repeating the catalog from memory."""
+    ad = build("uav_smid", smid_root)
+    assert ad.class_counts() == {"drone": 2, "bird": 1, "helicopter": 1}
+    assert ad.distractor_classes() == ["bird", "helicopter"]
