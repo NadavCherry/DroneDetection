@@ -1,0 +1,19 @@
+Ultralytics 8.4.84  Python-3.12.8 torch-2.11.0+cu128 CUDA:0 (NVIDIA GeForce RTX 4080 Laptop GPU, 12282MiB)
+YOLOv8s-p2 summary (fused): 91 layers, 10,626,968 parameters, 0 gradients, 36.6 GFLOPs
+[34m[1mval: [0mFast image access  (ping: 0.00.0 ms, read: 895.7235.0 MB/s, size: 86.3 KB)
+[K[34m[1mval: [0mScanning C:\Users\nadav\PycharmProjects\SpeckLock\work\dsv3_crop640_lbl0\labels\val.cache... 206 images, 0 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 206/206  0.0s
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\nadav\AppData\Local\Programs\Python\Python312\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nadav\AppData\Local\Programs\Python\Python312\Lib\multiprocessing\spawn.py", line 131, in _main
+    prepare(preparation_data)
+  File "C:\Users\nadav\AppData\Local\Programs\Python\Python312\Lib\multiprocessing\spawn.py", line 246, in prepare
+    _fixup_main_from_path(data['init_main_from_path'])
+  File "C:\Users\nadav\AppData\Local\Programs\Python\Python312\Lib\multiprocessing\spawn.py", line 297, in _fixup_main_from_path
+    main_content = runpy.run_path(main_path,
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 286, in run_path
+  File "<frozen runpy>", line 254, in _get_code_from_file
+OSError: [Errno 22] Invalid argument: 'C:\\Users\\nadav\\PycharmProjects\\SpeckLock\\<stdin>'
