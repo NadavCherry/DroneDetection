@@ -1,3 +1,6 @@
 [18:19:45] ======================================================================
 [18:19:45] overnight driver starting
 [18:19:45] temporal build: waiting for C:\Users\nadav\PycharmProjects\SpeckLock\work\ext_datasets\ardmav_yolo_temporal\data.yaml
+[18:26:30] ======================================================================
+[18:26:30] overnight driver starting (train -> infer -> score vs MGMD 0.55 @ IoU 0.25)
+[18:26:30] temporal build: waiting for C:\Users\nadav\PycharmProjects\SpeckLock\work\ext_datasets\ardmav_yolo_temporal\data.yaml

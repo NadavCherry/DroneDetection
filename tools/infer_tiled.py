@@ -64,6 +64,22 @@ def tile_origins(w: int, h: int, tile: int, overlap: int) -> list[tuple[int, int
     return [(x, y) for y in ys for x in xs]
 
 
+def centre_in_frame(det: Detection, w: int, h: int) -> bool:
+    """Is this detection inside the ORIGINAL frame, after undoing stabilisation?
+
+    Stabilisation warps each frame onto a same-sized canvas, so the region vacated by the
+    pan is filled with a constant and carries a hard straight edge that a detector trained
+    on real pixels will happily fire on. Undoing the shift then places those boxes outside
+    the frame: measured on phantom05, detections at x = 2091 on a 1920 px frame, 171 px
+    into a border containing no scene at all.
+
+    Ground truth lives in original-frame coordinates and inside the frame, so every one of
+    these is a false positive manufactured by our own preprocessing. On a benchmark where
+    precision is the scarce resource they cost AP with nothing to show for it.
+    """
+    return 0.0 <= det.cx < w and 0.0 <= det.cy < h
+
+
 def merge_by_centre(dets: list[Detection], dist: float = 6.0) -> list[Detection]:
     """Greedy merge of near-coincident centres, highest score first.
 
@@ -134,14 +150,15 @@ def run_video(model, video: Path, mode: str, args) -> DetectionSet:
         for i in range(0, len(crops), args.batch):
             chunk = crops[i:i + args.batch]
             res = model.predict(chunk, imgsz=args.tile, conf=args.conf, device=args.device,
-                                verbose=False, max_det=args.max_det)
+                                verbose=False, max_det=args.max_det, half=args.half)
             for r, (ox, oy) in zip(res, origins[i:i + args.batch]):
                 for b in r.boxes:
                     x1, y1, x2, y2 = (float(v) for v in b.xyxy[0])
-                    found.append(Detection(x1 + ox - dx, y1 + oy - dy,
-                                           x2 + ox - dx, y2 + oy - dy,
-                                           float(b.conf[0]),
-                                           r.names[int(b.cls[0])]))
+                    d = Detection(x1 + ox - dx, y1 + oy - dy,
+                                  x2 + ox - dx, y2 + oy - dy,
+                                  float(b.conf[0]), r.names[int(b.cls[0])])
+                    if centre_in_frame(d, w, h):     # see the docstring: border artefacts
+                        found.append(d)
         ds.add(idx, merge_by_centre(found, args.merge_dist))
     return ds
 
@@ -156,12 +173,20 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--video-root", default="data/external/ard_mav/ARD-MAV/videos")
     ap.add_argument("--tile", type=int, default=640)
     ap.add_argument("--overlap", type=int, default=128)
-    ap.add_argument("--conf", type=float, default=0.01,
-                    help="low on purpose: AP integrates over the curve, and a high floor "
-                         "silently truncates the low-precision tail that AP is made of")
+    ap.add_argument("--conf", type=float, default=0.05,
+                    help="score floor. Low on purpose -- AP integrates over the curve and "
+                         "a high floor truncates the low-precision tail AP is made of -- "
+                         "but not arbitrarily low: at 0.01 ultralytics' internal NMS hit "
+                         "its 2.4 s time limit and gave up mid-frame, which silently drops "
+                         "boxes and makes the run non-deterministic. 0.05 measured clean")
     ap.add_argument("--merge-dist", type=float, default=6.0)
-    ap.add_argument("--max-det", type=int, default=50)
+    ap.add_argument("--max-det", type=int, default=30,
+                    help="per TILE, not per frame; 8 tiles cover a 1920x1080 frame")
     ap.add_argument("--batch", type=int, default=8)
+    ap.add_argument("--half", action="store_true",
+                    help="FP16 inference. Roughly 2x on Ada and a detector this small is "
+                         "not precision-limited at 6 px; off by default so the reference "
+                         "number is FP32")
     ap.add_argument("--device", default="0")
     ap.add_argument("--dt", type=int, default=TEMPORAL_DT)
     ap.add_argument("--stop", type=int, default=0, help="first N frames only (smoke test)")

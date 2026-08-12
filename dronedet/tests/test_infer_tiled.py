@@ -111,3 +111,33 @@ def test_merging_keeps_the_highest_score_regardless_of_input_order():
 
 def test_an_empty_frame_merges_to_nothing():
     assert M.merge_by_centre([], dist=6.0) == []
+
+
+# --------------------------------------------------- the stabilisation border artefact
+
+def test_a_detection_on_the_stabilisation_border_is_rejected():
+    """Undoing the pan can place a box outside the frame; that box is our own artefact.
+
+    Stabilisation warps each frame onto a same-sized canvas, so the region the pan vacates
+    is filled with a constant and carries a hard straight edge a detector fires on. Undoing
+    the shift puts those boxes beyond the image. Measured on phantom05 before this check:
+    detections at x = 2091 on a 1920 px frame -- 171 px into a border containing no scene.
+    Ground truth is inside the frame, so every one is a false positive we manufactured.
+    """
+    assert not M.centre_in_frame(_d(2091, 500, 0.9), 1920, 1080)
+    assert not M.centre_in_frame(_d(-30, 500, 0.9), 1920, 1080)
+    assert not M.centre_in_frame(_d(900, 1120, 0.9), 1920, 1080)
+
+
+def test_a_detection_inside_the_frame_survives():
+    assert M.centre_in_frame(_d(960, 540, 0.9), 1920, 1080)
+    assert M.centre_in_frame(_d(0.5, 0.5, 0.9), 1920, 1080)
+
+
+def test_the_bound_is_the_centre_not_the_corner():
+    """A real target near the edge has a box that pokes past it; that is not a reason to
+    drop it. Only the centre leaving the frame means the detection belongs to the border.
+    """
+    d = _d(1918, 540, 0.9, side=10)          # centre inside, right edge at 1923
+    assert d.x2 > 1920
+    assert M.centre_in_frame(d, 1920, 1080)
