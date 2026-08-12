@@ -1,9 +1,26 @@
 """ARD-MAV experiments: the headline pair, plus the published edge architecture.
 
-ARD-MAV is the set with the most headroom of anything on disk (published bar: MGMD at
-AP 0.55, IoU 0.25, on the official 15-video split) and the only one whose official split
-this repo now honours. All three configs here train on the same 40 train / 5 val videos
-and never touch the 15 test videos, so their numbers are placeable beside a published one.
+ARD-MAV is the set with the most headroom of anything on disk and the only one whose
+official split this repo honours. All configs here train on the same 40 train / 5 val
+videos and never touch the 15 test videos, so their numbers are placeable beside a
+published one.
+
+THE BAR, corrected 2026-08-12
+-----------------------------
+**GLAD, AP 0.80 at IoU 0.5** on the official 15-video split (arXiv 2312.11008, IEEE
+T-ITS 2024), P 0.92 / R 0.82 over 28,322 frames. By its own three conditions: ordinary
+0.91, complex background 0.81, **small MAVs 0.58**.
+
+This file used to say "published bar: MGMD at AP 0.55, IoU 0.25, on the official
+15-video split". That merged two papers: MGMD's threshold is 0.25 but on a split it never
+enumerates, while the official-split number is GLAD's at 0.5. The real bar is higher and
+at a threshold twice as strict, and `benchmarks/protocol.py` had the same splice compiled
+into it, so every ARD-MAV number produced here was scored against nothing published.
+
+**Aim at the 0.58 row.** It is GLAD's weakest condition, it is where the targets are
+few-pixel, and it is the one a stabilised temporal stack has a reason to win. Beating an
+overall average this method has no particular claim on is a worse goal than beating the
+condition it was designed for.
 
 A NOTE THAT WILL COST YOU A RUN IF YOU SKIP IT
 ----------------------------------------------
@@ -40,7 +57,8 @@ BASELINE_ARDMAV = ExperimentConfig(
     notes="The recipe rounds 5-7 actually used -- P2 head, 640 px native-scale tiles, "
           "labels inflated to a 12 px minimum side -- re-run against the OFFICIAL "
           "ARD-MAV split so that, for the first time, its number can be compared with "
-          "MGMD's 0.55. This is the control for trueextent_ardmav, and the run whose "
+          "GLAD's 0.80 @ IoU 0.5. This is the control for trueextent_ardmav, and the run "
+          "whose "
           "COCO AP is expected to be near zero: a 12 px label on a 6x3 px drone caps the "
           "achievable IoU at ~0.13 before the detector does anything at all.")
 
@@ -161,14 +179,16 @@ TRUEEXTENT_LOCAL = ExperimentConfig(
 # they answer a label-geometry question and answer it well -- but it does mean that a
 # number from `ardmav_headline` describes a plain single-frame YOLOv8s-p2, and this
 # project's contribution is a stabilised temporal stack. Publishing the first against
-# MGMD's 0.55 would compare the wrong method, and the sign of the result would not tell
+# GLAD's 0.80 would compare the wrong method, and the sign of the result would not tell
 # you which method was wrong.
 #
 # `temporal_stack_ablation` already asks this question, but on a POOLED corpus
 # (ardmav + nps + local:07_05) at dt=3 with a self-chosen split, so its number is an
 # internal A/B that cannot sit beside a published one. This pair asks it on ARD-MAV
-# alone, at dt=6, on the OFFICIAL 15-video split, so the winner is directly placeable
-# against MGMD.
+# alone, at dt=6, on the OFFICIAL 15-video split at IoU 0.5, so the winner is directly
+# placeable against GLAD -- and, because GLAD ships its weights (work/mirrors/glad), can
+# later be compared to it PAIRED on the same sequences, which is the only way a p-value
+# is available at all.
 #
 # ONE VARIABLE. Both arms share labels, splits, tiles, stride, schedule, seed, NWD and
 # augmentation; only the three input channels differ:

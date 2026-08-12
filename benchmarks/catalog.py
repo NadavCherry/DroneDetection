@@ -108,7 +108,10 @@ DATASETS: dict[str, Dataset] = {d.key: d for d in [
         target_px_median=11.8, official_protocol=ARDMAV_OFFICIAL,
         official_test=ARD_TEST, official_val=ARD_VAL, priority=1,
         notes="ACQUIRED and measured 2026-08-12: 106,456 boxes, median sqrt(area) 11.8 px, "
-              "21.3% very-tiny / 43.8% tiny. Published SOTA is only AP 0.55 (MGMD, IoU 0.25) "
+              "21.3% very-tiny / 43.8% tiny. Published SOTA is GLAD, AP 0.80 @ IoU 0.5 "
+              "(CORRECTED 2026-08-12; this said 'only AP 0.55 (MGMD, IoU 0.25)', which "
+              "spliced MGMD's threshold onto GLAD's split -- the bar is higher AND "
+              "stricter). The row to contest is GLAD's own small-MAV condition at 0.58 "
               "-- the largest headroom of any set here. NOTE phantom16, which this repo "
               "previously headlined, is the 3rd-EASIEST of 60 videos (39.1 px median)."),
 
