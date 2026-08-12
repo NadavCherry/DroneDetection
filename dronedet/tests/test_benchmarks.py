@@ -233,6 +233,6 @@ def test_loading_a_scorecard_from_a_different_schema_is_refused(tmp_path):
     import json
     p = tmp_path / "old.json"
     p.write_text(json.dumps({"model": "m", "dataset_key": "d", "protocol_key": "p",
-                             "split": "s", "sequences": [], "schema_version": 0}))
+                             "split": "s", "sequences": [], "schema_version": 0}), encoding="utf-8")
     with pytest.raises(ValueError, match="schema"):
         Scorecard.load(p)

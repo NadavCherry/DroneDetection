@@ -91,7 +91,7 @@ def main():
         if os.path.exists(out):
             print(f"[{i+1}/{len(gts)}] {stem}: exists, skip")
             continue
-        video = json.loads(Path(gp).read_text())["video"]
+        video = json.loads(Path(gp).read_text(encoding="utf-8"))["video"]
         if not os.path.exists(video):
             print(f"[{i+1}/{len(gts)}] {stem}: MISSING VIDEO {video}")
             continue

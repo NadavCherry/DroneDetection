@@ -116,7 +116,7 @@ class SplitScreenRecorder:
         """
         self._writer.release()
 
-        (self.out_dir / "frames.json").write_text(json.dumps(self._meta_rows, indent=1))
+        (self.out_dir / "frames.json").write_text(json.dumps(self._meta_rows, indent=1), encoding="utf-8")
 
         stats = {
             "frames": self.frames,
@@ -128,7 +128,7 @@ class SplitScreenRecorder:
         }
         if meta:
             stats.update(meta)
-        (self.out_dir / "meta.json").write_text(json.dumps(stats, indent=1))
+        (self.out_dir / "meta.json").write_text(json.dumps(stats, indent=1), encoding="utf-8")
         return stats
 
 

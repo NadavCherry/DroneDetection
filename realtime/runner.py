@@ -56,7 +56,7 @@ def run_pipeline(video: str, pipe: RTBase, out_dir: str,
     }
     ds.save(out / "dets.json")
     (out / "bench.json").write_text(json.dumps(ds.meta["stage_ms"] | {
-        "fps_end_to_end": ds.meta["fps_end_to_end"]}, indent=2))
+        "fps_end_to_end": ds.meta["fps_end_to_end"]}, indent=2), encoding="utf-8")
     print(f"[{pipe.name}] {n} frames, {ds.meta['fps_end_to_end']} fps end-to-end")
     for k, v in sorted(stage.items()):
         print(f"    {k:24s} {v:7.2f} ms/frame")

@@ -42,7 +42,7 @@ def render_detections(video: str, dets_path: str, out: str,
 
 
 def render_tracks(video: str, tracks_path: str, out: str) -> None:
-    raw = json.loads(Path(tracks_path).read_text())
+    raw = json.loads(Path(tracks_path).read_text(encoding="utf-8"))
     per_frame: dict[int, list] = {}
     trails: dict[int, list] = {}
     for tr in raw["tracks"]:

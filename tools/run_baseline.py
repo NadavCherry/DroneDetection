@@ -42,8 +42,8 @@ def train_imgsz(weights: str) -> int | None:
 
 def hit_rate_along_reference(dets_path: str, ref_tracks: str,
                              thresh: float, tau: float = 12.0) -> str:
-    det = json.loads(Path(dets_path).read_text())
-    ref = json.loads(Path(ref_tracks).read_text())
+    det = json.loads(Path(dets_path).read_text(encoding="utf-8"))
+    ref = json.loads(Path(ref_tracks).read_text(encoding="utf-8"))
     if not ref["tracks"]:
         return "no reference track"
     lines = []
@@ -103,7 +103,7 @@ def main() -> None:
     if ref.exists():
         for th in (a.show_score, 0.1, a.conf):
             summary.append(hit_rate_along_reference(str(dets_path), str(ref), th))
-        (out / "summary.txt").write_text("\n".join(summary) + "\n")
+        (out / "summary.txt").write_text("\n".join(summary) + "\n", encoding="utf-8")
         print("\n=== baseline vs pipeline reference track ===")
         print("\n".join(summary))
 

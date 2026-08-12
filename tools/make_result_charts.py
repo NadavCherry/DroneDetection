@@ -81,7 +81,7 @@ def save(fig, stem):
 
 def chart_cpa():
     """24 city engagements: closest approach against arrival bearing."""
-    d = json.loads((ROOT / "work/pursuit/city/results.json").read_text())
+    d = json.loads((ROOT / "work/pursuit/city/results.json").read_text(encoding="utf-8"))
     rows = [(int(r["name"].split("-")[1]), r["pass_cpa_m"]) for r in d["results"]]
     cpa = [c for _, c in rows]
     mean = st.mean(cpa)
@@ -120,7 +120,7 @@ def chart_detect():
     """62 one-camera engagements: detection rate splits hits from misses."""
     rows = []
     for env in ("rivermark", "skydome"):
-        d = json.loads((ROOT / f"work/pursuit/final/{env}/results.json").read_text())
+        d = json.loads((ROOT / f"work/pursuit/final/{env}/results.json").read_text(encoding="utf-8"))
         rows += [(bool(r["success"]), r["detect_rate"]) for r in d["results"]]
     hits = [r for ok, r in rows if ok]
     miss = [r for ok, r in rows if not ok]
@@ -156,7 +156,7 @@ def chart_detect():
 
 def chart_range():
     """Detection fraction against range, for the two motion front-ends."""
-    d = json.loads((ROOT / "work/pursuit/motion_bg2.json").read_text())
+    d = json.loads((ROOT / "work/pursuit/motion_bg2.json").read_text(encoding="utf-8"))
     bins = defaultdict(list)
     for r in d["rows"]:
         bins[int(r["range_m"] // 20) * 20].append(r)

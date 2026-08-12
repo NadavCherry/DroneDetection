@@ -16,7 +16,7 @@ TAU = 16.0
 
 def score(gt_path: str, tracks_path: str) -> dict:
     gt = GroundTruth.load(gt_path)
-    raw = json.loads(Path(tracks_path).read_text())
+    raw = json.loads(Path(tracks_path).read_text(encoding="utf-8"))
     excl = set(gt.meta.get("exclude_frames", []))
 
     # per-frame track points

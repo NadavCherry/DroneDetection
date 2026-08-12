@@ -110,7 +110,7 @@ def main(argv=None) -> int:
 
     if a.out:
         Path(a.out).parent.mkdir(parents=True, exist_ok=True)
-        Path(a.out).write_text(json.dumps(report, indent=1))
+        Path(a.out).write_text(json.dumps(report, indent=1), encoding="utf-8")
         print(f"\nwrote {a.out}")
     return 0
 

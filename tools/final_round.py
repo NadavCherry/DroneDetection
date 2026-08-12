@@ -25,9 +25,9 @@ def sh(*args: str) -> None:
 
 def rename_method(path: str, new_name: str) -> None:
     p = Path(path)
-    d = json.loads(p.read_text())
+    d = json.loads(p.read_text(encoding="utf-8"))
     d["method"] = new_name
-    p.write_text(json.dumps(d))
+    p.write_text(json.dumps(d), encoding="utf-8")
 
 
 def main() -> None:

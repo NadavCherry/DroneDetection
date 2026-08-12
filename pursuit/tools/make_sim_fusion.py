@@ -59,7 +59,7 @@ def _read_label(path: Path, w: int, h: int) -> list[tuple[float, float, float, f
     if not path.exists() or path.stat().st_size == 0:
         return []
     out = []
-    for line in path.read_text().splitlines():
+    for line in path.read_text(encoding="utf-8").splitlines():
         f = line.split()
         if len(f) < 5:
             continue
@@ -87,7 +87,7 @@ def _emit(stack: np.ndarray, boxes, x0: int, y0: int, tile: int,
                      f"{bw / tile:.6f} {bh / tile:.6f}")
         n += 1
     np.save(str(out_img), crop)
-    out_lbl.write_text("\n".join(lines))
+    out_lbl.write_text("\n".join(lines), encoding="utf-8")
     return n
 
 
@@ -170,7 +170,7 @@ def main(argv=None) -> int:
 
     (dst / "data.yaml").write_text(
         f"path: {dst.resolve()}\ntrain: images/train\nval: images/val\n"
-        f"channels: 4\nnc: 1\nnames:\n  0: drone\n")
+        f"channels: 4\nnc: 1\nnames:\n  0: drone\n", encoding="utf-8")
     for split, (ni, nb) in totals.items():
         print(f"{split}: {ni} tiles, {nb} boxes")
     print(f"wrote {dst}/data.yaml")

@@ -329,7 +329,7 @@ def main(argv=None) -> int:
     print(report)
     if a.out:
         a.out.parent.mkdir(parents=True, exist_ok=True)
-        a.out.write_text(report)
+        a.out.write_text(report, encoding="utf-8")
         print(f"\nwrote {a.out}", file=sys.stderr)
     return 0
 

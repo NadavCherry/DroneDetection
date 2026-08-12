@@ -64,11 +64,11 @@ class DetectionSet:
             "frames": {str(k): [d.as_list() for d in v] for k, v in sorted(self.frames.items())},
         }
         Path(path).parent.mkdir(parents=True, exist_ok=True)
-        Path(path).write_text(json.dumps(payload))
+        Path(path).write_text(json.dumps(payload), encoding="utf-8")
 
     @staticmethod
     def load(path: str | Path) -> "DetectionSet":
-        raw = json.loads(Path(path).read_text())
+        raw = json.loads(Path(path).read_text(encoding="utf-8"))
         ds = DetectionSet(video=raw["video"], method=raw["method"], meta=raw.get("meta", {}))
         for k, v in raw["frames"].items():
             ds.frames[int(k)] = [Detection.from_list(x) for x in v]

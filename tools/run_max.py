@@ -123,22 +123,22 @@ def main():
     #    Regime-adaptive: trust colour-blind motion evidence only on a near-static
     #    camera; on a moving camera require appearance confirmation (motion is
     #    parallax clutter there, appearance is strong & clean).
-    dets_payload = json.loads((out / "dets.json").read_text())
-    raw = json.loads((out / "tracks.json").read_text())
+    dets_payload = json.loads((out / "dets.json").read_text(encoding="utf-8"))
+    raw = json.loads((out / "tracks.json").read_text(encoding="utf-8"))
     cls = classify_tracks(raw, dets_payload, allow_motion=near_static)
     keep = [tr for tr in raw["tracks"] if cls[tr["id"]]["cls"] != "other"]
     (out / "tracks_drone.json").write_text(json.dumps(
-        {**raw, "tracks": keep, "classification": {str(k): v for k, v in cls.items()}}))
+        {**raw, "tracks": keep, "classification": {str(k): v for k, v in cls.items()}}), encoding="utf-8")
     print(f"tracks: {len(raw['tracks'])} confirmed -> {len(keep)} drone/near after classification")
 
     # 4. optional tracked-coverage eval
     if a.gt:
-        gt = json.loads(Path(a.gt).read_text())
+        gt = json.loads(Path(a.gt).read_text(encoding="utf-8"))
         if a.gt_lt is not None:
             for o in gt["objects"].values():
                 o["frames"] = {f: b for f, b in o["frames"].items() if int(f) < a.gt_lt}
         tmp_gt = out / "_gt.json"
-        tmp_gt.write_text(json.dumps(gt))
+        tmp_gt.write_text(json.dumps(gt), encoding="utf-8")
         import tools.eval_tracks as ET
         for label, tks in (("all confirmed", out / "tracks.json"),
                            ("drone-classified", out / "tracks_drone.json")):

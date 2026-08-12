@@ -59,7 +59,7 @@ def slug(heading: str) -> str:
 
 
 def anchors(path: Path) -> set[str]:
-    text = path.read_text(errors="replace")
+    text = path.read_text(errors="replace", encoding="utf-8")
     out = {slug(h) for h in HEADING.findall(text)}
     out |= set(EXPLICIT_ID.findall(text))
     return out
@@ -67,7 +67,7 @@ def anchors(path: Path) -> set[str]:
 
 def argparse_flags(script: Path) -> set[str]:
     try:
-        src = script.read_text(errors="replace")
+        src = script.read_text(errors="replace", encoding="utf-8")
     except OSError:
         return set()
     return set(re.findall(r'add_argument\(\s*"(--[\w-]+)"', src))
@@ -99,7 +99,7 @@ def check_targets(doc: Path, targets: list[str], fails: list, warns: list) -> No
 
 
 def check_commands(doc: Path, fails: list, warns: list) -> None:
-    text = doc.read_text(errors="replace")
+    text = doc.read_text(errors="replace", encoding="utf-8")
     for block in re.findall(r'```(?:bash|sh|shell)?\n(.*?)```', text, re.S):
         for m in SCRIPT.finditer(block):
             module, script = m.group(1), m.group(2)
@@ -142,7 +142,7 @@ def main(argv=None) -> int:
     warns: list[str] = []
 
     for doc in docs:
-        text = doc.read_text(errors="replace")
+        text = doc.read_text(errors="replace", encoding="utf-8")
         targets = LINK.findall(text) + HTML_SRC.findall(text)
         check_targets(doc, targets, fails, warns)
         if doc.suffix == ".md":

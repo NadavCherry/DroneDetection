@@ -50,8 +50,8 @@ def parse_args(argv=None):
 def main(argv=None) -> int:
     args = parse_args(argv)
     rec = Path(args.recording)
-    frames = json.loads((rec / "frames.json").read_text())
-    meta = json.loads((rec / "meta.json").read_text())
+    frames = json.loads((rec / "frames.json").read_text(encoding="utf-8"))
+    meta = json.loads((rec / "meta.json").read_text(encoding="utf-8"))
     fps = args.fps or meta.get("fps", 20.0)
     out_path = Path(args.out) if args.out else rec / "annotated.mp4"
 

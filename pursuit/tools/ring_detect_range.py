@@ -174,7 +174,7 @@ def main(argv=None) -> int:
     if a.out:
         p = ROOT / a.out
         p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(json.dumps({"args": vars(a), "rows": rows}, indent=1))
+        p.write_text(json.dumps({"args": vars(a), "rows": rows}, indent=1), encoding="utf-8")
         print(f"\nwrote {p}")
     return 0
 

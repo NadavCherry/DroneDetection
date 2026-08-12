@@ -194,7 +194,7 @@ def _emit(img, boxes: list[Box], stem: str, img_dir: Path, lbl_dir: Path,
 
     for name, image, lines in samples:
         _write_image(image, img_dir / f"{name}.jpg", args.jpeg_quality)
-        (lbl_dir / f"{name}.txt").write_text("\n".join(lines))
+        (lbl_dir / f"{name}.txt").write_text("\n".join(lines), encoding="utf-8")
         counts.images += 1
         counts.boxes += len(lines)
         if not lines:
@@ -273,7 +273,7 @@ def prepare(args) -> Report:
     if not args.dry_run:
         (out / "splits.json").parent.mkdir(parents=True, exist_ok=True)
         (out / "splits.json").write_text(json.dumps(
-            {"split_source": rep.split_source, "splits": rep.splits}, indent=1))
+            {"split_source": rep.split_source, "splits": rep.splits}, indent=1), encoding="utf-8")
 
     # ---------------------------------------------------------------- the extent report
     size_stats = _size_report(all_wh, args, rep)
@@ -306,7 +306,7 @@ def prepare(args) -> Report:
             "yolo": counts_json,
             "warnings": rep.warnings,
         }
-        (out / "manifest.json").write_text(json.dumps(manifest, indent=1))
+        (out / "manifest.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
         print(f"\nwrote {out}/manifest.json")
     return rep
 
@@ -466,7 +466,7 @@ def _write_data_yaml(root: Path, rep: Report) -> None:
         "names:",
         "  0: drone",
     ]
-    (root / "data.yaml").write_text("\n".join(lines) + "\n")
+    (root / "data.yaml").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def main(argv: list[str] | None = None) -> None:

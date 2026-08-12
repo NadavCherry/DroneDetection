@@ -297,7 +297,7 @@ def main(argv=None) -> int:
     if a.out:
         pth = ROOT / a.out
         pth.parent.mkdir(parents=True, exist_ok=True)
-        pth.write_text("\n".join(L))
+        pth.write_text("\n".join(L), encoding="utf-8")
         print(f"\nwrote {pth}")
     return 0
 

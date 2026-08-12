@@ -48,7 +48,7 @@ def load_labels(path: Path, w: int, h: int):
     if not path.exists():
         return []
     out = []
-    for line in path.read_text().splitlines():
+    for line in path.read_text(encoding="utf-8").splitlines():
         parts = line.split()
         if len(parts) < 5:
             continue
@@ -177,7 +177,7 @@ def main(argv=None) -> int:
             {"weights": a.weights, "conf": a.conf, "imgsz": a.imgsz,
              "buckets": rows, "fp_total": fp_total, "images": len(images),
              "bg_frames": bg_frames, "bg_frames_with_fp": bg_frames_with_fp,
-             "img_per_s": round(fps, 2), "floor_px": floor}, indent=1))
+             "img_per_s": round(fps, 2), "floor_px": floor}, indent=1), encoding="utf-8")
         print(f"wrote {a.out}")
     return 0
 

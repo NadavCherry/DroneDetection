@@ -351,7 +351,7 @@ def run_tracker_file(video: str, dets_path: str, out: str,
         payload["tracks"].append({"id": t.tid, "n": len(tf), "score": round(t.score, 3),
                                   "frames": tf})
     Path(out).parent.mkdir(parents=True, exist_ok=True)
-    Path(out).write_text(json.dumps(payload))
+    Path(out).write_text(json.dumps(payload), encoding="utf-8")
     print(f"{len(confirmed)} confirmed tracks -> {out} ({payload['meta']['fps']} fps)")
 
     if video_out:

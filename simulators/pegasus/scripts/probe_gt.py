@@ -163,7 +163,7 @@ def main() -> int:
         log("wrote /tmp/dev/pursuit/probe_frame.png")
         out["frame_mean"] = float(rgb.mean())
 
-    Path("/tmp/dev/pursuit/probe_gt.json").write_text(json.dumps(out, indent=1))
+    Path("/tmp/dev/pursuit/probe_gt.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
     log("PROBE_OK")
     app.close()
     return 0

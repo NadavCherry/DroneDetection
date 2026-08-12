@@ -32,7 +32,7 @@ OUT = "work/gt_user.json"
 
 
 def main() -> None:
-    user = json.loads(Path(USER).read_text())
+    user = json.loads(Path(USER).read_text(encoding="utf-8"))
     auto = GroundTruth.load(AUTO)
 
     gt = GroundTruth(video=user["video"])

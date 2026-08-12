@@ -216,7 +216,7 @@ def main(argv=None) -> int:
     out.write_text(json.dumps({"scene": scene_name, "n_true": n_true,
                                "n_false": n_false, "stats": summary,
                                "curve": {str(k): v for k, v in curve.items()},
-                               "raw": {"true": true_s, "false": false_s}}, indent=1))
+                               "raw": {"true": true_s, "false": false_s}}, indent=1), encoding="utf-8")
     print(f"wrote {out}")
     return 0
 

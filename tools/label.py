@@ -93,7 +93,7 @@ def gt_to_labels(gt_path: str | Path) -> tuple[dict[str, list[dict]], list[str]]
     Returns (frames_dict, class_names). GT stores (cx, cy, w, h); we emit
     (x1, y1, x2, y2) tagged with the object name as the class label.
     """
-    raw = json.loads(Path(gt_path).read_text())
+    raw = json.loads(Path(gt_path).read_text(encoding="utf-8"))
     per_frame: dict[str, list[dict]] = {}
     classes: list[str] = []
     for name, obj in raw.get("objects", {}).items():
@@ -119,7 +119,7 @@ def labels_to_gt(labels: dict, gt_path: str | Path) -> None:
     meta: dict = {}
     prev_ignore: dict[str, bool] = {}
     if gt_path.exists():
-        old = json.loads(gt_path.read_text())
+        old = json.loads(gt_path.read_text(encoding="utf-8"))
         meta = old.get("meta", {})
         prev_ignore = {n: o.get("ignore", False)
                        for n, o in old.get("objects", {}).items()}
@@ -148,7 +148,7 @@ def labels_to_gt(labels: dict, gt_path: str | Path) -> None:
         },
     }
     gt_path.parent.mkdir(parents=True, exist_ok=True)
-    gt_path.write_text(json.dumps(payload))
+    gt_path.write_text(json.dumps(payload), encoding="utf-8")
     print(f"exported {len(objects)} objects to {gt_path}")
 
 
@@ -157,7 +157,7 @@ def save_labels() -> None:
     path: Path = STATE["labels_path"]
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(STATE["labels"]))
+    tmp.write_text(json.dumps(STATE["labels"]), encoding="utf-8")
     os.replace(tmp, path)
 
 
@@ -841,7 +841,7 @@ def run(video: str, labels_path: str, from_gt: str | None,
 
     lpath = _resolve(labels_path)
     if lpath.exists():
-        labels = json.loads(lpath.read_text())
+        labels = json.loads(lpath.read_text(encoding="utf-8"))
         labels.setdefault("frames", {})
         labels.setdefault("classes", classes or DEFAULT_CLASSES)
         print(f"loaded {len(labels['frames'])} labeled frames from {lpath}")
@@ -906,7 +906,7 @@ def main() -> None:
     a = ap.parse_args()
 
     if a.export_gt:
-        labels = json.loads(_resolve(a.labels).read_text())
+        labels = json.loads(_resolve(a.labels).read_text(encoding="utf-8"))
         labels_to_gt(labels, _resolve(a.export_gt))
         return
 

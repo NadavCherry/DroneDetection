@@ -49,7 +49,7 @@ def _outcomes(run_dir: Path) -> dict:
         if not p.exists():
             continue
         try:
-            data = json.loads(p.read_text())
+            data = json.loads(p.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError):
             continue
         rows = data.get("results") if isinstance(data, dict) else data
@@ -63,7 +63,7 @@ def _outcomes(run_dir: Path) -> dict:
 def _from_telemetry(tel: Path) -> Optional[dict]:
     """Recover an outcome from the per-frame log when no summary was written."""
     try:
-        rows = json.loads(tel.read_text())
+        rows = json.loads(tel.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
         return None
     if not isinstance(rows, list) or not rows:
@@ -221,7 +221,7 @@ def main(argv=None) -> int:
     parts.append(f"<script>{JS}</script>")
 
     index = out / "index.html"
-    index.write_text("\n".join(parts).replace("&amp;middot;", "&middot;"))
+    index.write_text("\n".join(parts).replace("&amp;middot;", "&middot;"), encoding="utf-8")
     print(f"{total} clips from {len(groups)} runs -> {index}")
     if skipped:
         print(f"skipped {skipped} clip(s) under {a.min_kb:.0f} KB")

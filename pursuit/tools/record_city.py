@@ -128,7 +128,7 @@ def main(argv=None) -> int:
     if not rj.exists():
         print("!! no results.json -- nothing to report")
         return 1
-    payload = json.loads(rj.read_text())
+    payload = json.loads(rj.read_text(encoding="utf-8"))
     print(f"\n== {payload.get('hits')}/{payload.get('n')} intruders intercepted")
 
     # The headline clip: a save, and among saves the one that shows the most.

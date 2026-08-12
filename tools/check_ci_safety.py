@@ -64,7 +64,7 @@ def main(argv=None) -> int:
 
     with tempfile.TemporaryDirectory() as tmp:
         (Path(tmp) / "sitecustomize.py").write_text(
-            _SITECUSTOMIZE.format(blocked=set(a.blocked)))
+            _SITECUSTOMIZE.format(blocked=set(a.blocked)), encoding="utf-8")
         env_path = f"{tmp}:{REPO}"
         print(f"running the suite with {sorted(a.blocked)} blocked at import ...")
         proc = subprocess.run(

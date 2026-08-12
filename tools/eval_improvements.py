@@ -70,11 +70,11 @@ def main():
     clips = [c for c in CLIPS if c[0] in a.clips]
 
     rpath = out / "RESULTS.json"
-    table = json.loads(rpath.read_text()) if rpath.exists() else {}   # merge with prior runs
+    table = json.loads(rpath.read_text(encoding="utf-8")) if rpath.exists() else {}   # merge with prior runs
     for det_name in a.detectors:
         table[det_name] = {}
         for clip, regime, gt_path in clips:
-            video = json.loads(Path(gt_path).read_text())["video"]
+            video = json.loads(Path(gt_path).read_text(encoding="utf-8"))["video"]
             if not Path(video).exists():
                 print(f"!! {clip}: missing video {video}"); continue
             method = DETECTORS[det_name]()
@@ -95,7 +95,7 @@ def main():
             }
             print(f"  det AP={det['ap']:.3f} R={det['R']:.3f} | track cov={cov} false={false}", flush=True)
 
-    rpath.write_text(json.dumps(table, indent=1))
+    rpath.write_text(json.dumps(table, indent=1), encoding="utf-8")
     # print comparison tables over ALL detectors present (merged)
     dets = [d for d in ("baseline", "nwd", "fusion", "fusion_m") if d in table] or list(table)
     print("\n\n#### IDENTIFICATION (per-frame center-distance AP / recall)")

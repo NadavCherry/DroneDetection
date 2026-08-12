@@ -137,7 +137,7 @@ class HalmstadAdapter(Adapter):
                 "manifest (per-clip conditions, incl. which clips are night) and an "
                 "official split — Halmstad publishes neither a split nor a metric, so "
                 "both must be chosen by us and published with any number.")
-        raw = json.loads(sidecar.read_text())
+        raw = json.loads(sidecar.read_text(encoding="utf-8"))
         cls = self.class_of(seq)
         out: dict[int, list[Box]] = {}
         for frame_str, boxes in raw["frames"].items():

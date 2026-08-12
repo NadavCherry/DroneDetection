@@ -110,7 +110,7 @@ def main() -> int:
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps({"scene": a.scene, "ground_z": ground,
                                        "origin_xy": [ox, oy],
-                                       "buildings": kept}, indent=1))
+                                       "buildings": kept}, indent=1), encoding="utf-8")
     print(f"\nwrote {a.out}")
     app.close()
     return 0

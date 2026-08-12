@@ -103,7 +103,7 @@ def extract(video, boxes, frame_ids, split, prefix, tile=640, dt=DT, min_side=12
                     n_box += 1
                 stem = f"{prefix}_{idx:05d}"
                 np.save(str(OUT / "images" / split / f"{stem}.npy"), crop)
-                (OUT / "labels" / split / f"{stem}.txt").write_text("\n".join(lines))
+                (OUT / "labels" / split / f"{stem}.txt").write_text("\n".join(lines), encoding="utf-8")
                 n_img += 1
         idx += 1
     cap.release()
@@ -116,7 +116,7 @@ def write_data_yaml(out):
         "train: images/train\n"
         "val: images/val\n"
         "channels: 4\n"
-        "names:\n  0: drone\n")
+        "names:\n  0: drone\n", encoding="utf-8")
 
 
 def main():

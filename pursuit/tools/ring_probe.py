@@ -128,7 +128,7 @@ def main(argv=None) -> int:
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(json.dumps({"info": info, "range_m": a.range,
                                  "ms_per_step": 1000 * elapsed / max(1, len(rows)),
-                                 "rows": rows}, indent=1))
+                                 "rows": rows}, indent=1), encoding="utf-8")
         print(f"wrote {p}")
     return 0 if ok else 1
 

@@ -91,7 +91,7 @@ def yolo_root(tmp_path: Path) -> Path:
     root = tmp_path / "smid"
     (root / "data.yaml").parent.mkdir(parents=True, exist_ok=True)
     (root / "data.yaml").write_text(
-        "path: .\ntrain: train/images\nval: valid/images\nnames:\n  0: drone\n  1: bird\n")
+        "path: .\ntrain: train/images\nval: valid/images\nnames:\n  0: drone\n  1: bird\n", encoding="utf-8")
     spec = {
         "train": [("a", "0 0.5 0.5 0.1 0.05"), ("b", "1 0.25 0.25 0.2 0.2")],
         "valid": [("c", "0 0.4 0.6 0.1 0.05")],
@@ -101,7 +101,7 @@ def yolo_root(tmp_path: Path) -> Path:
         for stem, label in items:
             _img(root / split / "images" / f"{stem}.jpg")
             (root / split / "labels").mkdir(parents=True, exist_ok=True)
-            (root / split / "labels" / f"{stem}.txt").write_text(label + "\n")
+            (root / split / "labels" / f"{stem}.txt").write_text(label + "\n", encoding="utf-8")
     return root
 
 
@@ -130,7 +130,7 @@ def smid_root(tmp_path: Path) -> Path:
             (ann / f"{stem}.xml").write_text(
                 f"<annotation><filename>{stem}.png</filename>"
                 f"<size><width>100</width><height>80</height><depth>3</depth></size>"
-                f"{body}</annotation>")
+                f"{body}</annotation>", encoding="utf-8")
     return root
 
 
@@ -206,19 +206,19 @@ def test_uav_smid_keeps_bird_images_as_negatives_not_as_a_bird_class(smid_root, 
     out = tmp_path / "prep"
     prepare_data.main(["uav_smid", "--root", str(smid_root), "--out", str(out)])
     labels = sorted((out / "yolo/labels/train").glob("*.txt"))
-    bodies = {p.name: p.read_text().strip() for p in labels}
+    bodies = {p.name: p.read_text(encoding="utf-8").strip() for p in labels}
     assert len(bodies) == 2
     assert sum(1 for v in bodies.values() if v == "") == 1        # the bird image
     kept = [v for v in bodies.values() if v]
     assert len(kept) == 1 and kept[0].startswith("0 ")           # the drone, as class 0
-    assert "1:" not in (out / "yolo/data.yaml").read_text()      # one class, always
+    assert "1:" not in (out / "yolo/data.yaml").read_text(encoding="utf-8")      # one class, always
 
 
 def test_class_table_is_read_not_assumed(tmp_path):
     root = tmp_path / "d"
     _img(root / "images" / "a.jpg")
     (root / "labels").mkdir(parents=True, exist_ok=True)
-    (root / "labels" / "a.txt").write_text("0 0.5 0.5 0.1 0.1\n")
+    (root / "labels" / "a.txt").write_text("0 0.5 0.5 0.1 0.1\n", encoding="utf-8")
     with pytest.raises(FileNotFoundError, match="no class table"):
         build("yolo_dir", root).ground_truth("train")
 
@@ -230,7 +230,7 @@ def test_class_table_is_read_not_assumed(tmp_path):
 ])
 def test_read_class_names_handles_the_shapes_people_actually_write(tmp_path, body, expect):
     p = tmp_path / "data.yaml"
-    p.write_text("path: .\n" + body + "nc: 2\n")
+    p.write_text("path: .\n" + body + "nc: 2\n", encoding="utf-8")
     assert read_class_names(p) == expect
 
 
@@ -270,11 +270,11 @@ def test_fallback_split_is_deterministic_and_declared(tmp_path):
     'self-chosen', because a number on it is not comparable with a published one."""
     root = tmp_path / "flat"
     (root / "classes.txt").parent.mkdir(parents=True, exist_ok=True)
-    (root / "classes.txt").write_text("drone\n")
+    (root / "classes.txt").write_text("drone\n", encoding="utf-8")
     for i in range(40):
         _img(root / "images" / f"img{i:03d}.jpg")
         (root / "labels").mkdir(parents=True, exist_ok=True)
-        (root / "labels" / f"img{i:03d}.txt").write_text("0 0.5 0.5 0.1 0.1\n")
+        (root / "labels" / f"img{i:03d}.txt").write_text("0 0.5 0.5 0.1 0.1\n", encoding="utf-8")
     first = build("yolo_dir", root).split_map()
     second = build("yolo_dir", root).split_map()
     assert first == second
@@ -290,7 +290,7 @@ def test_test_images_are_never_written_into_the_training_set(yolo_root, tmp_path
     assert not (out / "yolo/images/test").exists()
     train_stems = {p.stem for p in (out / "yolo/images/train").glob("*.jpg")}
     assert not any("__d" in s or s.endswith("test") for s in train_stems)
-    data_yaml = (out / "yolo/data.yaml").read_text()
+    data_yaml = (out / "yolo/data.yaml").read_text(encoding="utf-8")
     assert "test:" not in data_yaml
     # Ground truth, by contrast, is written for every sequence including test -- that is
     # what the test split is FOR.
@@ -301,7 +301,7 @@ def test_export_test_writes_to_a_directory_data_yaml_does_not_reference(yolo_roo
     out = tmp_path / "prep"
     prepare_data.main(["yolo_dir", "--root", str(yolo_root), "--out", str(out), "--export-test"])
     assert list((out / "yolo/images/test").glob("*.jpg"))
-    assert "test:" not in (out / "yolo/data.yaml").read_text()
+    assert "test:" not in (out / "yolo/data.yaml").read_text(encoding="utf-8")
 
 
 # ============================================================================== min-side
@@ -328,11 +328,11 @@ def test_inflation_never_reaches_the_ground_truth(yolo_root, tmp_path):
     prepare_data.main(["yolo_dir", "--root", str(yolo_root), "--out", str(a)])
     prepare_data.main(["yolo_dir", "--root", str(yolo_root), "--out", str(b),
                        "--min-side", "24"])
-    assert (a / "gt/train.json").read_text() == (b / "gt/train.json").read_text()
+    assert (a / "gt/train.json").read_text(encoding="utf-8") == (b / "gt/train.json").read_text(encoding="utf-8")
     assert (a / "yolo/labels/train").exists()
-    true_label = [p for p in (a / "yolo/labels/train").glob("*.txt") if p.read_text().strip()][0]
+    true_label = [p for p in (a / "yolo/labels/train").glob("*.txt") if p.read_text(encoding="utf-8").strip()][0]
     infl_label = (b / "yolo/labels/train" / true_label.name)
-    assert true_label.read_text() != infl_label.read_text()
+    assert true_label.read_text(encoding="utf-8") != infl_label.read_text(encoding="utf-8")
 
 
 def test_manifest_records_the_inflation_and_its_cost(yolo_root, tmp_path, capsys):
@@ -342,7 +342,7 @@ def test_manifest_records_the_inflation_and_its_cost(yolo_root, tmp_path, capsys
     printed = capsys.readouterr().out
     assert "Label inflation" in printed and "can reach IoU 0.5" in printed
 
-    man = json.loads((out / "manifest.json").read_text())
+    man = json.loads((out / "manifest.json").read_text(encoding="utf-8"))
     assert man["min_side"] == 24.0
     assert man["label_extent"] == "inflated to a minimum side of 24 px"
     assert man["gt_extent"].startswith("true extent always")
@@ -358,7 +358,7 @@ def test_manifest_records_the_inflation_and_its_cost(yolo_root, tmp_path, capsys
 def test_no_inflation_warning_when_the_default_is_used(yolo_root, tmp_path):
     out = tmp_path / "prep"
     prepare_data.main(["yolo_dir", "--root", str(yolo_root), "--out", str(out)])
-    man = json.loads((out / "manifest.json").read_text())
+    man = json.loads((out / "manifest.json").read_text(encoding="utf-8"))
     assert man["min_side"] == 0.0
     assert not any("min-side" in w for w in man["warnings"])
     assert man["size_distribution"]["achievable_iou"][0]["min_side"] == 0.0
@@ -372,11 +372,11 @@ def test_large_images_are_tiled_at_native_scale_not_downscaled(tmp_path):
     in the training crop must equal its pixel size in the source."""
     root = tmp_path / "big"
     (root / "classes.txt").parent.mkdir(parents=True, exist_ok=True)
-    (root / "classes.txt").write_text("drone\n")
+    (root / "classes.txt").write_text("drone\n", encoding="utf-8")
     _img(root / "images" / "big000.jpg", w=1600, h=1200)
     (root / "labels").mkdir(parents=True, exist_ok=True)
     # a 16 x 12 px target at (800, 600) in a 1600 x 1200 image
-    (root / "labels" / "big000.txt").write_text("0 0.5 0.5 0.01 0.01\n")
+    (root / "labels" / "big000.txt").write_text("0 0.5 0.5 0.01 0.01\n", encoding="utf-8")
 
     out = tmp_path / "prep"
     prepare_data.main(["yolo_dir", "--root", str(root), "--out", str(out),
@@ -385,7 +385,7 @@ def test_large_images_are_tiled_at_native_scale_not_downscaled(tmp_path):
     assert crops, "nothing exported"
     assert cv2.imread(str(crops[0])).shape[:2] == (640, 640)
     label = crops[0].parent.parent.parent / "labels" / crops[0].parent.name / (crops[0].stem + ".txt")
-    _, _, _, w, h = label.read_text().split()
+    _, _, _, w, h = label.read_text(encoding="utf-8").split()
     assert (float(w) * 640, float(h) * 640) == pytest.approx((16.0, 12.0))
 
 
@@ -399,13 +399,13 @@ def test_a_source_shorter_than_the_tile_is_padded_and_still_labelled_correctly(t
     root = tmp_path / "wide"
     (root / "images").mkdir(parents=True)
     (root / "labels").mkdir(parents=True)
-    (root / "classes.txt").write_text("drone\n")
+    (root / "classes.txt").write_text("drone\n", encoding="utf-8")
     W, H = 1600, 400                       # wider than the 640 tile, SHORTER than it
     img = np.zeros((H, W, 3), np.uint8)
     img[194:206, 792:808] = 255            # a 16 x 12 target centred at (800, 200)
     cv2.imwrite(str(root / "images" / "wide000.jpg"), img)
     (root / "labels" / "wide000.txt").write_text(
-        f"0 {800 / W:.6f} {200 / H:.6f} {16 / W:.6f} {12 / H:.6f}\n")
+        f"0 {800 / W:.6f} {200 / H:.6f} {16 / W:.6f} {12 / H:.6f}\n", encoding="utf-8")
 
     out = tmp_path / "prep"
     prepare_data.main(["yolo_dir", "--root", str(root), "--out", str(out), "--tile", "640",
@@ -417,7 +417,7 @@ def test_a_source_shorter_than_the_tile_is_padded_and_still_labelled_correctly(t
 
     label = (crops[0].parent.parent.parent / "labels" / crops[0].parent.name
              / (crops[0].stem + ".txt"))
-    _, cx, cy, w, h = label.read_text().split()
+    _, cx, cy, w, h = label.read_text(encoding="utf-8").split()
     ih, iw = written.shape[:2]
     ys, xs = np.nonzero(written.max(axis=2) > 128)
     # The label must describe the target where it actually landed in the file on disk.
@@ -429,10 +429,10 @@ def test_a_source_shorter_than_the_tile_is_padded_and_still_labelled_correctly(t
 def test_tile_zero_writes_whole_frames(tmp_path):
     root = tmp_path / "big"
     (root / "classes.txt").parent.mkdir(parents=True, exist_ok=True)
-    (root / "classes.txt").write_text("drone\n")
+    (root / "classes.txt").write_text("drone\n", encoding="utf-8")
     _img(root / "images" / "big000.jpg", w=1600, h=1200)
     (root / "labels").mkdir(parents=True, exist_ok=True)
-    (root / "labels" / "big000.txt").write_text("0 0.5 0.5 0.01 0.01\n")
+    (root / "labels" / "big000.txt").write_text("0 0.5 0.5 0.01 0.01\n", encoding="utf-8")
 
     out = tmp_path / "prep"
     prepare_data.main(["yolo_dir", "--root", str(root), "--out", str(out),
@@ -453,7 +453,7 @@ def test_gt_only_writes_ground_truth_for_every_sequence_and_no_images(ardmav_roo
     assert {p.stem for p in (out / "gt").glob("*.json")} == {
         "phantom01", "phantom05", "phantom06"}
     assert not (out / "yolo").exists()
-    splits = json.loads((out / "splits.json").read_text())
+    splits = json.loads((out / "splits.json").read_text(encoding="utf-8"))
     assert splits["splits"]["test"] == ["phantom05"]
     assert splits["split_source"] == "official"
 
@@ -482,7 +482,7 @@ def test_halmstad_reads_a_converted_sidecar_when_one_exists(tmp_path):
     (root / "Video_Visible" / "V_BIRD_002.mp4").write_bytes(b"")
     (root / "labels_json").mkdir(parents=True)
     (root / "labels_json" / "V_BIRD_002.json").write_text(
-        json.dumps({"frames": {"0": [[10, 20, 30, 40]], "1": []}}))
+        json.dumps({"frames": {"0": [[10, 20, 30, 40]], "1": []}}), encoding="utf-8")
     gt = build("halmstad", root).ground_truth("V_BIRD_002")
     assert gt.objects["bird_0"].frames[0] == pytest.approx((20.0, 30.0, 20.0, 20.0))
     assert gt.objects["bird_0"].ignore is True          # a bird is never a drone positive

@@ -232,7 +232,7 @@ def main() -> None:
             name = f"f{t:05d}_{tag}"
             cv2.imwrite(str(ROOT / f"images/{split}/{name}.jpg"), img,
                         [cv2.IMWRITE_JPEG_QUALITY, 95])
-            (ROOT / f"labels/{split}/{name}.txt").write_text("\n".join(lines) + "\n")
+            (ROOT / f"labels/{split}/{name}.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
             counts[split] += 1
 
     (ROOT / "data.yaml").write_text(
@@ -240,7 +240,7 @@ def main() -> None:
         "train: images/train\n"
         "val: images/val\n"
         "names:\n  0: drone\n  1: bird\n"
-    )
+    , encoding="utf-8")
     print(f"ft7 dataset: {counts['train']} train / {counts['val']} val -> {ROOT}")
 
 

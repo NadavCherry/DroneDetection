@@ -36,7 +36,7 @@ def write_gt(path: Path, name: str, n_frames: int, *, birds: int = 0) -> None:
         objects["bird"] = {"ignore": True,
                            "frames": {str(f): [500.0, 500.0, 6.0, 6.0] for f in range(birds)}}
     (path / f"{name}.json").write_text(json.dumps(
-        {"video": f"{name}.mp4", "meta": {}, "objects": objects}))
+        {"video": f"{name}.mp4", "meta": {}, "objects": objects}), encoding="utf-8")
 
 
 def write_dets(path: Path, name: str, n_frames: int, *, hit: bool = True,
@@ -52,7 +52,7 @@ def write_dets(path: Path, name: str, n_frames: int, *, hit: bool = True,
             dl.append([497.0, 497.0, 503.0, 503.0, 0.8, "drone"])
         frames[str(f)] = dl
     (path / f"{name}.json").write_text(json.dumps(
-        {"video": f"{name}.mp4", "method": "test", "meta": {}, "frames": frames}))
+        {"video": f"{name}.mp4", "method": "test", "meta": {}, "frames": frames}), encoding="utf-8")
 
 
 @pytest.fixture

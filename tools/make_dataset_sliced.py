@@ -83,7 +83,7 @@ def main() -> None:
             cv2.imwrite(str(ROOT / f"images/{split}/{name}.jpg"), crop,
                         [cv2.IMWRITE_JPEG_QUALITY, 95])
             (ROOT / f"labels/{split}/{name}.txt").write_text(
-                "\n".join(labels_in(gt, idx, x0, y0)) + "\n")
+                "\n".join(labels_in(gt, idx, x0, y0)) + "\n", encoding="utf-8")
             counts[split] += 1
 
     (ROOT / "data.yaml").write_text(
@@ -91,7 +91,7 @@ def main() -> None:
         "train: images/train\n"
         "val: images/val\n"
         "names:\n  0: drone\n"
-    )
+    , encoding="utf-8")
     print(f"sliced dataset: {counts['train']} train / {counts['val']} val -> {ROOT}")
 
 

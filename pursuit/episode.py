@@ -781,4 +781,4 @@ class Episode:
 
     def save_telemetry(self, path) -> None:
         Path(path).parent.mkdir(parents=True, exist_ok=True)
-        Path(path).write_text(json.dumps(self.telemetry))
+        Path(path).write_text(json.dumps(self.telemetry), encoding="utf-8")

@@ -91,7 +91,7 @@ the street at its foot."""
 def load_buildings(path: Optional[Path] = None) -> List[dict]:
     """Read the surveyed structure list."""
     p = Path(path) if path else BUILDINGS_JSON
-    return json.loads(p.read_text())["buildings"]
+    return json.loads(p.read_text(encoding="utf-8"))["buildings"]
 
 
 RELIABLE_DETECT_M = 140.0

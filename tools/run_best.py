@@ -34,8 +34,8 @@ FT1 = "work/models/yolo-ft-best.pt"    # near/big-object expert
 
 
 def summarize(tracks_path: str, dets_path: str) -> str:
-    raw = json.loads(Path(tracks_path).read_text())
-    det = json.loads(Path(dets_path).read_text())
+    raw = json.loads(Path(tracks_path).read_text(encoding="utf-8"))
+    det = json.loads(Path(dets_path).read_text(encoding="utf-8"))
     # per-frame drone-confirmed detections for label attribution
     confirmed = {}
     for f, ds in det["frames"].items():
@@ -96,7 +96,7 @@ def main() -> None:
                   str(out / "tracks_confirmed.mp4"))
 
     summary = summarize(str(out / "tracks_all.json"), str(dets_path))
-    (out / "summary.txt").write_text(summary + "\n")
+    (out / "summary.txt").write_text(summary + "\n", encoding="utf-8")
     print("\n=== track summary (all-objects tracker) ===")
     print(summary)
 

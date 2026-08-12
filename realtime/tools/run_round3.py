@@ -112,7 +112,7 @@ def main() -> None:
            "--out", "realtime/work/eval3_1006_test.md")
         rows = []
         for name in PIPES:
-            b = json.loads((OUT / "1006" / name / "bench.json").read_text())
+            b = json.loads((OUT / "1006" / name / "bench.json").read_text(encoding="utf-8"))
             rows.append((name, b))
         lines = ["| pipeline | fps (5070) | total ms | stage breakdown |",
                  "|---|---|---|---|"]
@@ -121,11 +121,11 @@ def main() -> None:
             stages = ", ".join(f"{k} {v:.1f}" for k, v in sorted(b.items())
                                if k not in ("TOTAL ms/frame", "fps_end_to_end"))
             lines.append(f"| {name} | {b['fps_end_to_end']} | {total:.1f} | {stages} |")
-        Path("realtime/work/bench3.md").write_text("\n".join(lines) + "\n")
+        Path("realtime/work/bench3.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
         for p in ("realtime/work/eval3_0705_val.md",
                   "realtime/work/eval3_1006_test.md", "realtime/work/bench3.md"):
             print(f"\n==== {p} ====")
-            print(Path(p).read_text())
+            print(Path(p).read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

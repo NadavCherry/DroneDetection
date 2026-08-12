@@ -80,7 +80,7 @@ class Fig:
     def write(self, stem):
         out = "\n".join(self.svg) + "\n</svg>"
         Path("docs/media").mkdir(parents=True, exist_ok=True)
-        Path(f"docs/media/{stem}.svg").write_text(out)
+        Path(f"docs/media/{stem}.svg").write_text(out, encoding="utf-8")
         import cairosvg
 
         cairosvg.svg2png(bytestring=out.encode(), write_to=f"docs/media/{stem}.png",

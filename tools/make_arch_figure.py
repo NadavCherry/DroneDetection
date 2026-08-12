@@ -154,7 +154,7 @@ arrow([(1230, BOT + 70), (1488, BOT + 70)], "tracks")
 
 Path("docs/media").mkdir(parents=True, exist_ok=True)
 out = "\n".join(svg) + "\n</svg>"
-Path("docs/media/architecture.svg").write_text(out)
+Path("docs/media/architecture.svg").write_text(out, encoding="utf-8")
 import cairosvg
 
 cairosvg.svg2png(bytestring=out.encode(), write_to="docs/media/architecture.png",

@@ -38,12 +38,12 @@ def main() -> None:
     a = ap.parse_args()
 
     src = DetectionSet.load(a.src)
-    raw = json.loads(Path(a.tracks).read_text())
+    raw = json.loads(Path(a.tracks).read_text(encoding="utf-8"))
     keep_cls = None
     if a.classify:
         from dronedet.trackclass import classify_tracks
 
-        keep_cls = classify_tracks(raw, json.loads(Path(a.src).read_text()))
+        keep_cls = classify_tracks(raw, json.loads(Path(a.src).read_text(encoding="utf-8")))
         for tid, info in sorted(keep_cls.items()):
             print(f"  track {tid}: {info['cls']} (conf_frac {info['conf_frac']}, "
                   f"n_conf {info['n_conf']}, n {info['n']})")

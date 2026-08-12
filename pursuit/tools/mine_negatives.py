@@ -130,7 +130,7 @@ def main(argv=None) -> int:
                     crop = pad
                 stem = f"{a.tag}_{pi:04d}_{fi:03d}_{bi}"
                 np.save(str(out / "images" / split / f"{stem}.npy"), crop)
-                (out / "labels" / split / f"{stem}.txt").write_text("")
+                (out / "labels" / split / f"{stem}.txt").write_text("", encoding="utf-8")
                 n_tiles += 1
 
         print(f"  pass {pi + 1}/{a.passes}  frames={n_frames} "
@@ -139,7 +139,7 @@ def main(argv=None) -> int:
 
     (out / "data.yaml").write_text(
         f"path: {out.resolve()}\ntrain: images/train\nval: images/val\n"
-        f"channels: 4\nnc: 1\nnames:\n  0: drone\n")
+        f"channels: 4\nnc: 1\nnames:\n  0: drone\n", encoding="utf-8")
     rate = n_det / max(1, n_frames)
     print(f"\n{n_frames} drone-free frames produced {n_det} false detections "
           f"({rate:.2f} per frame)")

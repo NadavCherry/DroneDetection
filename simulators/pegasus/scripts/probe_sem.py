@@ -63,6 +63,6 @@ for name, (cz, yaw, pitchless_target_dz) in {
     out[name] = rec
     print(name, json.dumps(rec)[:1200], flush=True)
 
-Path("/tmp/dev/pursuit/probe_sem.json").write_text(json.dumps(out, indent=1))
+Path("/tmp/dev/pursuit/probe_sem.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
 print("PROBE_SEM_OK", flush=True)
 app.close()

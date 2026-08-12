@@ -320,14 +320,14 @@ def main(argv=None) -> int:
         ]
         print("\n" + "\n".join(block))
         Path(ROOT / "work/pursuit/city/README_BLOCK.md").write_text(
-            "\n".join(block))
+            "\n".join(block), encoding="utf-8")
 
     if a.out:
         p = Path(a.out)
         if not p.is_absolute():
             p = ROOT / p
         p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text("\n".join(L))
+        p.write_text("\n".join(L), encoding="utf-8")
         print(f"\nwrote {p}")
     return 0
 

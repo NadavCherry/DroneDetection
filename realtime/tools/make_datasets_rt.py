@@ -132,7 +132,7 @@ def objs_at(gt, shifts, t):
 def write_yolo(root, split, name, img, lines):
     cv2.imwrite(str(root / f"images/{split}/{name}.jpg"), img,
                 [cv2.IMWRITE_JPEG_QUALITY, 95])
-    (root / f"labels/{split}/{name}.txt").write_text("\n".join(lines) + "\n")
+    (root / f"labels/{split}/{name}.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def make_dirs(root):
@@ -140,7 +140,7 @@ def make_dirs(root):
         (root / sub).mkdir(parents=True, exist_ok=True)
     (root / "data.yaml").write_text(
         f"path: {root.resolve()}\ntrain: images/train\nval: images/val\n"
-        "names:\n  0: drone\n  1: bird\n")
+        "names:\n  0: drone\n  1: bird\n", encoding="utf-8")
 
 
 def build_crop256(gt, grays, shifts, banks):

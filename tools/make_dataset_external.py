@@ -68,7 +68,7 @@ def parse_nps(clip_id):
     """clip_id like 'Clip_5' -> {frame0: [[x1,y1,x2,y2], ...]}."""
     txt = NPS_ANN / f"{clip_id}_gt.txt"
     out = {}
-    for ln in open(txt):
+    for ln in open(txt, encoding="utf-8"):
         m = re.search(r"time_layer:\s*(\d+)", ln)
         if not m:
             continue
@@ -116,7 +116,7 @@ def extract_yolo(video_path, boxes_by_frame, frame_ids, img_dir, lbl_dir,
             stem = f"{prefix}_{idx:05d}"
             cv2.imwrite(str(img_dir / f"{stem}.jpg"), frame,
                         [cv2.IMWRITE_JPEG_QUALITY, quality])
-            (lbl_dir / f"{stem}.txt").write_text("\n".join(lines))
+            (lbl_dir / f"{stem}.txt").write_text("\n".join(lines), encoding="utf-8")
             n_img += 1
         idx += 1
     cap.release()
@@ -179,7 +179,7 @@ def extract_yolo_tiled(video_path, boxes_by_frame, frame_ids, img_dir, lbl_dir,
                 stem = f"{prefix}_{idx:05d}_{k}"
                 cv2.imwrite(str(img_dir / f"{stem}.jpg"), crop,
                             [cv2.IMWRITE_JPEG_QUALITY, quality])
-                (lbl_dir / f"{stem}.txt").write_text("\n".join(lines))
+                (lbl_dir / f"{stem}.txt").write_text("\n".join(lines), encoding="utf-8")
                 n_img += 1
         idx += 1
     cap.release()
@@ -192,7 +192,7 @@ USER_SPLIT_AT = 342   # 07_05: frames < this -> train, >= -> val (repo conventio
 def parse_repo_gt(path, frange=None):
     """dronedet gt.json -> {frame0: [[x1,y1,x2,y2],...]} for NON-ignore objects only.
     Used for the user's 07_05 (far drone). frange=(lo,hi) restricts frames."""
-    g = json.loads(Path(path).read_text())
+    g = json.loads(Path(path).read_text(encoding="utf-8"))
     out = {}
     for name, o in g["objects"].items():
         if o.get("ignore"):
@@ -290,7 +290,7 @@ def build_combined_tiled(stride_train, stride_val, min_side, tile=640):
     print(f"  train: {stats['train'][0]} tiles / {stats['train'][1]} boxes")
     print(f"  val:   {stats['val'][0]} tiles / {stats['val'][1]} boxes")
     # record the split so eval knows the test videos
-    (root / "splits.json").write_text(json.dumps(sp, indent=1))
+    (root / "splits.json").write_text(json.dumps(sp, indent=1), encoding="utf-8")
     return root
 
 
@@ -305,10 +305,10 @@ def build_combined_test_gt():
         if vid:
             write_gt_json(vid, parse_nps(v), base / "nps" / f"{v}.json")
     # user test = 10_06 (reuse hardened GT, corrected video path)
-    g = json.loads(Path("realtime/work/gt_1006_v2.json").read_text())
+    g = json.loads(Path("realtime/work/gt_1006_v2.json").read_text(encoding="utf-8"))
     g["video"] = "data/videos/10_06.mp4"
     (base / "user").mkdir(parents=True, exist_ok=True)
-    (base / "user" / "10_06.json").write_text(json.dumps(g))
+    (base / "user" / "10_06.json").write_text(json.dumps(g), encoding="utf-8")
     print(f"test GT: ardmav={len(sp['ardmav']['test'])} nps={len(sp['nps']['test'])} user=1 -> {base}")
 
 
@@ -360,7 +360,7 @@ def build_black_paste(n_tiles=5000, tile=640, min_side=12):
     img_dir, lbl_dir = root / "images/train", root / "labels/train"
 
     # 1. harvest black-drone crops from 07_05 (far = tiny flying, near = large)
-    g = json.loads(Path("work/gt_user.json").read_text())
+    g = json.loads(Path("work/gt_user.json").read_text(encoding="utf-8"))
     far, near = g["objects"]["far"]["frames"], g["objects"]["near"]["frames"]
     cap = cv2.VideoCapture("data/videos/07_05.mp4")
     cache, idx = {}, 0
@@ -394,7 +394,7 @@ def build_black_paste(n_tiles=5000, tile=640, min_side=12):
     # 2. background pool = drone-free ARD-MAV/NPS tiles already in the dataset
     bgs = []
     for lp in list(lbl_dir.glob("ardmav__*.txt")) + list(lbl_dir.glob("nps__*.txt")):
-        if lp.read_text().strip() == "":                                # empty label = negative
+        if lp.read_text(encoding="utf-8").strip() == "":                                # empty label = negative
             ip = img_dir / (lp.stem + ".jpg")
             if ip.exists():
                 bgs.append(ip)
@@ -439,7 +439,7 @@ def build_black_paste(n_tiles=5000, tile=640, min_side=12):
             continue
         stem = f"blackpaste__{i:05d}"
         cv2.imwrite(str(img_dir / f"{stem}.jpg"), bg, [cv2.IMWRITE_JPEG_QUALITY, 92])
-        (lbl_dir / f"{stem}.txt").write_text("\n".join(lines))
+        (lbl_dir / f"{stem}.txt").write_text("\n".join(lines), encoding="utf-8")
         made += 1
     print(f"added {made} black-drone paste tiles -> {img_dir}")
 
@@ -458,7 +458,7 @@ def write_gt_json(video_path, boxes_by_frame, out_path):
           "meta": {"shifts": {}, "exclude_frames": []},
           "objects": objects}
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(gt))
+    out_path.write_text(json.dumps(gt), encoding="utf-8")
     return len(objects), sum(len(o["frames"]) for o in objects.values())
 
 
@@ -467,7 +467,7 @@ def write_data_yaml(root, names=("drone",)):
              "names:"]
     for i, n in enumerate(names):
         lines.append(f"  {i}: {n}")
-    (root / "data.yaml").write_text("\n".join(lines) + "\n")
+    (root / "data.yaml").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 # ----------------------------------------------------------------------------- builders

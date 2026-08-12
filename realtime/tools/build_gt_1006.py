@@ -47,7 +47,7 @@ def main() -> None:
     # the drone crosses in front of dense foliage where windowed-median
     # texture noise dominates. Using the verified track makes 10_06 a
     # hit-rate-along-trajectory test (documented in the README).
-    pc_all = json.loads(Path("work/infer/10_06/tracks_all.json").read_text())
+    pc_all = json.loads(Path("work/infer/10_06/tracks_all.json").read_text(encoding="utf-8"))
     id1 = {int(f): v for tr in pc_all["tracks"] if tr["id"] == 1
            for f, v in tr["frames"].items()}
     far = {t: (v[0] + shifts[t][0], v[1] + shifts[t][1],
@@ -65,7 +65,7 @@ def main() -> None:
         obj.frames[t] = (cx - shifts[t][0], cy - shifts[t][1], w, h)
     gt.objects["far"] = obj
 
-    pc = json.loads(Path("work/infer/10_06/tracks_all.json").read_text())
+    pc = json.loads(Path("work/infer/10_06/tracks_all.json").read_text(encoding="utf-8"))
     k = 0
     for tr in pc["tracks"]:
         fs = {int(f): v for f, v in tr["frames"].items()}

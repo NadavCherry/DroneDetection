@@ -373,7 +373,7 @@ def read_class_names(path: str | Path) -> dict[int, str]:
     number downstream into fiction.
     """
     p = Path(path)
-    text = p.read_text()
+    text = p.read_text(encoding="utf-8")
     if p.suffix == ".txt":
         names = [ln.strip() for ln in text.splitlines() if ln.strip()]
         return {i: n for i, n in enumerate(names)}

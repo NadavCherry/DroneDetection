@@ -145,7 +145,7 @@ class DatasetWriter:
         split = self._split_of(group)
         cv2.imwrite(str(self.root / "images" / split / f"{name}.jpg"), bgr,
                     [cv2.IMWRITE_JPEG_QUALITY, self.quality])
-        (self.root / "labels" / split / f"{name}.txt").write_text("\n".join(lines))
+        (self.root / "labels" / split / f"{name}.txt").write_text("\n".join(lines), encoding="utf-8")
         self.counts[split] += 1
         self.counts["pos" if lines else "neg"] += 1
         return bool(lines)
@@ -201,7 +201,7 @@ class DatasetWriter:
             "val: images/val\n"
             "nc: 1\n"
             "names:\n"
-            "  0: drone\n")
+            "  0: drone\n", encoding="utf-8")
         stats = {
             **self.counts,
             "span_px": {
@@ -215,7 +215,7 @@ class DatasetWriter:
             **(extra or {}),
         }
         path = self.root / f"stats_{self.tag}.json"
-        path.write_text(json.dumps(stats, indent=1))
+        path.write_text(json.dumps(stats, indent=1), encoding="utf-8")
         return stats
 
 

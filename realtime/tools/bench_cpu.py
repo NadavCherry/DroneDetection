@@ -75,7 +75,7 @@ def main() -> None:
     for name, rt, ms in rows:
         lines.append(f"| {name} | {rt} | {ms:.1f} |")
     table = "\n".join(lines)
-    Path("realtime/work/bench_models.md").write_text(table + "\n")
+    Path("realtime/work/bench_models.md").write_text(table + "\n", encoding="utf-8")
     print(table)
 
 

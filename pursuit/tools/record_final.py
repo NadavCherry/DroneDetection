@@ -111,7 +111,7 @@ def main(argv=None) -> int:
         proc = subprocess.run(cmd, shell=True, cwd=str(ROOT))
         if (dest / "results.json").exists():
             flown.append(scene)
-            payload = json.loads((dest / "results.json").read_text())
+            payload = json.loads((dest / "results.json").read_text(encoding="utf-8"))
             print(f"== {scene}: {payload.get('hits')}/{payload.get('n')} "
                   f"intercepts", flush=True)
         else:
@@ -132,7 +132,7 @@ def main(argv=None) -> int:
     headline_scenes = [s for s in ("rivermark",) if s in flown] or flown
     best = None
     for scene in headline_scenes:
-        payload = json.loads((out / scene / "results.json").read_text())
+        payload = json.loads((out / scene / "results.json").read_text(encoding="utf-8"))
         for r in payload["results"]:
             clip = out / scene / f"{r['name']}.mp4"
             if not (r.get("success") and clip.exists()):

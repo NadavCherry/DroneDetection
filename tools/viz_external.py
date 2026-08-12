@@ -23,7 +23,7 @@ OUT = Path("docs/media/external")
 
 
 def load_json(p):
-    return json.loads(Path(p).read_text())
+    return json.loads(Path(p).read_text(encoding="utf-8"))
 
 
 def grab_frames(video, idxs):
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     ap.add_argument("--spec", required=True, help="JSON list of panel specs")
     a = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
-    for s in json.loads(Path(a.spec).read_text()):
+    for s in json.loads(Path(a.spec).read_text(encoding="utf-8")):
         if s.get("context"):
             p = context_figure(s["video"], s["gt"], s["frame"], out=s["out"])
             print("wrote", p)

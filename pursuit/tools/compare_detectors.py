@@ -191,7 +191,7 @@ def main() -> int:
         Path(a.out).parent.mkdir(parents=True, exist_ok=True)
         Path(a.out).write_text(json.dumps(
             {"scene": scene, "summary": summary,
-             "buckets": {m: dict(stats[m]) for m in models}}, indent=2))
+             "buckets": {m: dict(stats[m]) for m in models}}, indent=2), encoding="utf-8")
         print(f"\nwrote {a.out}")
     return 0
 

@@ -41,7 +41,7 @@ def make_ardmav(root: Path, *, n_xml: int = 3, n_videos: int = 2) -> Path:
     (base / "Annotations" / "phantom02").mkdir(parents=True)
     (base / "videos").mkdir(parents=True)
     for i in range(n_xml):
-        (base / "Annotations" / "phantom02" / f"{i:06d}.xml").write_text("<annotation/>")
+        (base / "Annotations" / "phantom02" / f"{i:06d}.xml").write_text("<annotation/>", encoding="utf-8")
     for i in range(n_videos):
         (base / "videos" / f"phantom{i:02d}.mp4").write_bytes(b"\x00")
     return base
@@ -208,7 +208,7 @@ def test_manifest_shape_and_verified_flags(tmp_path):
                               source_url="https://example.org/a.zip")
     F.write_manifest(payload, p.directory)
 
-    got = json.loads((p.directory / "MANIFEST.json").read_text())
+    got = json.loads((p.directory / "MANIFEST.json").read_text(encoding="utf-8"))
     for key in ("schema", "key", "fetched_at", "source_url", "archives", "counts",
                 "expected", "mismatches", "counts_verified", "catalogue_verified"):
         assert key in got, key
@@ -282,7 +282,7 @@ def test_archive_kind_sniffs_content_not_the_name(tmp_path):
     assert F.archive_kind(z) == "zip"
 
     html = tmp_path / "also.zip"
-    html.write_text("<!DOCTYPE html><title>Sign in</title>")
+    html.write_text("<!DOCTYPE html><title>Sign in</title>", encoding="utf-8")
     assert F.archive_kind(html) is None
 
 
@@ -336,7 +336,7 @@ def test_extract_refuses_a_tar_symlink_escape(tmp_path):
 
 def test_extract_rejects_a_non_archive_with_a_readable_message(tmp_path):
     p = tmp_path / "x.zip"
-    p.write_text("<html>login</html>")
+    p.write_text("<html>login</html>", encoding="utf-8")
     with pytest.raises(RuntimeError, match="neither a zip nor a tar"):
         F.extract(p, tmp_path / "out")
 
@@ -426,7 +426,7 @@ def test_present_dataset_with_wrong_counts_fails_loudly(tmp_path, monkeypatch):
     lines: list[str] = []
     assert F.fetch_one(ds, tmp_path, Args(dry_run=False), log=lines.append) == "failed"
     assert any("COUNT MISMATCH" in ln for ln in lines)
-    got = json.loads((tmp_path / "ard_mav" / "MANIFEST.json").read_text())
+    got = json.loads((tmp_path / "ard_mav" / "MANIFEST.json").read_text(encoding="utf-8"))
     assert got["mismatches"] and got["counts_verified"] is False
 
 
@@ -449,7 +449,7 @@ def test_a_manually_dropped_archive_is_extracted_even_for_a_gated_set(tmp_path):
     status = F.fetch_one(DATASETS["dvb"], tmp_path, Args(dry_run=False), log=lines.append)
     assert status == "ok"
     assert (d / "seq01" / "000001.jpg").is_file()
-    got = json.loads((d / "MANIFEST.json").read_text())
+    got = json.loads((d / "MANIFEST.json").read_text(encoding="utf-8"))
     assert [a["name"] for a in got["archives"]] == ["dvb.zip"]
     assert got["archives"][0]["sha256"]
     assert got["counts_verified"] is False          # no Layout registered for dvb
@@ -470,7 +470,7 @@ def test_every_dropped_archive_is_extracted_not_just_the_first(tmp_path):
     assert status == "ok"
     assert sorted(p.name for p in (d / "visible").iterdir()) == ["vid1.mp4", "vid2.mp4", "vid3.mp4"]
 
-    got = json.loads((d / "MANIFEST.json").read_text())
+    got = json.loads((d / "MANIFEST.json").read_text(encoding="utf-8"))
     assert [a["name"] for a in got["archives"]] == ["part1.zip", "part2.zip", "part3.zip"]
     assert all(a["sha256"] for a in got["archives"])
 
@@ -512,7 +512,7 @@ def test_module_imports_without_torch_or_gdown():
     import ast
 
     banned = {"gdown", "torch", "torchvision", "ultralytics", "requests", "yaml", "pandas"}
-    tree = ast.parse((REPO / "tools" / "fetch_data.py").read_text())
+    tree = ast.parse((REPO / "tools" / "fetch_data.py").read_text(encoding="utf-8"))
     in_function = {node for fn in ast.walk(tree)
                    if isinstance(fn, (ast.FunctionDef, ast.AsyncFunctionDef))
                    for node in ast.walk(fn)}

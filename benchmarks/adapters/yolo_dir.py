@@ -162,7 +162,7 @@ class YoloDirAdapter(Adapter):
                 out[i] = []                       # YOLO's own convention: no label = background
                 continue
             w, h = image_size(img)
-            out[i] = parse_yolo_label(lbl.read_text(), w, h, names)
+            out[i] = parse_yolo_label(lbl.read_text(encoding="utf-8"), w, h, names)
         return out
 
     def image_source(self, seq: str) -> ImageSource:

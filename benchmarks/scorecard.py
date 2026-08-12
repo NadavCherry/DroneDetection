@@ -140,11 +140,11 @@ class Scorecard:
     def save(self, path: str | Path) -> None:
         p = Path(path)
         p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(json.dumps(asdict(self), indent=1))
+        p.write_text(json.dumps(asdict(self), indent=1), encoding="utf-8")
 
     @staticmethod
     def load(path: str | Path) -> "Scorecard":
-        d = json.loads(Path(path).read_text())
+        d = json.loads(Path(path).read_text(encoding="utf-8"))
         got = d.get("schema_version", 0)
         if got != SCHEMA_VERSION:
             raise ValueError(

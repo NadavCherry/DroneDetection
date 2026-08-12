@@ -76,7 +76,7 @@ def main() -> None:
     # bench table
     rows = []
     for name in PIPES:
-        b = json.loads((OUT / "1006" / name / "bench.json").read_text())
+        b = json.loads((OUT / "1006" / name / "bench.json").read_text(encoding="utf-8"))
         rows.append((name, b))
     lines = ["| pipeline | fps (5070) | total ms | stage breakdown |", "|---|---|---|---|"]
     for name, b in rows:
@@ -84,7 +84,7 @@ def main() -> None:
         stages = ", ".join(f"{k} {v:.1f}" for k, v in sorted(b.items())
                            if k not in ("TOTAL ms/frame", "fps_end_to_end"))
         lines.append(f"| {name} | {b['fps_end_to_end']} | {total:.1f} | {stages} |")
-    Path("realtime/work/bench.md").write_text("\n".join(lines) + "\n")
+    Path("realtime/work/bench.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
 
 

@@ -91,8 +91,8 @@ def classify_tracks(tracks: dict, dets: dict, allow_motion: bool = True) -> dict
 
 def classify_files(tracks_path: str | Path, dets_path: str | Path,
                    allow_motion: bool = True) -> dict[int, dict]:
-    return classify_tracks(json.loads(Path(tracks_path).read_text()),
-                           json.loads(Path(dets_path).read_text()), allow_motion=allow_motion)
+    return classify_tracks(json.loads(Path(tracks_path).read_text(encoding="utf-8")),
+                           json.loads(Path(dets_path).read_text(encoding="utf-8")), allow_motion=allow_motion)
 
 
 def mean_ego_motion(dets: dict) -> float:

@@ -550,7 +550,7 @@ def manifest_dict(ds: Dataset, presence: Presence, *,
 def write_manifest(payload: dict, directory: Path) -> Path:
     directory.mkdir(parents=True, exist_ok=True)
     path = directory / MANIFEST_NAME
-    path.write_text(json.dumps(payload, indent=2) + "\n")
+    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     return path
 
 

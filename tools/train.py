@@ -170,7 +170,7 @@ def parse_data_yaml(path: Path) -> dict[str, Any]:
     raises on anything it does not recognise rather than guessing. The raw text is hashed
     into the manifest as well, so the parse is never the only record.
     """
-    text = path.read_text()
+    text = path.read_text(encoding="utf-8")
     out: dict[str, Any] = {"names": {}}
     in_names = False
     for raw in text.splitlines():
@@ -229,7 +229,7 @@ def label_box_stats(labels_dir: Path, tile_px: int, sample: int = 2000) -> dict[
     class_ids: set[int] = set()
     n_boxes = n_empty = 0
     for name in chosen:
-        body = (labels_dir / name).read_text().strip()
+        body = (labels_dir / name).read_text(encoding="utf-8").strip()
         if not body:
             n_empty += 1
             continue
@@ -280,7 +280,7 @@ def listing_hash(directory: Path) -> dict[str, Any]:
 def dataset_manifest(data_yaml: Path, tile_px: int, sample: int = 2000,
                      hash_contents: bool = False) -> dict[str, Any]:
     """Everything that identifies the dataset build a run consumed."""
-    raw = data_yaml.read_text()
+    raw = data_yaml.read_text(encoding="utf-8")
     parsed = parse_data_yaml(data_yaml)
     root = Path(parsed.get("path", data_yaml.parent))
     if not root.is_absolute():
@@ -554,7 +554,7 @@ def build_manifest(cfg: ExperimentConfig, seed: int, run_dir: Path,
 
 def write_json(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, default=str) + "\n")
+    path.write_text(json.dumps(payload, indent=2, default=str) + "\n", encoding="utf-8")
 
 
 # --------------------------------------------------------------------------- the runner

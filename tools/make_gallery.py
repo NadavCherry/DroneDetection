@@ -183,7 +183,7 @@ def facts_line(f: dict) -> str:
 
 
 def main() -> int:
-    manifest = json.loads((DOCS / "media" / "showcase.json").read_text())
+    manifest = json.loads((DOCS / "media" / "showcase.json").read_text(encoding="utf-8"))
     out = [HEAD]
 
     out.append('<h2>City defence &mdash; the four-camera ring'
@@ -234,7 +234,7 @@ def main() -> int:
 
     out.append(FOOT)
     path = DOCS / "gallery.html"
-    path.write_text("\n".join(out))
+    path.write_text("\n".join(out), encoding="utf-8")
     n = sum(len(manifest.get(k, [])) for k in ("city", "chase")) + len(DETECTION)
     print(f"wrote {path}  --  {n} clips")
     return 0

@@ -202,7 +202,7 @@ def main(argv=None) -> int:
 
     conditions_map = {}
     if a.conditions:
-        conditions_map = {k: tuple(v) for k, v in json.loads(a.conditions.read_text()).items()}
+        conditions_map = {k: tuple(v) for k, v in json.loads(a.conditions.read_text(encoding="utf-8")).items()}
 
     card = build_scorecard(
         a.dataset, a.model, a.gt, a.dets, protocol_key=a.protocol, split=split,

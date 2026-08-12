@@ -58,7 +58,7 @@ def load_frames():
 
 def candidates(n, shifts):
     """Per-frame candidate position in STABILIZED coords + source tag."""
-    pc = json.loads(Path("work/infer/10_06/tracks_all.json").read_text())
+    pc = json.loads(Path("work/infer/10_06/tracks_all.json").read_text(encoding="utf-8"))
     id1 = {int(f): v for tr in pc["tracks"] if tr["id"] == 1
            for f, v in tr["frames"].items()}
     meas = {t: (v[0] + shifts[t][0], v[1] + shifts[t][1])
@@ -240,11 +240,11 @@ def main():
                             "src": cand[t][2], "refined": t in refined,
                             "snr": round(refined[t][2], 1) if t in refined else None}
                    for t in sorted(cand)}
-        (OUT_DIR / "candidates.json").write_text(json.dumps(payload))
+        (OUT_DIR / "candidates.json").write_text(json.dumps(payload), encoding="utf-8")
         return
 
     bad = set(int(x) for x in a.finalize.split(",") if x.strip()) if a.finalize else set()
-    cjson = json.loads((OUT_DIR / "candidates.json").read_text())
+    cjson = json.loads((OUT_DIR / "candidates.json").read_text(encoding="utf-8"))
     gt_old = GroundTruth.load("realtime/work/gt_1006.json")
     gt = GroundTruth(video=VIDEO)
     gt.meta["shifts"] = {str(i): [round(s[0], 3), round(s[1], 3)]

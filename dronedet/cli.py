@@ -41,7 +41,7 @@ def cmd_eval(a: argparse.Namespace) -> None:
     print(report)
     if a.out:
         Path(a.out).parent.mkdir(parents=True, exist_ok=True)
-        Path(a.out).write_text(report)
+        Path(a.out).write_text(report, encoding="utf-8")
 
 
 def cmd_bench(a: argparse.Namespace) -> None:
@@ -107,7 +107,7 @@ def cmd_bench(a: argparse.Namespace) -> None:
     print(report)
     if a.out:
         Path(a.out).parent.mkdir(parents=True, exist_ok=True)
-        Path(a.out).write_text(report)
+        Path(a.out).write_text(report, encoding="utf-8")
 
 
 def cmd_track(a: argparse.Namespace) -> None:

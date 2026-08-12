@@ -93,7 +93,7 @@ def load_intrinsics(pegasus_config_dir, name: str = DEFAULT_CALIBRATION,
             f"camera calibration not found at {path}. Point --pegasus-config at "
             f"the external platform's robots/PEGASUS/config directory."
         )
-    data = yaml.safe_load(path.read_text())
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
     intr = Intrinsics(width=data["image_width"], height=data["image_height"],
                       fx=data["fx"], fy=data["fy"], cx=data["cx"], cy=data["cy"])
     if resolution is not None:

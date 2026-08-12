@@ -47,7 +47,7 @@ def main() -> None:
         name = f"f{idx:05d}"
         cv2.imwrite(str(ROOT / f"images/{split}/{name}.jpg"), frame,
                     [cv2.IMWRITE_JPEG_QUALITY, 95])
-        (ROOT / f"labels/{split}/{name}.txt").write_text("\n".join(lines) + "\n")
+        (ROOT / f"labels/{split}/{name}.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
         if split == "train":
             n_tr += 1
         else:
@@ -58,7 +58,7 @@ def main() -> None:
         "train: images/train\n"
         "val: images/val\n"
         "names:\n  0: drone\n"
-    )
+    , encoding="utf-8")
     print(f"dataset: {n_tr} train / {n_va} val images -> {ROOT}")
 
 

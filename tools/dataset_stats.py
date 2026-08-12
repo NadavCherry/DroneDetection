@@ -101,7 +101,7 @@ def load_ardmav(root: Path):
 
 
 def load_gt_json(path: Path):
-    d = json.loads(path.read_text())
+    d = json.loads(path.read_text(encoding="utf-8"))
     wh = []
     for name, o in d["objects"].items():
         if o.get("ignore"):

@@ -66,7 +66,7 @@ def load(search: Path) -> list:
     runs = []
     for rj in sorted(search.rglob("results.json")):
         try:
-            payload = json.loads(rj.read_text())
+            payload = json.loads(rj.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError):
             continue
         if not payload.get("results"):
@@ -267,7 +267,7 @@ def main(argv=None) -> int:
 
     out = ROOT / a.out
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text("\n".join(L))
+    out.write_text("\n".join(L), encoding="utf-8")
     print(f"{len(rows)} engagements from {len(runs)} runs -> {out}")
     if det:
         print(f"pipeline {1000.0 / loop:.1f} FPS mean, "

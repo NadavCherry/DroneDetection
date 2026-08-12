@@ -371,7 +371,7 @@ def main(argv=None) -> int:
         "hits": sum(1 for r in results if r.success),
         "results": [asdict(r) for r in results],
     }
-    (out / "results.json").write_text(json.dumps(payload, indent=1))
+    (out / "results.json").write_text(json.dumps(payload, indent=1), encoding="utf-8")
     print(f"\nwrote {out}/results.json")
     return 0 if all(r.success for r in results) else 1
 

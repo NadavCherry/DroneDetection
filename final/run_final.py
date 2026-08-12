@@ -94,11 +94,11 @@ def main() -> None:
     from dronedet.trackclass import classify_files
 
     cls = classify_files(out / "tracks.json", out / "dets.json")
-    raw = json.loads((out / "tracks.json").read_text())
+    raw = json.loads((out / "tracks.json").read_text(encoding="utf-8"))
     keep = [tr for tr in raw["tracks"] if cls[tr["id"]]["cls"] != "other"]
     (out / "tracks_drone.json").write_text(json.dumps(
         {**raw, "tracks": keep, "classification":
-         {str(k): v for k, v in cls.items()}}))
+         {str(k): v for k, v in cls.items()}}), encoding="utf-8")
 
     # 4. track-integrated detections (drone/near tracks only)
     import subprocess
@@ -113,7 +113,7 @@ def main() -> None:
 
     # 5. alarm summary
     lines = []
-    dets = json.loads((out / "dets.json").read_text())
+    dets = json.loads((out / "dets.json").read_text(encoding="utf-8"))
     det_frames = {int(f): v for f, v in dets["frames"].items()}
     for tr in keep:
         info = cls[tr["id"]]
@@ -136,7 +136,7 @@ def main() -> None:
             f"(latency {confirm - fs[0]} frames)" if confirm is not None else
             f"track {tr['id']} [{info['cls']}]: frames {fs[0]}-{fs[-1]} "
             f"({len(fs)} covered), not confirmed")
-    (out / "alarms.txt").write_text("\n".join(lines) + "\n")
+    (out / "alarms.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines) or "no drone tracks")
 
     # 6. annotated video

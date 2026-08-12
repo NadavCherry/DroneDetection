@@ -171,7 +171,7 @@ def load_facts(results: Path, key: str) -> dict:
     """Pull one engagement's measured facts straight out of its run manifest."""
     if not results.is_file():
         return {}
-    blob = json.loads(results.read_text())
+    blob = json.loads(results.read_text(encoding="utf-8"))
     for r in blob.get("results", []):
         if r.get("name") == key:
             return {
@@ -261,9 +261,9 @@ def main(argv=None) -> int:
 
     if not a.dry_run:
         path = OUT / "showcase.json"
-        merged = json.loads(path.read_text()) if path.is_file() else {}
+        merged = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else {}
         merged.update(manifest)
-        path.write_text(json.dumps(merged, indent=1) + "\n")
+        path.write_text(json.dumps(merged, indent=1) + "\n", encoding="utf-8")
         print(f"\nwrote {path}  --  {total / 1e6:.1f} MB of video in this pass")
     return 0
 

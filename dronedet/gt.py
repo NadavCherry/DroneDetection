@@ -39,11 +39,11 @@ class GroundTruth:
             },
         }
         Path(path).parent.mkdir(parents=True, exist_ok=True)
-        Path(path).write_text(json.dumps(payload))
+        Path(path).write_text(json.dumps(payload), encoding="utf-8")
 
     @staticmethod
     def load(path: str | Path) -> "GroundTruth":
-        raw = json.loads(Path(path).read_text())
+        raw = json.loads(Path(path).read_text(encoding="utf-8"))
         gt = GroundTruth(video=raw["video"], meta=raw.get("meta", {}))
         for name, o in raw["objects"].items():
             obj = GTObject(name=name, ignore=o.get("ignore", False))

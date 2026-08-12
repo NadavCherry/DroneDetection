@@ -872,7 +872,7 @@ def main(argv=None) -> int:
         Path(a.out).parent.mkdir(parents=True, exist_ok=True)
         Path(a.out).write_text(json.dumps(
             {"args": vars(a), "grid": rows,
-             "results": [asdict(r) for r in best[3]]}, indent=1))
+             "results": [asdict(r) for r in best[3]]}, indent=1), encoding="utf-8")
         print(f"wrote {a.out}")
     return 0 if best and best[2]["rate"] >= 1.0 else 1
 

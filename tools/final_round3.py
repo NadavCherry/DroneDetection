@@ -95,7 +95,7 @@ def main() -> None:
         for p in ("work/eval_round3_0705val.md", "work/eval_round3_0705full.md",
                   "work/eval_round3_1006test.md"):
             print(f"\n==== {p} ====")
-            print(Path(p).read_text())
+            print(Path(p).read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

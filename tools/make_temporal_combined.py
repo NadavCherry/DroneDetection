@@ -93,7 +93,7 @@ def extract(video, boxes, frame_ids, split, prefix, tile=640, dt=DT, min_side=12
                 stem = f"{prefix}_{idx:05d}"
                 cv2.imwrite(str(OUT / "images" / split / f"{stem}.jpg"), crop,
                             [cv2.IMWRITE_JPEG_QUALITY, 92])
-                (OUT / "labels" / split / f"{stem}.txt").write_text("\n".join(lines))
+                (OUT / "labels" / split / f"{stem}.txt").write_text("\n".join(lines), encoding="utf-8")
                 n_img += 1
         idx += 1
     cap.release()

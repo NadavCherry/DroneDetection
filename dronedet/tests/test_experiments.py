@@ -64,9 +64,9 @@ def _write_dataset(root: Path, min_side: float, tile: int = 640,
             s = max(true_sides[i % len(true_sides)], min_side)
             (img / f"f{i:04d}.jpg").write_bytes(b"\xff\xd8fake-jpeg" + bytes([i % 251]))
             (lbl / f"f{i:04d}.txt").write_text(
-                f"0 0.500000 0.500000 {s / tile:.6f} {s / tile:.6f}\n")
+                f"0 0.500000 0.500000 {s / tile:.6f} {s / tile:.6f}\n", encoding="utf-8")
     (root / "data.yaml").write_text(
-        f"path: {root.resolve()}\ntrain: images/train\nval: images/val\nnames:\n  0: drone\n")
+        f"path: {root.resolve()}\ntrain: images/train\nval: images/val\nnames:\n  0: drone\n", encoding="utf-8")
     return root / "data.yaml"
 
 
@@ -221,7 +221,7 @@ def test_the_no_p5_experiment_expects_a_three_level_head():
     assert cfg.expected_strides == (4, 8, 16)
     assert not cfg.unverified_model_cfg
 
-    text = (REPO / cfg.model_cfg).read_text()
+    text = (REPO / cfg.model_cfg).read_text(encoding="utf-8")
     detect = [ln for ln in text.splitlines() if "Detect" in ln and not ln.lstrip().startswith("#")]
     assert detect == ["  - [[18, 21, 24], 1, Detect, [nc]] # Detect(P2, P3, P4) -- no P5"], detect
     assert len(cfg.expected_strides) == 3, "three strides, three Detect inputs"
@@ -298,14 +298,14 @@ def test_parse_data_yaml_reads_what_the_repo_writes(tmp_path):
 
 def test_parse_data_yaml_refuses_a_shape_it_does_not_understand(tmp_path):
     y = tmp_path / "bad.yaml"
-    y.write_text("train: images/train\nval: images/val\n  stray: value\n")
+    y.write_text("train: images/train\nval: images/val\n  stray: value\n", encoding="utf-8")
     with pytest.raises(ValueError):
         T.parse_data_yaml(y)
 
 
 def test_missing_split_key_is_an_error(tmp_path):
     y = tmp_path / "bad.yaml"
-    y.write_text("train: images/train\n")
+    y.write_text("train: images/train\n", encoding="utf-8")
     with pytest.raises(ValueError):
         T.parse_data_yaml(y)
 
@@ -364,7 +364,7 @@ def test_a_dataset_with_the_wrong_number_of_classes_is_refused(tmp_path):
 def test_a_label_naming_a_class_the_config_does_not_have_is_refused(tmp_path):
     root = tmp_path / "ds"
     _write_dataset(root, min_side=12.0)
-    (root / "labels" / "train" / "f0000.txt").write_text("3 0.5 0.5 0.02 0.02\n")
+    (root / "labels" / "train" / "f0000.txt").write_text("3 0.5 0.5 0.02 0.02\n", encoding="utf-8")
     stats = T.label_box_stats(root / "labels" / "train", 640)
     msg = T.check_class_count({"names": {0: "drone"}}, stats, ("drone",))
     assert msg and "[3]" in msg
@@ -386,7 +386,7 @@ def test_dataset_manifest_hashes_both_splits_and_changes_with_the_data(tmp_path)
     assert m1["splits"]["train"]["labels"]["listing_sha256"]
 
     (tmp_path / "ds" / "labels" / "train" / "f0000.txt").write_text(
-        "0 0.5 0.5 0.05 0.05\n0 0.2 0.2 0.05 0.05\n")
+        "0 0.5 0.5 0.05 0.05\n0 0.2 0.2 0.05 0.05\n", encoding="utf-8")
     m2 = T.dataset_manifest(y, tile_px=640)
     assert (m1["splits"]["train"]["labels"]["listing_sha256"]
             != m2["splits"]["train"]["labels"]["listing_sha256"])
@@ -498,9 +498,9 @@ def test_manifest_is_written_before_the_trainer_is_called(tmp_path, demo_cfg):
     assert seen["kwargs"]["seed"] == 7
     assert run_dir.name == "demo-s7"
 
-    m = json.loads((run_dir / "MANIFEST.json").read_text())
+    m = json.loads((run_dir / "MANIFEST.json").read_text(encoding="utf-8"))
     assert m["experiment_name"] == "demo"
-    r = json.loads((run_dir / "RESULT.json").read_text())
+    r = json.loads((run_dir / "RESULT.json").read_text(encoding="utf-8"))
     assert r["status"] == "ok" and r["trainer"] == {"fake": True}
 
 
@@ -512,7 +512,7 @@ def test_a_crashed_run_still_leaves_a_manifest_and_a_failure_record(tmp_path, de
         T.train_one(demo_cfg, 1, _args(out_root=tmp_path / "runs"), trainer=boom)
     run_dir = tmp_path / "runs" / "demo-s1"
     assert (run_dir / "MANIFEST.json").exists()
-    r = json.loads((run_dir / "RESULT.json").read_text())
+    r = json.loads((run_dir / "RESULT.json").read_text(encoding="utf-8"))
     assert r["status"] == "failed" and "out of memory" in r["error"]
 
 
@@ -566,7 +566,7 @@ def test_seeds_three_writes_three_independent_run_directories(tmp_path, demo_cfg
         T.train_one(demo_cfg, seed, args, trainer=lambda *a: {"ok": True})
     dirs = sorted(p.name for p in (tmp_path / "runs").iterdir())
     assert dirs == ["demo-s7", "demo-s8", "demo-s9"]
-    seeds = [json.loads((tmp_path / "runs" / d / "MANIFEST.json").read_text())["seed"]
+    seeds = [json.loads((tmp_path / "runs" / d / "MANIFEST.json").read_text(encoding="utf-8"))["seed"]
              for d in dirs]
     assert seeds == [7, 8, 9]
 
