@@ -149,6 +149,34 @@ def test_the_ardmav_bar_is_glad_at_iou_0_5_not_mgmd_at_0_25():
     assert bar.protocol.split == "official-test-15"
 
 
+def test_the_glad_conditions_partition_the_official_test_split():
+    """GLAD's three conditions must cover the 15 test videos exactly, 5 each.
+
+    Taken from the authors' source (GLAD.py:31-33, GLAD_MC.py:22-24), so this test is
+    really asking "does our split still agree with theirs". A video in our test list with
+    no condition would silently vanish from the per-condition table -- and the SMALL row
+    is the one this project exists to contest, so losing a video from it would flatter us.
+    """
+    test = set(catalog.DATASETS["ardmav"].official_test)
+    assert set(catalog.ARD_CONDITIONS) == test
+    counts: dict[str, int] = {}
+    for conds in catalog.ARD_CONDITIONS.values():
+        assert len(conds) == 1, "GLAD assigns exactly one condition per video"
+        counts[conds[0]] = counts.get(conds[0], 0) + 1
+    assert counts == {"ordinary": 5, "complex": 5, "small": 5}
+
+
+def test_glad_is_weakest_on_the_condition_we_are_built_for():
+    """The strategic fact, pinned so it cannot drift: 0.58 on small vs 0.91 on ordinary.
+
+    If a future edit makes these equal, the argument for targeting the small subset has
+    gone with it and somebody should notice.
+    """
+    by = catalog.ARD_GLAD_BY_CONDITION
+    assert by["small"] < by["complex"] < by["ordinary"]
+    assert by["small"] == pytest.approx(0.58)
+
+
 def test_the_mgmd_number_is_not_claimed_to_be_on_the_official_split():
     """MGMD never enumerates its split, so its 0.55 is not scoreable against.
 

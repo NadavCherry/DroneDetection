@@ -94,6 +94,30 @@ ARD_TEST = tuple(f"phantom{n:02d}" for n in
                  (5, 8, 9, 10, 19, 30, 41, 43, 46, 47, 58, 63, 65, 70, 86))
 ARD_VAL = ("phantom06", "phantom23", "phantom45", "phantom61", "phantom79")
 
+#: GLAD's own three-way stratification of the 15 official test videos, and the AP it
+#: reports on each. Taken from the authors' source, not inferred: `GLAD.py:31-33` and
+#: `GLAD_MC.py:22-24` define these exact lists, and the repo README tabulates them.
+#:
+#: This is what makes the comparison useful rather than merely legal. A single overall
+#: AP averages a condition where the targets are large and easy with one where they are
+#: few-pixel, and this project has no particular claim on the former. The SMALL row --
+#: GLAD's own weakest, at 0.58 against its 0.91 on ordinary scenes -- is where a
+#: stabilised temporal stack has a reason to win, and it is a published number on a
+#: published split rather than a slice we chose after seeing our results.
+ARD_CONDITIONS: dict[str, tuple[str, ...]] = {
+    **{v: ("ordinary",) for v in ("phantom09", "phantom10", "phantom30",
+                                  "phantom47", "phantom70")},
+    **{v: ("complex",) for v in ("phantom05", "phantom08", "phantom58",
+                                 "phantom65", "phantom86")},
+    **{v: ("small",) for v in ("phantom19", "phantom41", "phantom43",
+                               "phantom46", "phantom63")},
+}
+
+#: GLAD's published AP per condition, IoU 0.5 (arXiv 2312.11008).
+ARD_GLAD_BY_CONDITION: dict[str, float] = {
+    "ordinary": 0.91, "complex": 0.81, "small": 0.58, "overall": 0.80,
+}
+
 
 DATASETS: dict[str, Dataset] = {d.key: d for d in [
 
