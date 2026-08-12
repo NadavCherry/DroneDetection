@@ -145,11 +145,19 @@ def peak_vram() -> dict[str, Any]:
 
     `reserved` is the number that matters for "will it OOM": the allocator holds cached
     blocks it has not handed out, and the card has to have room for those too.
+
+    Reports only when CUDA is ALREADY initialised, and that guard is the point.
+    `torch.cuda.max_memory_allocated()` initialises CUDA as a side effect if nothing
+    else has, and this runs at the end of every run including the fake-trainer tests --
+    so without the guard a pure-CPU test would build a CUDA context it never wanted:
+    seconds of startup, a context on a card another run may be holding, and a reporting
+    call that can block on a busy GPU. If no training touched the GPU there is no peak
+    to report, and saying so is the correct answer.
     """
     try:
         import torch
-        if not torch.cuda.is_available():
-            return {"available": False}
+        if not (torch.cuda.is_available() and torch.cuda.is_initialized()):
+            return {"available": False, "reason": "cuda not initialised in this process"}
         return {
             "available": True,
             "peak_allocated_gib": round(torch.cuda.max_memory_allocated() / 1024 ** 3, 3),
