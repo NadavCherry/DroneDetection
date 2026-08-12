@@ -200,7 +200,20 @@ _ARDMAV_AB = dict(
     datasets=("ardmav",),
     model_cfg="yolov8s-p2.yaml",
     weights="yolov8s.pt",
-    imgsz=640, batch=8, epochs=60, seed=0,
+    # 30 epochs, not the 60 the local configs use. 60 was chosen for the 962-image local
+    # set -- about 58k samples seen. ARD-MAV tiled is ~40,000 images, so 30 epochs is
+    # ~1.2M samples: 20x more exposure than the setting was ever tuned for, and keeping
+    # 60 would spend an extra day of GPU on overfitting budget.
+    #
+    # batch stays 8, which is a deliberate refusal. Measured on the 12 GiB card here,
+    # yolov8s-p2 @ 640 costs 3.73 GiB at batch 8 and 7.08 at batch 16 -- but this repo
+    # commits every shipped config to an 8 GB card (test_the_shipped_configs_fit_an_8gb_card,
+    # and the "8 GB?" column that rejects rival methods on the same ground). 7.08 GiB is
+    # over 8 GB x VRAM_SAFETY_FRACTION, so batch 16 in the config would break that promise
+    # for every reader in order to suit one laptop. Batch is a property of the machine,
+    # not of the experiment: pass `--batch 16` on the command line here and the config
+    # stays portable and stays honest.
+    imgsz=640, batch=8, epochs=30, seed=0,
     tile_px=640, min_side=0.0,
     nwd=True, nwd_assign_ratio=0.5, nwd_assign_c=16.0,
     nwd_loss_ratio=0.5, nwd_loss_c=2.0,

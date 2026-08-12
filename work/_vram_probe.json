@@ -1,0 +1,17 @@
+[
+ {
+  "batch": 8,
+  "peak_alloc_gib": 2.7142605781555176,
+  "peak_reserved_gib": 3.728515625
+ },
+ {
+  "batch": 16,
+  "peak_alloc_gib": 5.13857364654541,
+  "peak_reserved_gib": 7.083984375
+ },
+ {
+  "batch": 32,
+  "peak_alloc_gib": 9.974551677703857,
+  "peak_reserved_gib": 10.39453125
+ }
+]

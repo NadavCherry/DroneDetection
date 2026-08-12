@@ -64,12 +64,24 @@ UAV_DETR_B4_640 = VramReference(
     gib=5.14, batch=4, imgsz=640, measured=True,
     source="UAV-DETR reported peak training memory, batch 4 @ 640 px")
 
-#: Unmeasured. A YOLOv8s with a P2 head is roughly 3x lighter per batch-megapixel than a
-#: DETR of the same input size; that ratio is an educated guess and is flagged as one.
-YOLOV8S_P2_ESTIMATE = VramReference(
-    gib=6.55, batch=16, imgsz=640, measured=False,
-    source="ESTIMATE, never observed: yolov8s + P2 head, assumed ~1.0 GiB per "
-           "batch-megapixel (~3x lighter than UAV-DETR's measured 3.14)")
+#: MEASURED 2026-08-12 on an RTX 4080 Laptop (sm_89, 12 GiB), yolov8s-p2 @ 640 px, one
+#: epoch per point, peak `torch.cuda.max_memory_reserved()`:
+#:
+#:     batch  8 ->  3.73 GiB (31.1 %)
+#:     batch 16 ->  7.08 GiB (59.1 %)
+#:     batch 32 -> 10.39 GiB (86.7 %)
+#:
+#: which fits 0.37 GiB fixed + 0.419 GiB per sample. The estimate this replaces claimed
+#: 6.55 GiB at batch 16 and was ~8 % optimistic -- close, but this type exists to carry
+#: facts and now it carries one. Note that batch 32 lands ABOVE VRAM_SAFETY_FRACTION on
+#: this card: it runs, but it is not a thing to schedule unattended for six hours.
+YOLOV8S_P2_MEASURED = VramReference(
+    gib=7.08, batch=16, imgsz=640, measured=True,
+    source="MEASURED 2026-08-12, RTX 4080 Laptop 12 GiB, yolov8s-p2 @ 640 px, peak "
+           "max_memory_reserved over one epoch; fits 0.37 GiB + 0.419 GiB/sample")
+
+#: The former name, kept so nothing that imported it breaks. It now points at the fact.
+YOLOV8S_P2_ESTIMATE = YOLOV8S_P2_MEASURED
 
 #: Headroom left for the CUDA context, cuDNN workspaces and fragmentation. A run that
 #: fits at exactly 8.0 GiB in arithmetic does not fit on an 8 GB card.
@@ -308,9 +320,14 @@ class ExperimentConfig:
     def vram_warning(self, budget_gib: float = 8.0) -> str | None:
         """A loud, self-doubting OOM warning, or None if the run looks like it fits.
 
-        It always quotes the one measured anchor this project owns, because the reader's
-        first question is "how would you know?" and the honest answer is "from one
-        measurement of a different architecture".
+        It quotes the anchor it reasoned from and says whether anyone has observed it,
+        because the reader's first question is "how would you know?".
+
+        That answer improved on 2026-08-12. It used to be "from one measurement of a
+        *different* architecture" -- UAV-DETR's batch-4 figure, extrapolated onto a YOLO.
+        yolov8s-p2 has since been measured directly on this hardware at three batch
+        sizes, so a yolov8s-p2 config is now warned about on the strength of yolov8s-p2
+        numbers. The DETR anchor is still quoted when it is the one in use.
         """
         est = self.estimated_vram_gib()
         limit = budget_gib * VRAM_SAFETY_FRACTION
@@ -323,8 +340,10 @@ class ExperimentConfig:
             f"({limit:.1f} GiB usable after context/fragmentation).\n"
             f"  basis: {ref.source} -> {ref.gib_per_batch_megapixel:.2f} GiB per "
             f"batch-megapixel"
-            f"{'' if ref.measured else '  [UNMEASURED ESTIMATE]'}.\n"
-            f"  the only VRAM figure this project has measured is "
+            f"{'  [MEASURED]' if ref.measured else '  [UNMEASURED ESTIMATE]'}.\n"
+            f"  measured anchors this project owns: "
+            f"{YOLOV8S_P2_MEASURED.gib:.2f} GiB at batch {YOLOV8S_P2_MEASURED.batch} x "
+            f"{YOLOV8S_P2_MEASURED.imgsz} px (yolov8s-p2, this repo, 2026-08-12); "
             f"{UAV_DETR_B4_640.gib:.2f} GiB at batch {UAV_DETR_B4_640.batch} x "
             f"{UAV_DETR_B4_640.imgsz} px ({UAV_DETR_B4_640.source}).\n"
             f"  suggestion: --batch {self.max_batch_for(budget_gib)}, or keep the batch "

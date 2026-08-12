@@ -17,7 +17,7 @@ from .ardmav import (BASELINE_ARDMAV, BASELINE_LOCAL, P2_NO_P5_ARDMAV,
                      TRUEEXTENT_ARDMAV, TRUEEXTENT_LOCAL)
 from .base import (Augmentation, DEFAULT_AUG, ExperimentConfig, NO_PHOTOMETRIC_AUG,
                    UAV_DETR_B4_640, VRAM_SAFETY_FRACTION, VramReference,
-                   YOLOV8S_P2_ESTIMATE, check_strides)
+                   YOLOV8S_P2_ESTIMATE, YOLOV8S_P2_MEASURED, check_strides)
 from .birds import BIRDS_2CLASS
 from .temporal import TEMPORAL_ABLATION_SINGLE, TEMPORAL_ABLATION_STACK
 
@@ -103,5 +103,6 @@ def describe_all() -> str:
 __all__ = [
     "Augmentation", "DEFAULT_AUG", "EXPERIMENTS", "ExperimentConfig", "GROUPS",
     "NO_PHOTOMETRIC_AUG", "UAV_DETR_B4_640", "VRAM_SAFETY_FRACTION", "VramReference",
-    "YOLOV8S_P2_ESTIMATE", "check_strides", "describe_all", "get", "names", "resolve",
+    "YOLOV8S_P2_ESTIMATE", "YOLOV8S_P2_MEASURED",
+    "check_strides", "describe_all", "get", "names", "resolve",
 ]

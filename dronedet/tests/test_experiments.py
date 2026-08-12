@@ -34,7 +34,8 @@ if str(REPO) not in sys.path:
 from benchmarks.protocol import ARDMAV_OFFICIAL  # noqa: E402
 from configs.experiments import (Augmentation, EXPERIMENTS, GROUPS,  # noqa: E402
                                  ExperimentConfig, NO_PHOTOMETRIC_AUG, UAV_DETR_B4_640,
-                                 check_strides, describe_all, get, names, resolve)
+                                 YOLOV8S_P2_MEASURED, check_strides, describe_all, get,
+                                 names, resolve)
 
 
 def _load_train_module():
@@ -257,13 +258,22 @@ def test_the_shipped_configs_fit_an_8gb_card():
         assert cfg.vram_warning(8.0) is None, f"{cfg.name}: {cfg.vram_warning(8.0)}"
 
 
-def test_an_oversized_batch_warns_and_quotes_the_one_measured_reference():
+def test_an_oversized_batch_warns_and_quotes_its_measured_references():
+    """The warning must say what it reasoned from and whether anyone has observed it.
+
+    This assertion used to be `"UNMEASURED" in w` -- correct while the YOLO anchor was a
+    guess extrapolated from a DETR's batch-4 figure. yolov8s-p2 @ 640 px was measured
+    directly on 2026-08-12 (3.73 / 7.08 / 10.39 GiB at batch 8 / 16 / 32), so it flips: a
+    yolov8s-p2 config must now be warned about on yolov8s-p2 evidence and must say so.
+    Both anchors stay in the message, because a reader checking the arithmetic needs them.
+    """
     cfg = get("baseline_ardmav").with_overrides(batch=64, imgsz=1280)
     w = cfg.vram_warning(8.0)
     assert w is not None
     assert "LIKELY OOM" in w
     assert f"{UAV_DETR_B4_640.gib:.2f}" in w and "batch 4" in w
-    assert "UNMEASURED" in w, "the YOLO anchor is an estimate and must say so"
+    assert f"{YOLOV8S_P2_MEASURED.gib:.2f}" in w
+    assert "[MEASURED]" in w and "UNMEASURED" not in w
 
 
 def test_the_suggested_batch_actually_fits():

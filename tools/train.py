@@ -135,6 +135,30 @@ def package_versions() -> dict[str, str | None]:
     return out
 
 
+def peak_vram() -> dict[str, Any]:
+    """Peak VRAM this process reached, so the OOM guard can be corrected by evidence.
+
+    `configs.experiments.base.VramReference` exists to hold a *measured* anchor and its
+    docstring says this is where the measurement comes from -- but nothing was writing
+    it, so six completed runs left the anchor an estimate. Recorded per run now, in the
+    same units the guard reasons in.
+
+    `reserved` is the number that matters for "will it OOM": the allocator holds cached
+    blocks it has not handed out, and the card has to have room for those too.
+    """
+    try:
+        import torch
+        if not torch.cuda.is_available():
+            return {"available": False}
+        return {
+            "available": True,
+            "peak_allocated_gib": round(torch.cuda.max_memory_allocated() / 1024 ** 3, 3),
+            "peak_reserved_gib": round(torch.cuda.max_memory_reserved() / 1024 ** 3, 3),
+        }
+    except Exception as exc:                                   # noqa: BLE001
+        return {"available": False, "reason": f"{type(exc).__name__}: {exc}"}
+
+
 def gpu_info() -> dict[str, Any]:
     """Device name and memory, or an explicit statement of why they are unknown."""
     try:
@@ -639,6 +663,7 @@ def train_one(cfg: ExperimentConfig, seed: int, args: argparse.Namespace,
         "finished_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "best_weights": str(best) if best.exists() else None,
         "best_weights_sha256": sha256_file(best) if best.exists() else None,
+        "vram": peak_vram(),
         "trainer": result,
     })
     print(f"[{cfg.run_name(seed)}] done in {time.time() - started:.0f} s -> {run_dir}")
