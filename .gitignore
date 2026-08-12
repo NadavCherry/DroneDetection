@@ -124,3 +124,15 @@ dist/
 work/prepared/
 work/scorecards/
 work/det_bench/
+work/_overnight/
+work/_vram/
+
+# Third-party checkpoints mirrored for benchmarking. NOT ours to redistribute: GLAD
+# ships NO LICENCE FILE at all, so all rights are reserved by default -- committing
+# 113 MB of someone else's weights into an AGPL-3.0 tree would be a licence violation
+# on top of the bloat. Running them to produce comparison numbers is ordinary practice;
+# redistributing them is not. Re-fetch with:
+#   git clone --depth 1 \
+#     https://github.com/WestlakeIntelligentRobotics/Global-Local-MAV-Detection \
+#     work/mirrors/glad
+work/mirrors/

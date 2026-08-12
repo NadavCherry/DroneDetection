@@ -51,8 +51,23 @@ RESULTS: tuple[PublishedResult, ...] = (
         source_url="https://arxiv.org/abs/2312.11008",
         code_url="https://github.com/WestlakeIntelligentRobotics/Global-Local-MAV-Detection",
         notes="THE BAR on the official 15-video split. P 0.92 / R 0.82 over 28,322 "
-              "frames. Ships weights but only 'basic codes' -- no evaluator, so this "
-              "number has never been reproduced outside the authors' lab."),
+              "frames.\n"
+              "WEIGHTS ARE OBTAINABLE -- mirrored 2026-08-12 to work/mirrors/glad, 113 MB: "
+              "yolov5s_GLAD.pt (global, 14,359,541 B, sha256 9e8edde0...), "
+              "yolov5s_GLAD-crop.pt (local, 14,454,645 B, 031813a6...), "
+              "Net_best.pth (appearance classifier, 248,841 B, 0d3a4631...), plus prebuilt "
+              "TensorRT .engine files. This is the only route to a PAIRED comparison "
+              "against the incumbent, and therefore the only route to a p-value: a "
+              "published scalar has no distribution, but a rival we run on our sequences "
+              "does.\n"
+              "TWO CAVEATS, both from the repo itself. (1) NO LICENCE FILE, so all rights "
+              "are reserved by default: running it to produce comparison numbers is "
+              "ordinary practice, vendoring it into this AGPL tree or shipping a "
+              "derivative is not. (2) README, verbatim: 'This repository contains the "
+              "basic codes for GLAD, the full codes with Kalman Filter, Adaptive Search "
+              "Region, and other codes will be published in the future.' The release is "
+              "not the published method, so a re-run measures GLAD-as-released and must "
+              "be labelled that way -- never as a refutation of the paper's 0.80."),
     PublishedResult(
         method="GLAD (small-MAV subset)", dataset_key="ardmav", metric="AP@0.5", value=0.58,
         protocol=ARDMAV_GLAD, year=2024, verified=True,
