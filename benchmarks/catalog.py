@@ -155,7 +155,7 @@ DATASETS: dict[str, Dataset] = {d.key: d for d in [
         sequences=77, frames=105000, has_birds=True, priority=5,
         official_protocol=DVB_OFFICIAL,
         notes="The name-recognition benchmark. Birds ARE PRESENT BUT UNLABELLED, so no "
-              "bird-attributed false-alarm rate has ever been published in nine editions -- "
+              "bird-attributed false-alarm rate has ever been published in eight editions -- "
               "which is the opening. Requires emailing wosdetc@googlegroups.com and signing "
               "a data-usage agreement; budget a week. Bar to beat: Laroca et al. mAP50 0.7390 "
               "on their 7-video val split."),

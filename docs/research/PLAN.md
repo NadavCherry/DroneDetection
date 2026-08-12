@@ -14,8 +14,9 @@ was independently published in Sensors 2024 with a near-identical gain (0.465 �
 repo's 0.06 → 0.83). Refusing IoU at 4 px is backed by TPAMI 2025 (same model: IoU-AP 10.9 vs
 SAFit-AP 24.2) and by MVA 2025 adopting a centre-distance metric for the same reason. The NWD
 implementation here is *more* correct than a 2026 arXiv paper's. And the parameter-scaling lane is
-closed for sub-16 px targets — a 3-billion-parameter model scores 16.2 AP on very-tiny, below a
-2022 method — so priors, not scale, are the open lane, which is exactly where this project lives.
+closed for sub-16 px targets — a 3-billion-parameter model reaches only 16.2 APvt on AI-TOD-v2,
+*below a 2026 method* at a fraction of the size, while DINOv3-7b-sat scores 9.2, level with 2022's
+RFLA — so priors, not scale, are the open lane, which is exactly where this project lives.
 
 What is amateurish is the **evidence packaging**: a headline of 1.000 on one video, a comparison
 table that varies metric *and* dataset *and* split simultaneously, no seeds or intervals on the
@@ -71,7 +72,7 @@ Three facts line up into one opportunity nobody has taken:
 - Trajectory **alone** reaches 92.0 % bird/drone accuracy (LAT-BirdDrone 2025); track-level context
   is worth +73 % on birds over per-frame (OBSS). Appearance at 10 px carries almost nothing.
 - **No benchmark measures it.** Drone-vs-Bird has birds but leaves them *unlabelled*; ARD100 has no
-  bird class; YOLOBirDrone publishes no confusion matrix. In nine editions of the challenge, no
+  bird class; YOLOBirDrone publishes no confusion matrix. In eight editions of the challenge, no
   bird-specific false-alarm rate has ever been published.
 
 Measured here today, and currently unreported: **99.8 % drone recall with 0 hits on 934 labelled
@@ -105,7 +106,7 @@ Cheap and measurement-only first — these answer the damaging criticisms withou
 | 1 | Re-score every existing result with `python -m dronedet bench` — IoU **and** centre-distance, size-binned, with bird hits and bootstrap CIs | Kills "you invented your own metric" by reporting both; already built and tested | done / hours |
 | 2 | Put *n*, the sensor, and the hardware on every headline number; demote 1.000-on-one-video to a case study and lead with the generalist result | The audit's top 8 fixes; seven are hours and none needs retraining | hours |
 | 3 | Download YOLOMG's released weights and run them against SpeckLock on one common split, scored both ways. Add the **Jul 2026 YOLOv11 edge detector** (DUT Anti-UAV 92.2 mAP50, 2.11 M params, "add P2 / delete P5") as a second baseline — it is our own edge recipe, independently derived, with an IoU number | "You have never run the baseline" is unanswerable and cheap to answer | hours |
-| 4 | Fix `LABEL = 24.0` → true extents + NWD; retrain the 07_05 specialist; compare COCO AP and centre AP | Restores comparability; testable entirely on data already on disk | days |
+| 4 | **`local_extent` group** — `baseline_local` then `trueextent_local`. `tools/make_datasets_v3.py --label-px 0` now writes true extents (the flag exists and is tested); this is the run that uses it. **This is the only item that touches the fatal case** — `trueextent_ardmav` addresses ARD-MAV, where inflation is merely tolerable | Restores comparability where it is actually broken: 0 % of 07_05's boxes can reach IoU 0.5 at `LABEL = 24`, against 74 % for ARD-MAV at min_side 12. Testable entirely on data already on disk | days |
 | 5 | Re-acquire ARD-MAV, retrain on the official 45, score the official 15 | Removes the one real methodological fault | days |
 | 6 | Halmstad (CC0, video, labelled birds, night, 203 k frames, no agreement) → publish the drone-vs-bird confusion matrix stratified by target pixel size. Add **UAV_SMID v2** (Mendeley, CC BY 4.0, direct download, 5 balanced classes with 3,162–3,440 bird objects) as immediate hard negatives — most anti-UAV training sets have never shown a detector a bird | Nobody has published this table; it is the owner's stated priority | days |
 | 7 | Fog ladder on our own clips via the HazyDet ASM (`A ~ N(0.8,0.05²)`, `β ~ N(0.045,0.02²)`); report detection rate **and** stabiliser inlier count per β. Then validate on **real** weather: ExtremeTrack (188 videos, 96 hazy + 92 rainy, tracking boxes) and **TriCross-D2D** (air-to-air, moving camera, 73.8 % tiny, real + controlled fog) | Tests the physics claim above; two curves, one figure — and TriCross-D2D is the only set hitting both priorities at once | days |

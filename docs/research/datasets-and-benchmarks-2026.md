@@ -75,7 +75,13 @@ SpeckLock's grayscale-moment stack ports to IR unchanged (it only needs single-c
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | **IRSTD-UAV** (TDCNet) | 2026 | 17 seq / **15,106** frames | not stated | small UAV | **requires GIM registration as preprocessing** | No | **buildings / trees / CLOUDS clutter** | P / R / F1 / AP50 | https://github.com/IVPLabs/TDCNet (Google Drive + Baidu) | Open | ~2–5 (est) | **Y** |
 | **DAUB** | — | **16,177** frames, 22 segments, 16,944 targets (8,983 train / 4,795 test) | 256×256 MWIR | **1–10 px** | **Static** | No | No | **5-px centre-distance TP** + mAP50/F1 (see §4) | via IR-small-target repos | Open | <2 | **?** |
-| **Anti-UAV410** | 2023 | 410 seq / **438 K** boxes | 640×512 TIR | frame-level **Tiny/Small/Medium/Normal** attributes | static | No | **35 % sudden lighting change, >60 % occlusion** | **State Accuracy** (see §4) | https://github.com/HwangBo94/Anti-UAV410 (Drive + Baidu `a410`) | Open | ~30–60 (est) | **Y** |
+| **Anti-UAV410** | 2023 | 410 seq / **438 K** boxes | 640×512 TIR | frame-level attributes, full published list: **Thermal Crossover**, Out-of-View, Scale Variation, Fast Motion, Occlusion, Dynamic Background Clutter, Tiny/Small/Medium/Normal Size ✅ (verified against the repo README 2026-08-12) | static | No | **35 % sudden lighting change, >60 % occlusion**; **Thermal Crossover** is a first-class labelled failure mode — the target's radiance matches the background and it disappears | **State Accuracy** (see §4) | https://github.com/HwangBo94/Anti-UAV410 (Drive + Baidu `a410`) | Open | ~30–60 (est) | **Y** |
+
+> **Why the `Thermal Crossover` attribute is worth knowing even though this project is RGB.** The
+> standard reply to "just use a thermal camera and this is trivial" is that the field's own thermal
+> benchmark ships a labelled attribute for *the target vanishing against the background*. Thermal
+> moves the failure mode rather than removing it. Cite the attribute list above, not a general
+> impression.
 | **Anti-UAV600** | 2023 | 600 seq / **~723 K** frames | 640×512 TIR | tiny | static | No | — | State Accuracy | ModelScope `ly261666/3rd_Anti-UAV` | Open, slow from outside CN | ~40–80 (est) | **?** |
 | **4th Anti-UAV Challenge set** | 2025 | T1/T2: 223 train + 216 test videos; **T3: 300 seq** (0–40+ targets/frame) | 640×512 TIR (Anti-UAV300 adds 1920×1080 RGB) | tiny-scale explicitly added | static | No | dynamic backgrounds | State Accuracy (T1/2), **MOTA** (T3) | Zenodo `15103888` (train) / `16299533` (test) | **N — Zenodo files RESTRICTED**; use Drive/Baidu | **1.8 TB total** | **N** for Zenodo |
 | **Anti-MUAV15** | 2025 | 15 seq / **16,269** frames | 640×512 | avg **12–23 px** | static (assumed) | No | buildings/sky/trees | none stated | https://github.com/Shihan0325/Anti-MUAV15 (Drive + Baidu `r72r`) | no licence stated | <2 | **Y** |
@@ -326,7 +332,7 @@ These three are frequently quoted side by side. They are three different experim
 
 ### 5.3 The "drone-vs-bird" benchmark does not measure drone-vs-bird
 
-Birds appear in DDS but are **not annotated**. A bird false alarm is counted as an ordinary FP. **No bird-specific false-alarm rate has ever been published for this challenge in nine editions.** Any claim of "bird discrimination" measured on DDS is a claim about generic false positives. (This is also the opening described in §2, Priority 5.)
+Birds appear in DDS but are **not annotated**. A bird false alarm is counted as an ordinary FP. **No bird-specific false-alarm rate has ever been published for this challenge in eight editions.** Any claim of "bird discrimination" measured on DDS is a claim about generic false positives. (This is also the opening described in §2, Priority 5.)
 
 ### 5.4 ~~Laroca's own citation trap~~ — **corrected, this claim was wrong**
 

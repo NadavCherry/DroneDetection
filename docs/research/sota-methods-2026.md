@@ -88,9 +88,28 @@ Ranked by *quality and independence* of the supporting measurement, not by size 
 | 12 | **Scaling the backbone** | **Strong evidence it does NOT work** | DINOv3 gains "on medium and large objects, small largely unchanged"; DINOv3-7b-sat **APvt 9.2** — worse than 2022 RFLA | [DEIMv2](https://arxiv.org/abs/2509.20787), [ScaleBridge T.](https://arxiv.org/abs/2512.01665) |
 
 **Ingredient 12 is the strategic finding.** The parameter-scaling lane is closed for sub-16 px
-objects. A 3B-parameter model buys 35.7 AP overall but only 16.2 APvt — *below* D³Q's 16.5 at a
-fraction of the size. The open lane is priors: motion, geometry, physics. That is precisely where
-SpeckLock operates, and it is the strongest available answer to "amateurish".
+objects. Stated precisely, from the AI-TOD-v2 numbers in
+[the data briefing §4.9](datasets-and-benchmarks-2026.md):
+
+| model | year | params | AP | APvt |
+|---|---|---|---|---|
+| RFLA | 2022 | ~R50 | 25.7 | **9.2** |
+| NWD-RKA + DetectoRS | 2022 | ~R50 | 24.7 | 9.7 |
+| DQ-DETR | 2024 | — | 30.2 | 15.3 |
+| **D³R-DETR** | **2026** | — | 31.3 | **16.6** |
+| ScaleBridge-Det | 2025 | **3.0 B** | **35.7** | 16.2 |
+| DINOv3-7b-sat | 2025 | **7 B** | — | **9.2** |
+
+Two separate facts, and they must not be merged: a **3-billion**-parameter model reaches only
+16.2 APvt, *below a 2026 method* at a fraction of the size; and **DINOv3-7b-sat scores 9.2 APvt,
+level with 2022's RFLA**. Four years and seven billion parameters moved very-tiny AP from 9.2 to
+about 16.6, and the model that got there is not the biggest one. The open lane is priors: motion,
+geometry, physics. That is precisely where SpeckLock operates.
+
+> ⚠ **An earlier draft of this paragraph said the 3B model scored "below a 2022 method". That was
+> wrong** — 16.2 is well above RFLA's 9.2 and NWD-RKA's 9.7 — and it was wrong in the direction
+> that flattered the argument, which is the failure mode this whole document exists to prevent. It
+> also cited "D³Q's 16.5"; the table says D³R-DETR 16.6. Both are corrected here.
 
 ---
 

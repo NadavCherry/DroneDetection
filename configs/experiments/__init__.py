@@ -12,7 +12,8 @@ CI, which is the point: the config is checked before the GPU is booked.
 
 from __future__ import annotations
 
-from .ardmav import BASELINE_ARDMAV, P2_NO_P5_ARDMAV, TRUEEXTENT_ARDMAV
+from .ardmav import (BASELINE_ARDMAV, BASELINE_LOCAL, P2_NO_P5_ARDMAV,
+                     TRUEEXTENT_ARDMAV, TRUEEXTENT_LOCAL)
 from .base import (Augmentation, DEFAULT_AUG, ExperimentConfig, NO_PHOTOMETRIC_AUG,
                    UAV_DETR_B4_640, VRAM_SAFETY_FRACTION, VramReference,
                    YOLOV8S_P2_ESTIMATE, check_strides)
@@ -26,6 +27,8 @@ EXPERIMENTS: dict[str, ExperimentConfig] = {c.name: c for c in (
     BIRDS_2CLASS,
     TEMPORAL_ABLATION_SINGLE,
     TEMPORAL_ABLATION_STACK,
+    BASELINE_LOCAL,
+    TRUEEXTENT_LOCAL,
 )}
 
 #: Named sets that must be run together, and the reason they must.
@@ -36,6 +39,12 @@ GROUPS: dict[str, tuple[str, ...]] = {
     # The true-extent claim is a difference; without the control it is an anecdote.
     "ardmav_headline": ("baseline_ardmav", "trueextent_ardmav"),
     "ardmav_all": ("baseline_ardmav", "trueextent_ardmav", "p2_no_p5_ardmav"),
+    # The FATAL extent case is this project's own data, not ARD-MAV: at LABEL = 24 px,
+    # 0% of 07_05's boxes can reach IoU 0.5. ardmav_headline does not touch it.
+    "local_extent": ("baseline_local", "trueextent_local"),
+    # Everything the extent defect touches, controls included.
+    "extent_all": ("baseline_local", "trueextent_local",
+                   "baseline_ardmav", "trueextent_ardmav"),
 }
 
 

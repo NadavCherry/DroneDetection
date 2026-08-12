@@ -47,7 +47,24 @@ from dronedet.video import frames
 
 VIDEO = "data/videos/07_05.mp4"
 DT = 6      # overridable via --dt (channel spacing ablation)
+
 LABEL = 24.0
+"""Square side, in pixels, written for **every** label regardless of the target's real size.
+
+Overridable with ``--label-px``; ``--label-px 0`` writes the true extent instead.
+
+The default stays 24.0 so the round-1..7 datasets regenerate byte-identically, but it is
+the most consequential constant in this file and it must not be used for anything new.
+Measured cost (docs/research/verified-measurements-2026-08.md §6b): against this repo's own
+07_05 annotations, a 24 px square label caps the achievable IoU at a **median of 0.110**, so
+**0 %** of boxes can reach IoU 0.5 and COCO AP is not low but *arithmetically impossible*.
+At ``--label-px 0`` that becomes 90 % reachable.
+
+The inflation existed for a real reason -- IoU-based label assignment starves few-pixel
+ground truths of positive anchors -- but `dronedet/nwd.py` now solves that by the route the
+literature uses. Train with ``--label-px 0 --nwd`` and the comparability comes back.
+"""
+
 CLS = {"drone": 0, "bird": 1}
 
 
@@ -160,7 +177,9 @@ def paste_group(rng, chans, banks, taken, w, h, want, min_gap=60,
                                     interpolation=cv2.INTER_LINEAR)
                 feather_paste_subpx(ch, pp, cx - vx * back, cy - vy * back, haze)
             taken.append((cx, cy))
-            lines.append((cls_name, cx, cy))
+            # p0's own extent, so --label-px 0 can label a pasted patch by its real size
+            # rather than by the fixed square.
+            lines.append((cls_name, cx, cy, float(p0.shape[1]), float(p0.shape[0])))
     return lines
 
 
@@ -228,16 +247,29 @@ def build_banks(gt, grays, shifts, split_at):
 
 
 def objs_at(gt, shifts, t):
+    """-> [(cls, (cx, cy, w, h)), ...] in stabilized coords.
+
+    The true ``w, h`` are carried even though the default recipe overwrites them with a
+    fixed ``LABEL`` square: an earlier version dropped them here, which made
+    ``--label-px 0`` impossible further downstream without anyone noticing that the
+    information had already been thrown away.
+    """
     out = []
     fb = gt.objects["far"].box(t)
     if fb is not None:
-        out.append(("drone", (fb[0] + shifts[t][0], fb[1] + shifts[t][1])))
+        out.append(("drone", (fb[0] + shifts[t][0], fb[1] + shifts[t][1], fb[2], fb[3])))
     for name, o in gt.objects.items():
         if name.startswith("bird"):
             b = o.box(t)
             if b is not None:
-                out.append(("bird", (b[0] + shifts[t][0], b[1] + shifts[t][1])))
+                out.append(("bird", (b[0] + shifts[t][0], b[1] + shifts[t][1], b[2], b[3])))
     return out
+
+
+def label_wh(true_w: float, true_h: float) -> tuple[float, float]:
+    """The (w, h) actually written, honouring ``LABEL``. One place, so the fixed-square
+    default and the true-extent mode cannot drift apart between call sites."""
+    return (LABEL, LABEL) if LABEL > 0 else (true_w, true_h)
 
 
 def hard_negative_frames(gt, split_at,
@@ -281,8 +313,10 @@ def build_full(gt, grays, shifts, banks, split_at, variants, hard_neg, root):
         if split == "val" and t < 2 * DT:
             continue  # val stays comparable to v2 (no warmup frames)
         objs = objs_at(gt, shifts, t)
-        real_lines = [f"{CLS[c]} {cx/w:.6f} {cy/h:.6f} {LABEL/w:.6f} {LABEL/h:.6f}"
-                      for c, (cx, cy) in objs]
+        real_lines = []
+        for c, (cx, cy, tw, th) in objs:
+            lw, lh = label_wh(tw, th)
+            real_lines.append(f"{CLS[c]} {cx/w:.6f} {cy/h:.6f} {lw/w:.6f} {lh/h:.6f}")
         if split == "val":
             img = np.dstack(clamp_chans(grays, t))
             write_yolo(root, split, f"f{t:05d}", img, real_lines)
@@ -294,11 +328,12 @@ def build_full(gt, grays, shifts, banks, split_at, variants, hard_neg, root):
             chans = [c.copy() for c in clamp_chans(grays, t)]
             lines = list(real_lines)
             if t >= 2 * DT:  # no pastes into clamped warmup stacks
-                taken = [(cx, cy) for _, (cx, cy) in objs]
+                taken = [(cx, cy) for _, (cx, cy, _, _) in objs]
                 pasted = paste_group(rng, chans, banks, taken, w, h,
                                      [("drone", 4 + v), ("bird", 3)])
-                lines += [f"{CLS[c]} {cx/w:.6f} {cy/h:.6f} "
-                          f"{LABEL/w:.6f} {LABEL/h:.6f}" for c, cx, cy in pasted]
+                for c, cx, cy, pw, ph in pasted:
+                    lw, lh = label_wh(pw, ph)
+                    lines.append(f"{CLS[c]} {cx/w:.6f} {cy/h:.6f} {lw/w:.6f} {lh/h:.6f}")
             write_yolo(root, split, f"f{t:05d}_v{v}", np.dstack(chans), lines)
             counts[split] += 1
         if t in hard_neg:  # extra clean copy: emphasize the false-alarm frame
@@ -335,10 +370,10 @@ def build_crops(gt, grays, shifts, banks, split_at, root, tile, n_paste_slices,
         drones = [(c, p) for c, p in objs if c == "drone"]
         birds = [(c, p) for c, p in objs if c == "bird"]
         if drones:
-            slices.append(("far", origin(rng, *drones[0][1]), False))
+            slices.append(("far", origin(rng, *drones[0][1][:2]), False))
         if birds:
             c, p = birds[rng.randrange(len(birds))]
-            slices.append(("bird", origin(rng, *p), False))
+            slices.append(("bird", origin(rng, *p[:2]), False))
         if split == "train" and t >= 2 * DT:
             for k in range(n_paste_slices):
                 for _try in range(40):
@@ -346,7 +381,7 @@ def build_crops(gt, grays, shifts, banks, split_at, root, tile, n_paste_slices,
                     y0 = rng.randint(0, h - tile)
                     if all(not (x0 - 30 < cx < x0 + tile + 30 and
                                 y0 - 30 < cy < y0 + tile + 30)
-                           for _, (cx, cy) in objs):
+                           for _, (cx, cy, _w, _h) in objs):
                         slices.append((f"paste{k}", (x0, y0), True))
                         break
 
@@ -355,20 +390,23 @@ def build_crops(gt, grays, shifts, banks, split_at, root, tile, n_paste_slices,
             lines = []
             if not is_paste:
                 taken = []
-                for cls_name, (cx, cy) in objs:
+                for cls_name, (cx, cy, tw, th) in objs:
                     if x0 <= cx < x0 + tile and y0 <= cy < y0 + tile:
+                        lw, lh = label_wh(tw, th)
                         lines.append(f"{CLS[cls_name]} {(cx-x0)/tile:.6f} "
-                                     f"{(cy-y0)/tile:.6f} {LABEL/tile:.6f} "
-                                     f"{LABEL/tile:.6f}")
+                                     f"{(cy-y0)/tile:.6f} {lw/tile:.6f} "
+                                     f"{lh/tile:.6f}")
                         taken.append((cx - x0, cy - y0))
             else:
                 taken = []
                 pasted = paste_group(rng, crop_ch, banks, taken, tile, tile,
                                      paste_want, min_gap=48,
                                      border=min(48, tile // 5))
-                lines = [f"{CLS[c]} {cx/tile:.6f} {cy/tile:.6f} "
-                         f"{LABEL/tile:.6f} {LABEL/tile:.6f}"
-                         for c, cx, cy in pasted]
+                lines = []
+                for c, cx, cy, pw, ph in pasted:
+                    lw, lh = label_wh(pw, ph)
+                    lines.append(f"{CLS[c]} {cx/tile:.6f} {cy/tile:.6f} "
+                                 f"{lw/tile:.6f} {lh/tile:.6f}")
             write_yolo(root, split, f"f{t:05d}_{tag}", np.dstack(crop_ch), lines)
             counts[split] += 1
     print(f"{root.name}: {counts}")
@@ -382,10 +420,28 @@ def main() -> None:
     ap.add_argument("--only", choices=["full", "crop640", "crop256"], default=None)
     ap.add_argument("--dt", type=int, default=None,
                     help="temporal channel spacing override (default 6)")
+    ap.add_argument("--label-px", type=float, default=None,
+                    help="square label side in px (default 24.0). Pass 0 to write the "
+                         "TRUE extent instead -- required for any IoU-based number, see "
+                         "the LABEL docstring")
     a = ap.parse_args()
     if a.dt:
         global DT
         DT = a.dt
+    if a.label_px is not None:
+        global LABEL
+        LABEL = a.label_px
+
+    if LABEL > 0:
+        print(f"[labels] fixed {LABEL:g} px squares. Achievable IoU against the true "
+              f"annotation is capped by geometry, so any IoU/COCO number from a model "
+              f"trained on this is bounded below its real accuracy -- at 24 px, 0% of "
+              f"07_05's boxes can reach IoU 0.5. Pass --label-px 0 for true extents.",
+              flush=True)
+    else:
+        print("[labels] TRUE extent. Pair this with --nwd on tools/train_yolo.py: the "
+              "inflation existed to stop IoU assignment starving tiny GTs, and NWD is "
+              "what replaces it.", flush=True)
 
     gt, grays, shifts = load_stabilized()
     banks = build_banks(gt, grays, shifts, a.split_at)

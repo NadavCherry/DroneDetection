@@ -93,3 +93,54 @@ P2_NO_P5_ARDMAV = ExperimentConfig(
           "never been trained, which is why expected_strides stays set -- tools/train.py "
           "re-reads the head at launch and aborts before the first batch if a later edit "
           "moves it.")
+
+
+_LOCAL_BUILD = ("python tools/make_datasets_v3.py --split-at 548 --only crop640 "
+                "--label-px {label_px} --suffix {suffix}")
+
+BASELINE_LOCAL = ExperimentConfig(
+    name="baseline_local",
+    datasets=("local:07_05",),
+    data="work/dsv3_crop640_lbl24/data.yaml",
+    model_cfg="yolov8s-p2.yaml",
+    weights="yolov8s.pt",
+    imgsz=640, batch=8, epochs=60, seed=0,
+    tile_px=640, min_side=24.0,
+    nwd=False,
+    aug=DEFAULT_AUG,
+    protocol_key="specklock-centre",
+    build_command=_LOCAL_BUILD.format(label_px=24, suffix="_lbl24"),
+    tags=("local", "headline", "extent"),
+    notes="The shipped round-3 recipe on this project's own 07_05 data, with its "
+          "LABEL = 24.0 px fixed-square labels. This is the CONTROL for "
+          "trueextent_local and the run that demonstrates the defect rather than "
+          "fixing it: measured against 07_05's real annotations, a 24 px square caps "
+          "the achievable IoU at a median of 0.110, so 0% of boxes can reach IoU 0.5 "
+          "and this run's COCO AP is arithmetically bound to be 0.000 however good the "
+          "detector is. Run it anyway -- a defect you can only assert is weaker than "
+          "one you can show.")
+
+
+TRUEEXTENT_LOCAL = ExperimentConfig(
+    name="trueextent_local",
+    datasets=("local:07_05",),
+    data="work/dsv3_crop640_lbl0/data.yaml",
+    model_cfg="yolov8s-p2.yaml",
+    weights="yolov8s.pt",
+    imgsz=640, batch=8, epochs=60, seed=0,
+    tile_px=640, min_side=0.0,
+    nwd=True, nwd_assign_ratio=0.5, nwd_assign_c=16.0,
+    nwd_loss_ratio=0.5, nwd_loss_c=2.0,
+    aug=DEFAULT_AUG,
+    protocol_key="specklock-centre",
+    build_command=_LOCAL_BUILD.format(label_px=0, suffix="_lbl0"),
+    tags=("local", "headline", "extent"),
+    notes="THE experiment that fixes the fatal case. trueextent_ardmav addresses "
+          "ARD-MAV, where inflation is tolerable (min_side 12 still leaves 74% of boxes "
+          "able to reach IoU 0.5). It is THIS repo's OWN data at LABEL = 24 that is "
+          "arithmetically hopeless at 0%, and only this config touches it. Report both "
+          "centre-distance AP (the protocol that is honest at 4 px) and COCO AP (the "
+          "one that makes the number comparable), against baseline_local at the same "
+          "three seeds. Note the 10_06 ground truth is itself a constant 8.0 px, so a "
+          "COCO number on the test video is capped by the LABELS as well as the model "
+          "until that GT is re-derived with true extents -- score the val split first.")

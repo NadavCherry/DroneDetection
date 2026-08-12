@@ -193,7 +193,7 @@ Neither travels in git. `halmstad` still has no recorded archive URL; `extremetr
 | 4 | `smot4sb` | 108,192 frames of tiny birds from a moving camera and **zero drones** — a pure false-positive corpus. Plus a permanently-open Codabench leaderboard | open | no | also the peer-reviewed cover for centre-distance scoring (SO-HOTA) |
 | 4 | `ard100` | head-to-head with YOLOMG, this project's nearest published relative; the tiniest targets of any drone video set | BaiduYun | **yes** | no mirror. Baidu account required, throttled hard, expect hours |
 | 4 | `nps` | a second head-to-head | unknown | **yes** | ⚠ `verified=False`. **No official split** — every paper self-splits, so cross-paper NPS numbers are not comparable, and you must say so whenever you quote one |
-| 5 | `dvb` | the reputational benchmark; bar to beat is Laroca et al. **mAP50 0.7390** | signed agreement | **yes** | see §2.1. Birds are present but **unlabelled** — labelling them and publishing the first bird-attributed false-alarm rate in nine editions is a bigger contribution than a leaderboard row |
+| 5 | `dvb` | the reputational benchmark; bar to beat is Laroca et al. **mAP50 0.7390** | signed agreement | **yes** | see §2.1. Birds are present but **unlabelled** — labelling them and publishing the first bird-attributed false-alarm rate in eight editions is a bigger contribution than a leaderboard row |
 | 6 | `dut_antiuav` | the easy end (SOTA 0.92–0.96), useful only because the Jul-2026 YOLOv11 edge baseline reports on it | open | no | quote **only** beside ARD-MAV/ARD100 with an explicit "this is the easy end" sentence |
 
 Human-gated, restated so you cannot miss it: **`dvb` (email), `extremetrack` (form), `ard100`
@@ -583,7 +583,7 @@ reading it:
 
 If it reports no distractors, either the dataset has no labelled birds or the adapter dropped them —
 and **no false-alarm claim is measurable** until that is fixed. That is precisely the Drone-vs-Bird
-situation: birds present, unlabelled, for nine editions.
+situation: birds present, unlabelled, for eight editions.
 
 ---
 
@@ -721,7 +721,7 @@ or the [internal audit](internal-audit-2026-08.md).
 
 11. **Cross-paper NPS comparisons**, and **any Drone-vs-Bird number presented as "the" benchmark
     score.** NPS publishes no official split; DvB withholds test annotations, so every published DvB
-    number in nine editions is on a self-chosen validation split. Three such numbers side by side are
+    number in eight editions is on a self-chosen validation split. Three such numbers side by side are
     three different experiments.
 
 12. **"Significantly better than [published method]."** There is no second sample. No test exists.
