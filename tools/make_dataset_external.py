@@ -43,6 +43,14 @@ ARD_TEST_IDS = [f"phantom{n:02d}" for n in
 # 5 videos held out of the 45 train/val pool for YOLO val (whole-video holdout).
 ARD_VAL_IDS = ["phantom06", "phantom23", "phantom45", "phantom61", "phantom79"]
 
+# Channel spacing for the temporal stack, in frames. 6 is not a free parameter here:
+# it is `DT` in make_datasets_v3.py, so the shipped weights, the ablation in
+# work/ablation/REPORT.md and anything built by this file all describe the same
+# 13-frame aperture (t-12, t-6, t). Change it only as a declared ablation -- MISSION
+# item 7 asks for exactly that sweep -- and never silently, or two "temporal" numbers
+# in the same table will mean different things.
+TEMPORAL_DT = 6
+
 
 # ----------------------------------------------------------------------------- parsing
 def parse_ardmav(vid_id):
@@ -123,13 +131,87 @@ def extract_yolo(video_path, boxes_by_frame, frame_ids, img_dir, lbl_dir,
     return n_img, n_box
 
 
+def _jpeg_params(quality, chroma_444):
+    """JPEG flags. ``chroma_444`` disables the 2x2 chroma subsampling.
+
+    Irrelevant for an ordinary BGR frame and *not* irrelevant for a temporal stack.
+    OpenCV writes a 3-channel array as BGR: it converts to YCbCr and, by default,
+    stores Cb/Cr at half resolution in each axis. In a temporal stack the three
+    channels are three different instants, so the chroma planes carry the
+    *inter-frame difference* -- which is the entire signal the stack exists to
+    provide -- and subsampling halves its resolution before the model ever sees it.
+    On an 11.8 px median target moving a few px per frame that is not a rounding
+    error. Left at the shipped default so this builder reproduces the existing
+    representation exactly; ``--chroma-444`` makes it a one-flag ablation.
+    """
+    params = [cv2.IMWRITE_JPEG_QUALITY, quality]
+    if chroma_444:
+        params += [cv2.IMWRITE_JPEG_SAMPLING_FACTOR, cv2.IMWRITE_JPEG_SAMPLING_FACTOR_444]
+    return params
+
+
+def _emit_tiles(image, boxes, img_dir, lbl_dir, stem_prefix, min_side, tile,
+                rng, jitter, neg_per_frame, quality, chroma_444=False):
+    """Cut and write every tile for ONE already-prepared image. Returns (n_img, n_box).
+
+    Split out of `extract_yolo_tiled` so the single-frame and temporal builders share
+    one copy of the window and label arithmetic. The jitter draw, the negative
+    rejection test and the centre-in-tile rule are each easy to reimplement slightly
+    differently, and two builders that tile *almost* the same way would make the
+    single-frame vs temporal comparison measure the tiling as well as the input.
+    """
+    H, W = image.shape[:2]
+    n_img = n_box = 0
+    windows = []
+    for (x1, y1, x2, y2) in boxes:
+        cx, cy = (x1 + x2) / 2.0, (y1 + y2) / 2.0
+        jx = rng.uniform(-jitter, jitter) * tile
+        jy = rng.uniform(-jitter, jitter) * tile
+        x0 = int(min(max(cx + jx - tile / 2, 0), max(W - tile, 0)))
+        y0 = int(min(max(cy + jy - tile / 2, 0), max(H - tile, 0)))
+        windows.append(("pos", x0, y0))
+    for _ in range(neg_per_frame if boxes else neg_per_frame + 1):
+        x0 = rng.randint(0, max(W - tile, 0))
+        y0 = rng.randint(0, max(H - tile, 0))
+        # keep only if it contains no drone center
+        if all(not (x0 <= (b[0]+b[2])/2 <= x0+tile and y0 <= (b[1]+b[3])/2 <= y0+tile)
+               for b in boxes):
+            windows.append(("neg", x0, y0))
+    for k, (kind, x0, y0) in enumerate(windows):
+        tw = min(tile, W); th = min(tile, H)
+        crop = image[y0:y0+th, x0:x0+tw]
+        if crop.shape[0] != tile or crop.shape[1] != tile:
+            pad = np.zeros((tile, tile, 3), np.uint8)
+            pad[:crop.shape[0], :crop.shape[1]] = crop
+            crop = pad
+        lines = []
+        for (x1, y1, x2, y2) in boxes:
+            cx, cy = (x1 + x2) / 2.0, (y1 + y2) / 2.0
+            if not (x0 <= cx <= x0+tile and y0 <= cy <= y0+tile):
+                continue
+            lcx, lcy = cx - x0, cy - y0
+            w, h = max(x2 - x1, min_side), max(y2 - y1, min_side)
+            lines.append(f"0 {lcx/tile:.6f} {lcy/tile:.6f} {w/tile:.6f} {h/tile:.6f}")
+            n_box += 1
+        stem = f"{stem_prefix}_{k}"
+        cv2.imwrite(str(img_dir / f"{stem}.jpg"), crop, _jpeg_params(quality, chroma_444))
+        (lbl_dir / f"{stem}.txt").write_text("\n".join(lines), encoding="utf-8")
+        n_img += 1
+    return n_img, n_box
+
+
 def extract_yolo_tiled(video_path, boxes_by_frame, frame_ids, img_dir, lbl_dir,
                        prefix, min_side, tile=640, jitter=0.35, neg_per_frame=1,
                        quality=92):
     """Native-resolution tiles: for each selected frame, emit one `tile`x`tile`
     crop centered (with jitter) on each drone -- the drone keeps its TRUE pixel
     size (no downscale) -- plus `neg_per_frame` random drone-free tiles as hard
-    negatives. Labels are all boxes falling inside the tile, in tile coords."""
+    negatives. Labels are all boxes falling inside the tile, in tile coords.
+
+    SINGLE-FRAME appearance only. See `extract_yolo_tiled_temporal` for the
+    representation this project's own ablation measures at AP 1.000 against this
+    one's 0.110; the two are kept side by side so the comparison can be run.
+    """
     import random
     rng = random.Random(1234)
     img_dir.mkdir(parents=True, exist_ok=True)
@@ -143,46 +225,98 @@ def extract_yolo_tiled(video_path, boxes_by_frame, frame_ids, img_dir, lbl_dir,
         if not ok:
             break
         if idx in want:
-            H, W = frame.shape[:2]
-            boxes = boxes_by_frame.get(idx, [])
-            windows = []
-            for (x1, y1, x2, y2) in boxes:
-                cx, cy = (x1 + x2) / 2.0, (y1 + y2) / 2.0
-                jx = rng.uniform(-jitter, jitter) * tile
-                jy = rng.uniform(-jitter, jitter) * tile
-                x0 = int(min(max(cx + jx - tile / 2, 0), max(W - tile, 0)))
-                y0 = int(min(max(cy + jy - tile / 2, 0), max(H - tile, 0)))
-                windows.append(("pos", x0, y0))
-            for _ in range(neg_per_frame if boxes else neg_per_frame + 1):
-                x0 = rng.randint(0, max(W - tile, 0))
-                y0 = rng.randint(0, max(H - tile, 0))
-                # keep only if it contains no drone center
-                if all(not (x0 <= (b[0]+b[2])/2 <= x0+tile and y0 <= (b[1]+b[3])/2 <= y0+tile)
-                       for b in boxes):
-                    windows.append(("neg", x0, y0))
-            for k, (kind, x0, y0) in enumerate(windows):
-                tw = min(tile, W); th = min(tile, H)
-                crop = frame[y0:y0+th, x0:x0+tw]
-                if crop.shape[0] != tile or crop.shape[1] != tile:
-                    pad = np.zeros((tile, tile, 3), np.uint8)
-                    pad[:crop.shape[0], :crop.shape[1]] = crop
-                    crop = pad
-                lines = []
-                for (x1, y1, x2, y2) in boxes:
-                    cx, cy = (x1 + x2) / 2.0, (y1 + y2) / 2.0
-                    if not (x0 <= cx <= x0+tile and y0 <= cy <= y0+tile):
-                        continue
-                    lcx, lcy = cx - x0, cy - y0
-                    w, h = max(x2 - x1, min_side), max(y2 - y1, min_side)
-                    lines.append(f"0 {lcx/tile:.6f} {lcy/tile:.6f} {w/tile:.6f} {h/tile:.6f}")
-                    n_box += 1
-                stem = f"{prefix}_{idx:05d}_{k}"
-                cv2.imwrite(str(img_dir / f"{stem}.jpg"), crop,
-                            [cv2.IMWRITE_JPEG_QUALITY, quality])
-                (lbl_dir / f"{stem}.txt").write_text("\n".join(lines), encoding="utf-8")
-                n_img += 1
+            ni, nb = _emit_tiles(frame, boxes_by_frame.get(idx, []), img_dir, lbl_dir,
+                                 f"{prefix}_{idx:05d}", min_side, tile,
+                                 rng, jitter, neg_per_frame, quality)
+            n_img += ni
+            n_box += nb
         idx += 1
     cap.release()
+    return n_img, n_box
+
+
+def _clamped_taps(buf, dt):
+    """The three taps ``[t-2*dt, t-dt, t]``, clamped to the oldest frame held.
+
+    Mirrors `make_datasets_v3.clamp_chans`' ``grays[max(0, t - 2*DT)]`` exactly. Before
+    2*dt frames have been seen the older taps repeat the first frame, so the model is
+    trained on the same short-trail regime that inference produces at stream start --
+    without it the first 12 frames of every sequence are a distribution the model has
+    never seen, which is precisely when an interceptor most needs a detection.
+    """
+    n = len(buf)
+    return [buf[max(0, n - 1 - 2 * dt)], buf[max(0, n - 1 - dt)], buf[n - 1]]
+
+
+def extract_yolo_tiled_temporal(video_path, boxes_by_frame, frame_ids, img_dir, lbl_dir,
+                                prefix, min_side, tile=640, jitter=0.35, neg_per_frame=1,
+                                quality=92, dt=TEMPORAL_DT, chroma_444=False,
+                                stab_mode="translation"):
+    """`extract_yolo_tiled`, but each tile is a stabilised 3-moment temporal stack.
+
+    This is the representation the project's own ablation measures at AP 1.000 against
+    a single frame's 0.110 on the same video and target, and the one three independent
+    groups have since reproduced. The ARD-MAV configs were training on single frames,
+    so a number from them described a method this project does not claim.
+
+    Identical to `make_datasets_v3.py`'s recipe on purpose, tap for tap:
+
+    * grayscale, warped to the sequence's first frame by accumulated phase correlation,
+      so all three channels share one coordinate frame and a static background cancels;
+    * channels ``np.dstack([t-2*dt, t-dt, t])``, oldest first -- the order the shipped
+      weights were trained on, and reversing it silently costs the model its arrow of time;
+    * clamped warmup, per `_clamped_taps`.
+
+    Deliberately *not* identical in one respect: this streams a `2*dt+1` ring buffer
+    rather than holding every frame. `make_datasets_v3` can afford `load_stabilized()`
+    on one 571-frame clip; ARD-MAV is 60 videos of 1920x1080 and the same approach would
+    ask for gigabytes per video.
+
+    Boxes are translated into stabilised coordinates by the same accumulated shift
+    applied to the pixels. Skipping that is the failure that does not announce itself:
+    the stack still looks right, the labels sit a few pixels off the target, and on an
+    11.8 px median box a few pixels is the whole object.
+    """
+    import random
+    from collections import deque
+
+    from dronedet.stabilize import Stabilizer, warp_to_reference
+
+    rng = random.Random(1234)
+    img_dir.mkdir(parents=True, exist_ok=True)
+    lbl_dir.mkdir(parents=True, exist_ok=True)
+    want = set(frame_ids)
+    if not want:
+        return 0, 0
+    last = max(want)
+
+    stab = Stabilizer(stab_mode)
+    buf = deque(maxlen=2 * dt + 1)          # stabilised grayscale, oldest .. newest
+    cap = cv2.VideoCapture(str(video_path))
+    idx, n_img, n_box = 0, 0, 0
+    try:
+        while idx <= last:
+            ok, frame = cap.read()
+            if not ok:
+                break
+            # Every frame is stabilised, not only the selected ones: the accumulator is
+            # a running registration to frame 0, so skipping frames would break the
+            # chain and quietly misregister everything after the first gap.
+            m = stab.update(frame)
+            buf.append(warp_to_reference(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), m))
+            if idx in want:
+                dx, dy = float(m[0, 2]), float(m[1, 2])
+                boxes = [(x1 + dx, y1 + dy, x2 + dx, y2 + dy)
+                         for (x1, y1, x2, y2) in boxes_by_frame.get(idx, [])]
+                ni, nb = _emit_tiles(np.dstack(_clamped_taps(buf, dt)), boxes,
+                                     img_dir, lbl_dir, f"{prefix}_{idx:05d}",
+                                     min_side, tile, rng, jitter, neg_per_frame,
+                                     quality, chroma_444)
+                n_img += ni
+                n_box += nb
+            idx += 1
+    finally:
+        cap.release()
     return n_img, n_box
 
 
@@ -330,6 +464,45 @@ def build_ardmav_train_tiled(stride_train, stride_val, min_side, tile=640):
             print(f"  [{split}] {vid}: {ni} tiles, {nb} boxes")
     write_data_yaml(root)
     print(f"\nARD-MAV TILED YOLO ({tile}px) -> {root}")
+    print(f"  train: {stats['train'][0]} tiles / {stats['train'][1]} boxes")
+    print(f"  val:   {stats['val'][0]} tiles / {stats['val'][1]} boxes")
+    return root
+
+
+def build_ardmav_temporal_tiled(stride_train, stride_val, min_side, tile=640,
+                                dt=TEMPORAL_DT, chroma_444=False):
+    """ARD-MAV as stabilised temporal stacks, on the OFFICIAL split.
+
+    The sibling of `build_ardmav_train_tiled`, differing only in the input
+    representation, so `temporal_ardmav` vs `baseline_ardmav` isolates exactly one
+    variable: whether the model sees motion. Same videos, same split, same tiles, same
+    stride, same labels.
+
+    The 15 official test videos are never opened here -- they are scored, not trained
+    on -- and the 5 val videos are a whole-video holdout, so no frame of a val sequence
+    can reach train through a neighbouring tile.
+    """
+    root = OUT_ROOT / "ardmav_yolo_temporal"
+    train_ids = [v for v in _ard_all() if v not in ARD_TEST_IDS and v not in ARD_VAL_IDS]
+    stats = {"train": [0, 0], "val": [0, 0]}
+    print(f"temporal stacks: dt={dt} (taps t-{2*dt}, t-{dt}, t), "
+          f"chroma {'4:4:4' if chroma_444 else '4:2:0 (shipped default)'}, "
+          f"min_side={min_side}")
+    for split, ids, stride in (("train", train_ids, stride_train),
+                               ("val", ARD_VAL_IDS, stride_val)):
+        for vid in ids:
+            boxes = parse_ardmav(vid)
+            pos = [f for f, b in boxes.items() if b]
+            chosen = set(pos[::stride])
+            ni, nb = extract_yolo_tiled_temporal(
+                ARD_ROOT / "videos" / f"{vid}.mp4", boxes, chosen,
+                root / "images" / split, root / "labels" / split,
+                vid, min_side, tile=tile, dt=dt, chroma_444=chroma_444)
+            stats[split][0] += ni
+            stats[split][1] += nb
+            print(f"  [{split}] {vid}: {ni} tiles, {nb} boxes")
+    write_data_yaml(root)
+    print(f"\nARD-MAV TEMPORAL YOLO ({tile}px, dt={dt}) -> {root}")
     print(f"  train: {stats['train'][0]} tiles / {stats['train'][1]} boxes")
     print(f"  val:   {stats['val'][0]} tiles / {stats['val'][1]} boxes")
     return root
@@ -538,18 +711,30 @@ def _find_nps_video(clip):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--task", required=True,
-                    choices=["ardmav-train", "ardmav-train-tiled", "ardmav-gt", "nps-gt",
+                    choices=["ardmav-train", "ardmav-train-tiled",
+                             "ardmav-temporal-tiled", "ardmav-gt", "nps-gt",
                              "combined-tiled", "combined-gt", "black-paste", "all"])
     ap.add_argument("--stride-train", type=int, default=4)
     ap.add_argument("--stride-val", type=int, default=10)
     ap.add_argument("--min-side", type=int, default=12)
     ap.add_argument("--tile", type=int, default=640)
     ap.add_argument("--n-tiles", type=int, default=5000)
+    ap.add_argument("--dt", type=int, default=TEMPORAL_DT,
+                    help=f"temporal channel spacing in frames (default {TEMPORAL_DT}, "
+                         "matching make_datasets_v3.DT; taps are t-2*dt, t-dt, t)")
+    ap.add_argument("--chroma-444", action="store_true",
+                    help="write JPEG without chroma subsampling. For a temporal stack "
+                         "the chroma planes carry the inter-frame difference, which "
+                         "4:2:0 stores at half resolution; off by default so the "
+                         "shipped representation is reproduced exactly")
     a = ap.parse_args()
     if a.task in ("ardmav-train", "all"):
         build_ardmav_train(a.stride_train, a.stride_val, a.min_side)
     if a.task == "ardmav-train-tiled":
         build_ardmav_train_tiled(a.stride_train, a.stride_val, a.min_side, tile=a.tile)
+    if a.task == "ardmav-temporal-tiled":
+        build_ardmav_temporal_tiled(a.stride_train, a.stride_val, a.min_side,
+                                    tile=a.tile, dt=a.dt, chroma_444=a.chroma_444)
     if a.task == "combined-tiled":
         build_combined_tiled(a.stride_train, a.stride_val, a.min_side, tile=a.tile)
     if a.task == "combined-gt":

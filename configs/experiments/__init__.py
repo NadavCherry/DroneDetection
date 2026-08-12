@@ -13,6 +13,7 @@ CI, which is the point: the config is checked before the GPU is booked.
 from __future__ import annotations
 
 from .ardmav import (BASELINE_ARDMAV, BASELINE_LOCAL, P2_NO_P5_ARDMAV,
+                     SINGLEFRAME_ARDMAV, TEMPORAL_ARDMAV,
                      TRUEEXTENT_ARDMAV, TRUEEXTENT_LOCAL)
 from .base import (Augmentation, DEFAULT_AUG, ExperimentConfig, NO_PHOTOMETRIC_AUG,
                    UAV_DETR_B4_640, VRAM_SAFETY_FRACTION, VramReference,
@@ -29,6 +30,8 @@ EXPERIMENTS: dict[str, ExperimentConfig] = {c.name: c for c in (
     TEMPORAL_ABLATION_STACK,
     BASELINE_LOCAL,
     TRUEEXTENT_LOCAL,
+    SINGLEFRAME_ARDMAV,
+    TEMPORAL_ARDMAV,
 )}
 
 #: Named sets that must be run together, and the reason they must.
@@ -45,6 +48,11 @@ GROUPS: dict[str, tuple[str, ...]] = {
     # Everything the extent defect touches, controls included.
     "extent_all": ("baseline_local", "trueextent_local",
                    "baseline_ardmav", "trueextent_ardmav"),
+    # Does the founding claim survive on a public benchmark, on the official split, at
+    # the shipped dt=6? The single-frame arm is NOT trueextent_ardmav: it drops
+    # photometric augmentation so that the input representation is the only variable.
+    # Running the stack arm alone would be an assertion with a number attached.
+    "ardmav_temporal": ("singleframe_ardmav", "temporal_ardmav"),
 }
 
 

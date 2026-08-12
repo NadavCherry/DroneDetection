@@ -17,7 +17,7 @@ inflation the config claims. That check is the whole reason it exists.
 
 from __future__ import annotations
 
-from .base import DEFAULT_AUG, ExperimentConfig
+from .base import DEFAULT_AUG, NO_PHOTOMETRIC_AUG, ExperimentConfig
 
 ARDMAV_TILED = "work/ext_datasets/ardmav_yolo_tiled/data.yaml"
 _BUILD = ("PYTHONPATH=. .venv/bin/python tools/make_dataset_external.py "
@@ -152,3 +152,95 @@ TRUEEXTENT_LOCAL = ExperimentConfig(
           "three seeds. Note the 10_06 ground truth is itself a constant 8.0 px, so a "
           "COCO number on the test video is capped by the LABELS as well as the model "
           "until that GT is re-derived with true extents -- score the val split first.")
+
+
+# ---------------------------------------------------------------------------------
+# The temporal A/B on ARD-MAV: does the founding claim survive on someone else's data?
+#
+# The three configs above train on SINGLE RGB FRAMES. That is not a criticism of them --
+# they answer a label-geometry question and answer it well -- but it does mean that a
+# number from `ardmav_headline` describes a plain single-frame YOLOv8s-p2, and this
+# project's contribution is a stabilised temporal stack. Publishing the first against
+# MGMD's 0.55 would compare the wrong method, and the sign of the result would not tell
+# you which method was wrong.
+#
+# `temporal_stack_ablation` already asks this question, but on a POOLED corpus
+# (ardmav + nps + local:07_05) at dt=3 with a self-chosen split, so its number is an
+# internal A/B that cannot sit beside a published one. This pair asks it on ARD-MAV
+# alone, at dt=6, on the OFFICIAL 15-video split, so the winner is directly placeable
+# against MGMD.
+#
+# ONE VARIABLE. Both arms share labels, splits, tiles, stride, schedule, seed, NWD and
+# augmentation; only the three input channels differ:
+#
+#     singleframe : B, G, R of frame t
+#     temporal    : gray(t-12), gray(t-6), gray(t), ego-stabilised, dt=6
+#
+# Photometric augmentation is off in BOTH arms. It is forced off on the temporal arm --
+# hue/saturation jitter would remix moments rather than colours -- and applied to the
+# single-frame arm too so augmentation is not a second variable. That mildly handicaps
+# the single-frame arm against how it would normally be trained; say so when reporting.
+#
+# The negative-supply confound that `temporal_stack_ablation` had to declare and could
+# not fix does NOT apply here: `extract_yolo_tiled_temporal` emits the same drone-free
+# negative tiles per frame as `extract_yolo_tiled`, so both arms see the same ratio of
+# empty sky to target. That was the point of building it on the shared tiling core.
+#
+# HAZARD, same as the note at the top of this file: both arms build into their own
+# directory, but `--min-side 0` here and `--min-side 12` for the baseline pair still
+# overwrite each other within `ardmav_yolo_tiled`. Build, train, then rebuild.
+# ---------------------------------------------------------------------------------
+
+ARDMAV_TEMPORAL = "work/ext_datasets/ardmav_yolo_temporal/data.yaml"
+_TEMPORAL_BUILD = ("PYTHONPATH=. .venv/bin/python tools/make_dataset_external.py "
+                   "--task ardmav-temporal-tiled --tile 640 --stride-train 4 "
+                   "--stride-val 10 --min-side 0 --dt 6")
+
+_ARDMAV_AB = dict(
+    datasets=("ardmav",),
+    model_cfg="yolov8s-p2.yaml",
+    weights="yolov8s.pt",
+    imgsz=640, batch=8, epochs=60, seed=0,
+    tile_px=640, min_side=0.0,
+    nwd=True, nwd_assign_ratio=0.5, nwd_assign_c=16.0,
+    nwd_loss_ratio=0.5, nwd_loss_c=2.0,
+    aug=NO_PHOTOMETRIC_AUG,
+    protocol_key="ardmav-official",
+)
+
+SINGLEFRAME_ARDMAV = ExperimentConfig(
+    name="singleframe_ardmav",
+    data=ARDMAV_TILED,
+    temporal_stack=False,
+    build_command=_BUILD.format(min_side=0),
+    tags=("ardmav", "temporal-ab"),
+    notes="Control arm. Identical to trueextent_ardmav except that photometric "
+          "augmentation is off, so that the only difference from temporal_ardmav is "
+          "what the three channels contain. Not redundant with trueextent_ardmav: that "
+          "config answers 'do true extents unblock COCO AP', this one answers 'what "
+          "does a single frame score when the temporal arm is held to the same "
+          "augmentation'. Reporting the temporal gain against a DEFAULT_AUG control "
+          "would credit motion for an augmentation difference.",
+    **_ARDMAV_AB,
+)
+
+TEMPORAL_ARDMAV = ExperimentConfig(
+    name="temporal_ardmav",
+    data=ARDMAV_TEMPORAL,
+    temporal_stack=True,
+    stack_dt=6,
+    build_command=_TEMPORAL_BUILD,
+    tags=("ardmav", "temporal-ab", "headline"),
+    notes="THE experiment that puts this project's actual method on a public benchmark "
+          "with a published bar. Ego-stabilised grays at t-12/t-6/t, dt=6 to match the "
+          "shipped PC detector and the ablation in work/ablation/REPORT.md -- dt=3 is "
+          "what temporal_stack_ablation used and dt=9 was measured and lost, so dt is a "
+          "knob with a history rather than a default.\n"
+          "ARD-MAV is where the mechanism should be worth most and where it is least "
+          "guaranteed: 60 videos, a MOVING camera, median target 11.8 px. Moving camera "
+          "cuts both ways -- it is why stabilisation is necessary and why it can fail, "
+          "so report the stabiliser's inlier/response rate beside the AP. If the gain "
+          "does not survive here it is a real negative result about the founding claim, "
+          "and worth more than another number on our own two clips.",
+    **_ARDMAV_AB,
+)
