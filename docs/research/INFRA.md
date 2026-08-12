@@ -93,8 +93,8 @@ Verify the card is actually visible:
 .venv/bin/python -m pytest -q
 ```
 
-**Expect `801 passed` in roughly 35 s** — measured 2026-08-12 on this branch, of which `pursuit/tests`
-contributes 540 and the rest are `dronedet/tests`. Treat it as a **floor, not an equality**: the
+**Expect `807 passed` in roughly 30 s** — measured 2026-08-12 at commit `3aac721`, of which
+`pursuit/tests` contributes 540 and `dronedet/tests` 267. Treat it as a **floor, not an equality**: the
 branch is under active construction and the count only grows. CI enforces floors of 600 total / 540
 pursuit / 50 dronedet, so a *smaller* number means something collapsed — usually a `testpaths` entry
 pointing at a directory that is not in the index, a mistake that once kept the build green for weeks
@@ -157,6 +157,14 @@ Everything lands under `data/external/`. ARD-MAV is aliased to `data/external/ar
 is where it already lives; an existing tree is never deleted and an interrupted HTTP fetch resumes
 from `.part`.
 
+**An open licence is not a URL.** Measured 2026-08-12: `ardmav` is the only entry with a
+`download_id` recorded, and it is already on disk — so *every other* key, including the
+open-licence ones, prints the page to open and exits **2**. `--priority 2 --dry-run` reports
+`halmstad` and `uav_smid` as blocked for exactly that reason, not because of their licence. When
+you have the archive link, record it as `download_id=` in `benchmarks/catalog.py` (or drop the
+archive into the dataset directory, which is extracted and verified even for a gated set) so the
+next machine does not repeat the hunt.
+
 ### 2.3 Priority order
 
 | # | key | what it buys you | gate | human? | notes |
@@ -173,7 +181,9 @@ from `.part`.
 | 6 | `dut_antiuav` | the easy end (SOTA 0.92–0.96), useful only because the Jul-2026 YOLOv11 edge baseline reports on it | open | no | quote **only** beside ARD-MAV/ARD100 with an explicit "this is the easy end" sentence |
 
 Human-gated, restated so you cannot miss it: **`dvb` (email), `extremetrack` (form), `ard100`
-(BaiduYun), `nps` and `tricross` (no verified route)**. Five of ten. Start them on day 0.
+(BaiduYun), `nps` and `tricross` (no verified route)**. Five of ten. Start them on day 0. The
+`human?` column is about the *licence gate*; it is not a promise that the fetcher can act, because
+an open entry with no recorded `download_id` still needs someone to find the link once (§2.2).
 
 ### 2.4 Disk budget
 
@@ -408,7 +418,10 @@ classes map to "bird" or are dropped. That is a decision, not an oversight; make
 
 ### Building what a config expects
 
-Each config carries its own `build_command`, and `--dry-run` prints it. For the ARD-MAV pair that is
+Each config carries its own `build_command`. `--dry-run` does not print it to the terminal: it goes
+into the resolved config inside `work/runs/<name>-s<seed>/MANIFEST.json`, and onto stderr in the
+ABORT message when the dataset is absent or disagrees with the config — which is when you need it.
+Read it ahead of time in `configs/experiments/`. For the ARD-MAV pair that is
 `tools/make_dataset_external.py --task ardmav-train-tiled` at `--min-side 0` or `12` — note that
 this is the legacy builder, not `prepare_data.py`, and that both builds land in
 `work/ext_datasets/ardmav_yolo_tiled/`, which is exactly why the on-disk inflation check exists.
@@ -711,11 +724,11 @@ positives — a chaser translating at 14 m/s has no static background to cancel)
 ```bash
 .venv/bin/python -m pip install torch==2.11.0 torchvision==0.26.0 --index-url https://download.pytorch.org/whl/cu128
 .venv/bin/python -m pip install -e ".[train,test]"
-.venv/bin/python -m pytest -q                                   # expect at least 801 passed
+.venv/bin/python -m pytest -q                                   # expect at least 807 passed
 .venv/bin/python tools/fetch_data.py --priority 2               # exit 2 = a human must act
 .venv/bin/python tools/dataset_stats.py --dataset ardmav --per-video
 .venv/bin/python tools/prepare_data.py ardmav --out work/prepared/ardmav --tile 640 --stride 4
-.venv/bin/python tools/train.py --config ardmav_headline --dry-run   # prints each build_command
+.venv/bin/python tools/train.py --config ardmav_headline --dry-run   # plan + manifest, no training
 .venv/bin/python tools/train.py --config ardmav_headline --seeds 3
 .venv/bin/python tools/evaluate.py --dataset ardmav --model trueextent_ardmav \
     --gt work/prepared/ardmav/gt --dets work/det/ardmav --official-split \
