@@ -1,0 +1,3 @@
+[18:19:45] ======================================================================
+[18:19:45] overnight driver starting
+[18:19:45] temporal build: waiting for C:\Users\nadav\PycharmProjects\SpeckLock\work\ext_datasets\ardmav_yolo_temporal\data.yaml
