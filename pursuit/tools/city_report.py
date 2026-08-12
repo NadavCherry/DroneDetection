@@ -31,14 +31,7 @@ if str(ROOT) not in sys.path:
 from pursuit.tools.report import load  # noqa: E402
 
 
-def wilson(k: int, n: int, z: float = 1.96):
-    if n == 0:
-        return (0.0, 0.0, 0.0)
-    p = k / n
-    d = 1.0 + z * z / n
-    centre = (p + z * z / (2 * n)) / d
-    half = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / d
-    return (p, max(0.0, centre - half), min(1.0, centre + half))
+from dronedet.stats import wilson  # noqa: E402  (one implementation, tested there)
 
 
 def _f(v: Optional[float], nd: int = 2, dash: str = "—") -> str:

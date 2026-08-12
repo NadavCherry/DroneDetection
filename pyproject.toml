@@ -1,0 +1,138 @@
+# Packaging for SpeckLock.
+#
+# Two conventions here are load-bearing and were each learned from a failure:
+#
+# 1. `dependencies` below does NOT contain torch, torchvision or ultralytics.
+#    The scoring path -- dronedet.metrics, dronedet.stats, dronedet.gt,
+#    dronedet.detections, the whole `benchmarks` package and every pursuit test --
+#    is deliberately torch-free so that CI can install four wheels instead of two
+#    gigabytes of CUDA. Putting torch in the base dependency set would silently
+#    undo that the first time someone ran `pip install -e .` in the CI job.
+#    Training and inference live in the `train` extra.
+#
+# 2. Packages are listed explicitly rather than auto-discovered. This is a flat
+#    layout whose repo root also holds data/, work/, docs/, final/ and baseline/;
+#    setuptools' flat-layout auto-discovery either errors out on the ambiguity or
+#    ships half the dataset. The cost is that a NEW SUBPACKAGE IS SILENTLY DROPPED
+#    until it is added below, and an editable install hides that -- its finder maps
+#    top-level names to source directories, so undeclared submodules still import.
+#    Only a built wheel tells the truth, and only if the whole namelist is read,
+#    not the top-level names:
+#      pip wheel . --no-deps -w /tmp/w
+#      python -c "import zipfile,glob;print(zipfile.ZipFile(glob.glob('/tmp/w/*.whl')[0]).namelist())"
+#
+# Not packaged, on purpose: `tools/`, `realtime/tools/` and `final/` are scripts
+# run from the repo root (`python tools/train_yolo.py`), not importable library
+# surface, and none of them has an __init__.py.
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "specklock"
+description = "See a 3-14 px drone from a moving camera, then close on it with camera-only guidance."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "AGPL-3.0-only"
+license-files = ["LICENSE", "NOTICE.md"]
+authors = [{ name = "Nadav Cherry" }]
+keywords = [
+    "small-object detection", "drone detection", "counter-UAS",
+    "temporal stacking", "multi-object tracking", "proportional navigation",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+]
+
+# Pinned, not ranged, and pinned to exactly the versions in requirements.txt.
+# Every number quoted in docs/reports was measured against these; a caret range
+# would let a scipy or OpenCV change move a published figure without a commit.
+dependencies = [
+    "numpy==2.5.0",
+    "scipy==1.18.0",
+    "opencv-contrib-python==5.0.0.93",  # contrib: dnn_superres, used only by the SR ablation
+    "imageio-ffmpeg==0.6.0",            # bundled ffmpeg: MP4 edit-list recovery, H.264 export
+]
+
+# Single source of truth: dronedet/__init__.py. setuptools reads the attribute
+# from the AST, so resolving the version never imports cv2.
+dynamic = ["version"]
+
+[project.optional-dependencies]
+# GOTCHA: a plain `pip install specklock[train]` resolves the CPU wheels from
+# PyPI. This repo's GPU is Blackwell (sm_120) and needs the cu128 build:
+#   pip install torch==2.11.0 torchvision==0.26.0 --index-url https://download.pytorch.org/whl/cu128
+# Install that first, then the extra -- the pins match, so pip leaves it alone.
+train = [
+    "torch==2.11.0",
+    "torchvision==0.26.0",
+    "ultralytics==8.4.84",
+]
+# Absent from `train` on purpose: tensorrt (an .engine is architecture-specific
+# and must be built on the machine that will run it) and onnxruntime (only needed
+# to reproduce the CPU column of realtime/README.md's component table).
+
+test = ["pytest==9.1.1"]
+
+# Only to regenerate figures that are already committed as PNG/SVG.
+docs = ["cairosvg==2.9.0", "matplotlib==3.11.1"]
+
+[project.urls]
+Homepage = "https://nadavcherry.github.io/SpeckLock/"
+Source = "https://github.com/NadavCherry/SpeckLock"
+
+[project.scripts]
+# `python -m dronedet ...` remains the documented invocation and keeps working;
+# dronedet/__main__.py calls the same main(). This entry point exists so that an
+# installed copy has the CLI on PATH without a checkout.
+dronedet = "dronedet.cli:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "dronedet.__version__" }
+
+[tool.setuptools]
+packages = [
+    "benchmarks",
+    # The per-dataset parsers. Declared separately because setuptools does not
+    # recurse into a listed package: without this line the wheel ships
+    # `benchmarks/` with no `adapters/`, and dronedet/tests/test_adapters.py --
+    # which the wheel *does* ship -- fails to import on any non-editable install.
+    "benchmarks.adapters",
+    # configs/*.yaml are ultralytics model definitions passed by path and are not
+    # importable surface; configs.experiments is, and that is why configs is here.
+    "configs",
+    "configs.experiments",
+    "dronedet",
+    "dronedet.methods",
+    "dronedet.tests",
+    "pursuit",
+    "pursuit.tests",
+    "pursuit.tools",
+    # The edge re-architecture is library surface, not a script directory:
+    # final/run_final.py imports realtime.{pipelines,rt_models,runner} to serve
+    # the edge-rt profile. Its own tools/ has no __init__.py and stays out.
+    "realtime",
+    # Shipped because pursuit imports it host-side: pursuit.run_pursuit and
+    # pursuit/tests/test_ring.py read simulators.pegasus.{pursuit_proto,camera}.
+    # pursuit_proto is also the only module the Isaac Sim container runs, which
+    # is why it must stay dependency-free -- see simulators/pegasus/README.md.
+    "simulators",
+    "simulators.pegasus",
+    "simulators.pegasus.control",
+    "simulators.pegasus.recording",
+    "simulators.pegasus.scenes",
+    "simulators.pegasus.scripts",
+]
+
+[tool.setuptools.package-data]
+# The surveyed Rivermark rooftops that city.py stations the interceptor against;
+# a JSON the code loads by path relative to its own module.
+"simulators.pegasus" = ["*.json"]
+# Model definitions handed to ultralytics by path, so they must exist on disk
+# next to the package rather than only in the source checkout.
+"configs" = ["*.yaml"]

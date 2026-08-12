@@ -8,6 +8,8 @@ Modules:
     methods    -- competing detector implementations behind one interface
     gt         -- ground-truth store
     evaluate   -- center-distance based per-frame evaluation
+    metrics    -- benchmark-grade scoring: centre-distance AND IoU/COCO AP, AI-TOD
+                  size bins, distractor (bird) accounting, bootstrap intervals
     track      -- camera-motion-compensated Kalman tracker
     viz        -- overlays and video writing
 """

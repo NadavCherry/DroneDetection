@@ -44,6 +44,72 @@ def cmd_eval(a: argparse.Namespace) -> None:
         Path(a.out).write_text(report)
 
 
+def cmd_bench(a: argparse.Namespace) -> None:
+    from .detections import DetectionSet
+    from .gt import GroundTruth
+    from . import metrics as M
+
+    fr = None
+    if a.frames:
+        lo, hi = a.frames.split(":")
+        fr = (int(lo), int(hi))
+    targets = set(a.targets) if a.targets else None
+    gt = GroundTruth.load(a.gt)
+
+    confusers = tuple(a.confusers)
+    distractor_names = [n for n, o in gt.objects.items()
+                        if (o.ignore if targets is None else n not in targets)]
+    confuser_names = [n for n in distractor_names if n.startswith(confusers)]
+    n_conf_inst = sum(len(gt.objects[n].frames) for n in confuser_names)
+
+    lines = [
+        f"# Benchmark report (tau={a.tau} px)",
+        "",
+        f"Ground truth `{a.gt}` — targets: "
+        f"{', '.join(sorted(targets)) if targets else 'all non-ignore objects'}.",
+        f"**Confusers** ({len(confuser_names)} objects, {n_conf_inst} instances, prefix "
+        f"{'/'.join(confusers)}): {', '.join(sorted(confuser_names)) or 'none'}. These are the "
+        "things that must never be called a drone; a hit on one is the failure this pipeline "
+        "exists to prevent, and it is reported here rather than silently discarded.",
+        f"Other distractors (excluded from recall, hits not held against a method): "
+        f"{', '.join(sorted(set(distractor_names) - set(confuser_names))) or 'none'}.",
+        "",
+        "| method | AP(centre) | AP very-tiny | AP tiny | COCO AP | AP50 | P | R | FP/frame | "
+        "**confuser hits** | med err px |",
+        "|---|---|---|---|---|---|---|---|---|---|---|",
+    ]
+    for path in a.dets:
+        ds = DetectionSet.load(path)
+        ev = M.evaluate(gt, ds, rule="centre", tau=a.tau, targets=targets, frame_range=fr)
+        thr = a.threshold if a.threshold is not None else M.pick_threshold(ev)
+        s = M.summarise(ev, thr)
+        coco = M.coco_ap(gt, ds, targets=targets, frame_range=fr)
+        by = s.ap_by_size
+        hits, inst = s.confuser_hits(confusers)
+        lines.append(
+            f"| {ds.method} | {s.ap:.3f} | {by.get('very-tiny', float('nan')):.3f} | "
+            f"{by.get('tiny', float('nan')):.3f} | {coco['AP']:.3f} | {coco['AP50']:.3f} | "
+            f"{s.precision:.3f} | {s.recall:.3f} | {s.fp_per_frame:.3f} | "
+            f"**{hits}/{inst}** | {s.median_centre_error:.1f} |")
+        if a.ci:
+            lo, hi = M.bootstrap_ci(ev, block=a.block, n_resamples=a.resamples)
+            lines.append(f"| ↳ *95% CI on AP(centre)* | *[{lo:.3f}, {hi:.3f}]* "
+                         f"| | | | | | | | | |")
+
+    lines += [
+        "",
+        f"Operating point: {'fixed --threshold ' + str(a.threshold) if a.threshold is not None else 'best-F1 chosen on THIS set (optimistic — pass --threshold from a val run for an honest number)'}.",
+        "COCO AP is AP@[.50:.05:.95] on IoU, the metric published drone papers report. It is "
+        "0.000 for any method whose boxes do not carry real extent, however well it localises "
+        "the centre — see `dronedet/metrics.py`.",
+    ]
+    report = "\n".join(lines)
+    print(report)
+    if a.out:
+        Path(a.out).parent.mkdir(parents=True, exist_ok=True)
+        Path(a.out).write_text(report)
+
+
 def cmd_track(a: argparse.Namespace) -> None:
     from .track import run_tracker_file
 
@@ -80,6 +146,26 @@ def main() -> None:
     e.add_argument("--frames", help="restrict scoring to a frame range, e.g. 342:571")
     e.add_argument("--out")
     e.set_defaults(fn=cmd_eval)
+
+    b = sub.add_parser("bench", help="benchmark-grade scoring: centre-distance AND COCO AP, "
+                                     "size bins, distractor (bird) hits, bootstrap CIs")
+    b.add_argument("--gt", required=True)
+    b.add_argument("--dets", nargs="+", required=True)
+    b.add_argument("--tau", type=float, default=12.0)
+    b.add_argument("--targets", nargs="+",
+                   help="object names counting as positives; all others become distractors")
+    b.add_argument("--threshold", type=float, default=None,
+                   help="operating threshold, normally taken from a val run; "
+                        "omitted means best-F1 on this set, which is optimistic")
+    b.add_argument("--confusers", nargs="+", default=["bird"],
+                   help="name prefixes of the distractors that must never be called a drone "
+                        "(default: bird). Hits on these get their own column.")
+    b.add_argument("--frames", help="restrict scoring to a frame range, e.g. 342:571")
+    b.add_argument("--ci", action="store_true", help="add a block-bootstrap 95%% CI on AP")
+    b.add_argument("--block", type=int, default=30, help="bootstrap block length in frames")
+    b.add_argument("--resamples", type=int, default=2000)
+    b.add_argument("--out")
+    b.set_defaults(fn=cmd_bench)
 
     t = sub.add_parser("track", help="run tracker over a detection JSON")
     t.add_argument("--video", required=True)

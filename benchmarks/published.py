@@ -1,0 +1,140 @@
+"""Published results, with the protocol that produced each one.
+
+The point of storing these is not convenience. It is that `tools/compare.py` can call
+`Protocol.mismatches_with` and *derive* whether our number and theirs can be subtracted,
+instead of relying on whoever writes the table to remember. Every previous
+apples-to-oranges comparison in this repo happened because the protocol was in prose.
+
+Provenance rules, enforced by `test_published.py`:
+
+* `value` is transcribed from the source, never rounded, never converted between metrics.
+* `verified=True` means the paper or repo page was opened during the 2026-08 sweep.
+* A number reported by a *competing* paper about someone else's method is marked
+  `reported_by_competitor=True`. Those get quoted constantly and are the least reliable
+  class of number in this literature -- TransVisDrone's 0.15 on ARD100 comes from
+  YOLOMG's authors, not from TransVisDrone's.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from .protocol import AP50, ARDMAV_OFFICIAL, DVB_OFFICIAL, NPS_OFFICIAL, Protocol
+
+
+@dataclass(frozen=True)
+class PublishedResult:
+    method: str
+    dataset_key: str
+    metric: str                  # human-readable name of `value`
+    value: float
+    protocol: Protocol
+    source_url: str
+    year: int
+    verified: bool
+    reported_by_competitor: bool = False
+    code_url: str = ""
+    notes: str = ""
+
+
+RESULTS: tuple[PublishedResult, ...] = (
+
+    # ------------------------------------------------------------------ ARD-MAV
+    PublishedResult(
+        method="MGMD / GLAD", dataset_key="ardmav", metric="AP@0.25", value=0.55,
+        protocol=ARDMAV_OFFICIAL, year=2024, verified=True,
+        source_url="https://arxiv.org/abs/2410.10527",
+        code_url="https://github.com/WestlakeIntelligentRobotics/Global-Local-MAV-Detection",
+        notes="F1 0.69, 28 fps. THE BAR on ARD-MAV, and the largest headroom available: "
+              "0.55 on the official 15-video split at the forgiving IoU 0.25."),
+
+    # ------------------------------------------------------------------ ARD100
+    PublishedResult(
+        method="YOLOMG-1280", dataset_key="ard100", metric="AP@0.5", value=0.85,
+        protocol=AP50, year=2025, verified=True,
+        source_url="https://arxiv.org/abs/2503.07115",
+        code_url="https://github.com/Irisky123/YOLOMG",
+        notes="0.78 at 640 px input. Their own ablation: replacing the motion map with a "
+              "second RGB stream collapses this to 0.33, and 3-frame differencing beats "
+              "2-frame 0.78 vs 0.73 -- both of which support this project's thesis."),
+    PublishedResult(
+        method="YOLOv9", dataset_key="ard100", metric="AP@0.5", value=0.64,
+        protocol=AP50, year=2025, verified=True, reported_by_competitor=True,
+        source_url="https://arxiv.org/abs/2503.07115",
+        notes="Best non-YOLOMG method in YOLOMG's own table."),
+    PublishedResult(
+        method="TransVisDrone", dataset_key="ard100", metric="AP@0.5", value=0.15,
+        protocol=AP50, year=2023, verified=True, reported_by_competitor=True,
+        source_url="https://arxiv.org/abs/2503.07115",
+        notes="⚠ QUOTE WITH CARE. This is YOLOMG's re-run of a competitor, not "
+              "TransVisDrone's own result. This repo previously reproduced it in bold as "
+              "evidence of a rival 'collapsing'. Do not repeat that."),
+
+    # ------------------------------------------------------------------ NPS-Drones
+    PublishedResult(
+        method="TransVisDrone", dataset_key="nps", metric="AP@0.5", value=0.95,
+        protocol=NPS_OFFICIAL, year=2023, verified=True,
+        source_url="https://arxiv.org/abs/2210.08423",
+        code_url="https://github.com/tusharsangam/TransVisDrone",
+        notes="Their own ablation is the useful part: a plain single-frame YOLOv5-l already "
+              "scores 0.93, so the VideoSwin transformer is worth +0.02."),
+    PublishedResult(
+        method="YOLOMG-1280", dataset_key="nps", metric="AP@0.5", value=0.95,
+        protocol=NPS_OFFICIAL, year=2025, verified=True,
+        source_url="https://arxiv.org/abs/2503.07115", code_url="https://github.com/Irisky123/YOLOMG"),
+    PublishedResult(
+        method="Dogfight", dataset_key="nps", metric="AP@0.5", value=0.89,
+        protocol=NPS_OFFICIAL, year=2021, verified=True,
+        source_url="https://arxiv.org/abs/2103.17242",
+        notes="~1 fps. TF 1.12 / CUDA 9 -- will not run on Blackwell, so it cannot be "
+              "re-measured in-house; quote only."),
+
+    # ------------------------------------------------------------------ Drone-vs-Bird
+    PublishedResult(
+        method="Laroca et al. (1st, 8th DvB Challenge)", dataset_key="dvb",
+        metric="mean mAP@0.5", value=0.7390, protocol=DVB_OFFICIAL, year=2025, verified=True,
+        source_url="https://arxiv.org/abs/2504.19347",
+        notes="YOLOv11 + multi-scale tiling + drone/bird copy-paste + temporal consistency "
+              "post-processing, over a 7-video self-chosen val split. Weakest videos: "
+              "gopro_002 0.4491 and dji_phantom_4_hillside_cross 0.4992 -- the moving-camera "
+              "cluttered cases, which are this project's design point. Their single-frame "
+              "bird rejector FAILED ('lost many true positives') and their stated future work "
+              "is a multi-frame patch classifier -- i.e. this repo's track classifier."),
+    PublishedResult(
+        method="YOLOMG (zero-shot)", dataset_key="dvb", metric="AP@0.5", value=0.41,
+        protocol=DVB_OFFICIAL, year=2025, verified=True,
+        source_url="https://arxiv.org/abs/2503.07115",
+        notes="Precision 0.50, recall 0.47 — cross-dataset transfer with NO DvB training. "
+              "Not comparable to Laroca's 0.7390, which trained on DvB. These two are "
+              "frequently quoted side by side; they are different experiments."),
+
+    # ------------------------------------------------------------------ DUT Anti-UAV
+    PublishedResult(
+        method="Lightweight YOLOv11 (P2, no P5)", dataset_key="dut_antiuav",
+        metric="mAP@0.5", value=0.922, protocol=AP50, year=2026, verified=True,
+        source_url="https://doi.org/10.3390/app16157423",
+        notes="mAP@0.5:0.95 = 0.615, 2.11M params, Jetson Orin Nano Super + TensorRT FP16. "
+              "Almost exactly this repo's edge recipe, independently derived. 'Add P2, delete "
+              "P5' is a cheap ablation this repo has not tried. ⚠ MDPI landing page returned "
+              "403 to automated fetch; numbers are from publisher-deposited metadata."),
+    PublishedResult(
+        method="UAV-DETR", dataset_key="dut_antiuav", metric="mAP@0.5:0.95", value=0.6715,
+        protocol=AP50, year=2026, verified=True,
+        source_url="https://arxiv.org/abs/2603.22841",
+        code_url="https://github.com/wd-sir/UAVDETR",
+        notes="mAP50 96.17. ⚠ Verified at commit e51d1d81: their NWD applies the pixel-unit "
+              "constant C=12.8 to normalised [0,1] boxes, a scale error of exactly imgsz=640, "
+              "which makes the NWD term effectively linear. Unreviewed preprint -- treat this "
+              "as internal evidence that dronedet/nwd.py is right, not as a stick."),
+)
+
+
+def for_dataset(dataset_key: str) -> list[PublishedResult]:
+    return sorted((r for r in RESULTS if r.dataset_key == dataset_key),
+                  key=lambda r: -r.value)
+
+
+def best_for_dataset(dataset_key: str) -> PublishedResult | None:
+    """The number to beat. Excludes competitor-reported values, which are unreliable."""
+    rs = [r for r in for_dataset(dataset_key) if not r.reported_by_competitor]
+    return rs[0] if rs else None

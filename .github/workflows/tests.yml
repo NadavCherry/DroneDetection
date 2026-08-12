@@ -1,16 +1,40 @@
 name: tests
 
-# The pursuit suite is the only automated test suite in the repository, and it is
-# deliberately cheap to run: nothing under pursuit/tests imports torch or
-# ultralytics, so CI installs a minimal set rather than `-r requirements.txt`,
-# which would pull ~2 GB of CUDA wheels to run 540 tests that never touch a GPU.
-# Verified with an import blocker: `pursuit.episode` imports clean without either.
+# Nothing under pursuit/tests or dronedet/tests imports torch or ultralytics, so CI
+# installs a minimal set rather than `-r requirements.txt`, which would pull ~2 GB of
+# CUDA wheels to run tests that never touch a GPU. That is a contract, not an
+# accident: dronedet.metrics, .stats, .gt and .detections and the whole `benchmarks`
+# package are kept dependency-light so this job stays cheap, and the `smoke` step
+# below fails the build the moment something in that import chain reaches for torch.
+#
+# The package is installed with `pip install -e . --no-deps`:
+#   -e      so the import graph in pyproject.toml is actually exercised -- a package
+#           declared but missing, or a module only importable because the repo root
+#           happened to be the working directory, fails here rather than for a user.
+#   --no-deps  because the pinned dependency set names opencv-contrib-python, which a
+#           headless runner cannot use and does not need. The four wheels installed
+#           by hand above it are the real test environment.
+#
+# The count floors exist because of a real failure: pytest.ini once pointed testpaths
+# at a directory that did not exist, pytest collected nothing, and the build stayed
+# green for weeks. A suite that silently collapses now fails. They are floors, not
+# exact counts -- the guard is there to catch a collapse, not to police a single
+# test moving. When a round of work lands, raise them.
 
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:
+
+env:
+  # Measured 2026-08-12: 797 collected = 540 pursuit + 257 dronedet, all passing.
+  # pursuit/tests is stable, so its floor sits at the exact count; dronedet/tests is
+  # still being written, so its floor sits well below and should be ratcheted up
+  # once the benchmark work has settled.
+  MIN_TOTAL: 600
+  MIN_PURSUIT: 540
+  MIN_DRONEDET: 50
 
 jobs:
   pytest:
@@ -30,8 +54,102 @@ jobs:
           python -m pip install --upgrade pip
           pip install "numpy==2.5.0" "scipy==1.18.0" "opencv-python-headless==5.0.0.93" "pytest==9.1.1"
 
+      - name: Install the package itself
+        run: pip install -e . --no-deps
+
+      - name: Prove the scoring path imports without torch
+        # Run from a directory that is not the checkout, so nothing resolves via
+        # the implicit cwd entry on sys.path. If any of these modules grows a
+        # top-level `import torch`, the import fails here with a clear name
+        # instead of surfacing as a mysterious collection error later.
+        run: |
+          cd "$RUNNER_TEMP"
+          python - <<'PY'
+          import importlib, sys
+
+          MODULES = [
+              "dronedet", "dronedet.metrics", "dronedet.stats",
+              "dronedet.gt", "dronedet.detections", "dronedet.evaluate",
+              "benchmarks", "benchmarks.catalog", "benchmarks.protocol", "benchmarks.published",
+              "benchmarks.scorecard", "benchmarks.adapters",
+              "pursuit", "pursuit.geometry", "pursuit.guidance", "pursuit.episode",
+              "simulators.pegasus.pursuit_proto",
+          ]
+          for name in MODULES:
+              importlib.import_module(name)
+
+          heavy = sorted({"torch", "torchvision", "ultralytics"} & set(sys.modules))
+          if heavy:
+              raise SystemExit(
+                  f"torch-free contract broken: importing the scoring path pulled in {heavy}. "
+                  "Move that import inside the function that needs it."
+              )
+          print(f"{len(MODULES)} modules imported, none pulled in torch")
+          PY
+
       - name: Run the suite
-        run: python -m pytest -q
+        run: |
+          set -o pipefail
+          python -m pytest -q | tee run.log
+          passed=$(grep -oE '[0-9]+ passed' run.log | tail -1 | grep -oE '^[0-9]+' || true)
+          echo "passed=${passed:-0}, floor=$MIN_TOTAL"
+          if [ -z "$passed" ] || [ "$passed" -lt "$MIN_TOTAL" ]; then
+            echo "::error::${passed:-0} tests passed, expected at least $MIN_TOTAL"
+            exit 1
+          fi
+
+  collect:
+    # Deliberately separate from `pytest`: collection catches a broken import or a
+    # vanished testpaths entry even when the tests that do run all pass, and it
+    # answers in seconds, so a mistake of that shape is reported almost immediately.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install the test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install "numpy==2.5.0" "scipy==1.18.0" "opencv-python-headless==5.0.0.93" "pytest==9.1.1"
+
+      - name: Install the package itself
+        run: pip install -e . --no-deps
+
+      - name: Collect, and refuse a suite that shrank
+        run: |
+          set -o pipefail
+          python -m pytest --collect-only -q | tee collected.txt
+
+          total=$(grep -oE '^[0-9]+ tests? collected' collected.txt | grep -oE '^[0-9]+' || true)
+          pursuit=$(grep -c '^pursuit/tests/' collected.txt || true)
+          dronedet=$(grep -c '^dronedet/tests/' collected.txt || true)
+
+          echo "collected: total=${total:-0} pursuit=$pursuit dronedet=$dronedet"
+          echo "floors:    total=$MIN_TOTAL pursuit=$MIN_PURSUIT dronedet=$MIN_DRONEDET"
+
+          fail=0
+          if [ -z "$total" ]; then
+            echo "::error::could not parse a collected-test count from pytest output"
+            fail=1
+          elif [ "$total" -lt "$MIN_TOTAL" ]; then
+            echo "::error::collected $total tests, floor is $MIN_TOTAL"
+            fail=1
+          fi
+          # Per-testpath floors, because a total can be met while one whole suite
+          # is missing -- exactly the failure mode a bad `testpaths` entry produces.
+          if [ "$pursuit" -lt "$MIN_PURSUIT" ]; then
+            echo "::error::pursuit/tests collected $pursuit, floor is $MIN_PURSUIT"
+            fail=1
+          fi
+          if [ "$dronedet" -lt "$MIN_DRONEDET" ]; then
+            echo "::error::dronedet/tests collected $dronedet, floor is $MIN_DRONEDET"
+            fail=1
+          fi
+          exit $fail
 
   docs:
     runs-on: ubuntu-latest

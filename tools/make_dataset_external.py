@@ -206,18 +206,39 @@ def parse_repo_gt(path, frange=None):
     return out
 
 
-def combined_splits():
-    """Whole-video 70/20/10 split per dataset (test=idx%10==0, val=idx%10 in {1,2}).
-    Every dataset lands in train, val AND test."""
-    def split(ids):
-        tr, va, te = [], [], []
-        for i, v in enumerate(sorted(ids)):
-            (te if i % 10 == 0 else va if i % 10 in (1, 2) else tr).append(v)
-        return {"train": tr, "val": va, "test": te}
-    ard = split(_ard_all())
+def _index_split(ids):
+    """Positional 70/20/10 whole-video split (test = idx%10==0, val = idx%10 in {1,2})."""
+    tr, va, te = [], [], []
+    for i, v in enumerate(sorted(ids)):
+        (te if i % 10 == 0 else va if i % 10 in (1, 2) else tr).append(v)
+    return {"train": tr, "val": va, "test": te}
+
+
+def combined_splits(legacy: bool = False):
+    """Whole-video splits per dataset, for the combined multi-dataset corpus.
+
+    ARD-MAV uses **its published split** (``ARD_TEST_IDS``, 15 test videos, Guo et al.),
+    which is the only way a number here can be compared with a published one.
+
+    ``legacy=True`` restores the positional ``idx % 10`` split that rounds 5-7 actually
+    used. That split ignored ``ARD_TEST_IDS`` -- defined 168 lines above it and never
+    referenced -- and chose 6 test videos by position, so **most of the official test
+    videos were in the training set** and the resulting ARD-MAV numbers cannot be placed
+    beside MGMD's or GLAD's. Keep the flag only to regenerate those old artifacts; do not
+    report a number produced with it.
+
+    NPS-Drones publishes no official split, so it keeps the positional one either way --
+    say so whenever an NPS number is quoted, rather than implying a standard split.
+    """
     nps_ids = [Path(p).stem.replace("_gt", "") for p in NPS_ANN.glob("Clip_*_gt.txt")]
-    nps = split(nps_ids)
-    return {"ardmav": ard, "nps": nps,
+    if legacy:
+        ard = _index_split(_ard_all())
+    else:
+        train_ids = [v for v in _ard_all()
+                     if v not in ARD_TEST_IDS and v not in ARD_VAL_IDS]
+        ard = {"train": sorted(train_ids), "val": sorted(ARD_VAL_IDS),
+               "test": sorted(ARD_TEST_IDS)}
+    return {"ardmav": ard, "nps": _index_split(nps_ids),
             "user": {"train": ["07_05"], "val": ["07_05"], "test": ["10_06"]}}
 
 

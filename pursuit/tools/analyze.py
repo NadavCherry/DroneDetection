@@ -46,20 +46,11 @@ from pursuit.tools.report import load  # noqa: E402
 
 # ---------------------------------------------------------------- statistics
 
-def wilson(k: int, n: int, z: float = 1.96) -> tuple:
-    """Binomial confidence interval that behaves at the edges.
-
-    The textbook ``p +/- z*sqrt(p(1-p)/n)`` gives ``[1.0, 1.0]`` for 31/31,
-    which asserts certainty from 31 samples. Wilson does not: it returns about
-    [0.89, 1.00], which is the honest statement.
-    """
-    if n == 0:
-        return (0.0, 0.0, 0.0)
-    p = k / n
-    d = 1.0 + z * z / n
-    centre = (p + z * z / (2 * n)) / d
-    half = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / d
-    return (p, max(0.0, centre - half), min(1.0, centre + half))
+# wilson and holm live in dronedet.stats so there is exactly one implementation in the
+# repo -- they were previously copy-pasted here and into city_report.py, where a fix to
+# one would silently diverge from the other. Both are numpy/stdlib only, so importing
+# them keeps this module inside the torch-free CI contract.
+from dronedet.stats import holm, wilson  # noqa: E402,F401
 
 
 def _logf(n: int) -> float:
@@ -127,18 +118,6 @@ def mann_whitney(xs: Sequence[float], ys: Sequence[float]) -> float:
         return 1.0
     z = (abs(u1 - mu) - 0.5) / math.sqrt(var)
     return max(0.0, min(1.0, math.erfc(z / math.sqrt(2.0))))
-
-
-def holm(pairs: list) -> list:
-    """Holm-Bonferroni: control the family-wise error over several factors."""
-    ordered = sorted(pairs, key=lambda kv: kv[1])
-    m = len(ordered)
-    out, running = [], 0.0
-    for i, (name, p) in enumerate(ordered):
-        adj = min(1.0, max(running, (m - i) * p))
-        running = adj
-        out.append((name, p, adj))
-    return out
 
 
 # ------------------------------------------------------------------ analysis

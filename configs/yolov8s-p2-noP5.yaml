@@ -1,0 +1,69 @@
+# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+#
+# YOLOv8 with P2/4 - P4/16 outputs: the stride-4 head ADDED, the stride-32 head DELETED.
+#
+# Rationale (configs/experiments/ardmav.py::P2_NO_P5_ARDMAV): ARD-MAV's median target is
+# 11.8 px. A P5 head predicts on a 32-px grid, so it can never be the assigned level for
+# any of them -- it carries the largest share of the head's parameters and contributes
+# nothing but background logits. The backbone still computes P5 (layers 7-9) because the
+# neck's top-down path starts from SPPF; only the *detection* branch is removed.
+#
+# Hand-written, then MEASURED (2026-08-12, ultralytics 8.4.84 / torch 2.11.0+cu128):
+# instantiating this file yields detect strides (4, 8, 16) and 7,409,459 parameters,
+# against (4, 8, 16, 32) and 10,884,336 for the stock `yolov8s-p2.yaml` -- so deleting the
+# P5 branch removes 31.9% of the parameters, which is the claim the experiment rests on.
+# `model.load('yolov8s.pt')` transfers 219 items into both, i.e. the P5 detach costs
+# nothing in transferable backbone weights.
+#
+# It has still never been TRAINED. `tools/train.py` re-reads the detect head's strides at
+# launch and aborts unless they are (4, 8, 16), because the check costs milliseconds and a
+# silent head change costs three hours.
+
+# Parameters
+nc: 1 # number of classes
+ch: 3
+scales: # model compound scaling constants; the filename's 's' selects the row
+  # [depth, width, max_channels]
+  n: [0.33, 0.25, 1024]
+  s: [0.33, 0.50, 1024]
+  m: [0.67, 0.75, 768]
+  l: [1.00, 1.00, 512]
+  x: [1.00, 1.25, 512]
+
+# YOLOv8.0 backbone (unchanged)
+backbone:
+  # [from, repeats, module, args]
+  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2
+  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4
+  - [-1, 3, C2f, [128, True]]
+  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8
+  - [-1, 6, C2f, [256, True]]
+  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16
+  - [-1, 6, C2f, [512, True]]
+  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32
+  - [-1, 3, C2f, [1024, True]]
+  - [-1, 1, SPPF, [1024, 5]] # 9
+
+# YOLOv8.0-p2 head, with the final P5 bottom-up branch and its Detect input removed
+head:
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]
+  - [[-1, 6], 1, Concat, [1]] # cat backbone P4
+  - [-1, 3, C2f, [512]] # 12
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]
+  - [[-1, 4], 1, Concat, [1]] # cat backbone P3
+  - [-1, 3, C2f, [256]] # 15 (P3/8-small)
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]
+  - [[-1, 2], 1, Concat, [1]] # cat backbone P2
+  - [-1, 3, C2f, [128]] # 18 (P2/4-xsmall)
+
+  - [-1, 1, Conv, [128, 3, 2]]
+  - [[-1, 15], 1, Concat, [1]] # cat head P3
+  - [-1, 3, C2f, [256]] # 21 (P3/8-small)
+
+  - [-1, 1, Conv, [256, 3, 2]]
+  - [[-1, 12], 1, Concat, [1]] # cat head P4
+  - [-1, 3, C2f, [512]] # 24 (P4/16-medium)
+
+  - [[18, 21, 24], 1, Detect, [nc]] # Detect(P2, P3, P4) -- no P5

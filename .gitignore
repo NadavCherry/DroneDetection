@@ -108,3 +108,19 @@ work/pursuit/**
 !work/pursuit/flicker.json
 !work/pursuit/robustness.json
 work/linkedin/
+
+# Packaging build artefacts (pyproject.toml). `pip install -e .` writes an
+# .egg-info tree into the repo root on every install; it is regenerated from
+# pyproject.toml and must never be committed.
+*.egg-info/
+build/
+dist/
+
+# Benchmark working directories. Prepared corpora are regenerable from the raw
+# download plus tools/prepare_data.py, and are large. Scorecards are cheap to
+# regenerate from detections and would otherwise accumulate one file per run --
+# but a scorecard you intend to CITE should be force-added, because a number in a
+# report must point at the artifact that produced it.
+work/prepared/
+work/scorecards/
+work/det_bench/
