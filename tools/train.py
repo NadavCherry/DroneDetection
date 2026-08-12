@@ -58,6 +58,7 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 from configs.experiments import ExperimentConfig, check_strides, describe_all, resolve  # noqa: E402
+from dronedet.console import use_utf8_stdio  # noqa: E402
 
 MANIFEST_SCHEMA_VERSION = 2
 
@@ -746,6 +747,7 @@ def apply_overrides(cfg: ExperimentConfig, args: argparse.Namespace) -> Experime
 
 
 def main(argv: list[str] | None = None) -> int:
+    use_utf8_stdio()
     args = build_parser().parse_args(argv)
     if args.list:
         print(describe_all())

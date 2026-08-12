@@ -66,6 +66,7 @@ from benchmarks.adapters import ADAPTERS, Box, build  # noqa: E402
 from dataset_stats import _iou_after_inflation  # noqa: E402
 from dataset_stats import summarise as print_size_report  # noqa: E402
 from dronedet.metrics import SIZE_BINS, size_bin  # noqa: E402
+from dronedet.console import use_utf8_stdio  # noqa: E402
 
 #: Candidate inflations always shown next to the chosen one, so the cost of the repo's two
 #: historical defaults (12 in make_dataset_external, 24 in make_datasets_v3) is on screen
@@ -470,6 +471,7 @@ def _write_data_yaml(root: Path, rep: Report) -> None:
 
 
 def main(argv: list[str] | None = None) -> None:
+    use_utf8_stdio()
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("key", choices=sorted(ADAPTERS), help="which adapter to run")

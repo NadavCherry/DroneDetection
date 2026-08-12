@@ -38,6 +38,7 @@ from benchmarks.scorecard import (  # noqa: E402
 from dronedet.stats import (  # noqa: E402
     compare_with_published, holm, mcnemar, paired_bootstrap_diff, paired_permutation_test,
     wilson)
+from dronedet.console import use_utf8_stdio  # noqa: E402
 
 
 # --------------------------------------------------------------------------- ours vs ours
@@ -291,6 +292,7 @@ def table_confusers(cards: list[Scorecard], threshold: float,
 
 # ------------------------------------------------------------------------------------ cli
 def main(argv=None) -> int:
+    use_utf8_stdio()
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--scorecards", nargs="+", required=True, type=Path)

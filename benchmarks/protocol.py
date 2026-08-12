@@ -117,12 +117,43 @@ AP50 = Protocol(
     notes="Single IoU 0.5. What YOLOMG, TransVisDrone and Dogfight report on "
           "NPS-Drones and ARD100.")
 
-#: ARD-MAV's own papers (MGMD/GLAD) score at IoU 0.25, not 0.5.
-ARDMAV_OFFICIAL = Protocol(
-    matcher="iou", ap_style="ap25", iou_threshold=0.25, split="official-test-15",
-    citation="Guo et al., GLAD / MGMD (IEEE T-ITS 2024)",
-    notes="15 held-out videos: phantom{05,08,09,10,19,30,41,43,46,47,58,63,65,70,86}. "
-          "The forgiving 0.25 threshold exists because the targets go down to 6x3 px.")
+#: The bar on ARD-MAV's official split. VERIFIED against the paper 2026-08-12.
+#:
+#: GLAD, arXiv 2312.11008 / IEEE T-ITS 2024, experiments section, verbatim:
+#:     "Following the protocol in [21], the performance evaluation is based on Precision,
+#:      Recall, F-Score, and AP. We set the intersection over union (IOU) threshold
+#:      between predictions and ground truths to 0.5."
+#: on "15 videos from the ARD-MAV dataset", 28,322 frames. The video IDs in `notes` are
+#: quoted from the GLAD repository README, which states them explicitly.
+ARDMAV_GLAD = Protocol(
+    matcher="iou", ap_style="ap50", iou_threshold=0.5, split="official-test-15",
+    citation="Guo et al., GLAD, IEEE T-ITS 2024 (arXiv 2312.11008)",
+    notes="15 held-out videos: phantom{05,08,09,10,19,30,41,43,46,47,58,63,65,70,86}, "
+          "28,322 frames. GLAD scores AP 0.80 overall (P 0.92 / R 0.82), and by its own "
+          "three conditions: ordinary 0.91, complex background 0.81, SMALL MAVs 0.58. "
+          "The small-MAV row is the one this project is built to contest.")
+
+#: NOT the official split. MGMD scores at IoU 0.25 on a split of its own that it never
+#: enumerates, so a number under this protocol is not placeable beside a GLAD number and
+#: `mismatches_with` will say so on both counts (threshold AND split).
+ARDMAV_MGMD = Protocol(
+    matcher="iou", ap_style="ap25", iou_threshold=0.25,
+    split="mgmd-self-chosen-UNENUMERATED",
+    citation="MGMD (ARD-MAV authors), IoU 0.25 on an unpublished split",
+    notes="Kept only so a quoted MGMD number can be typed without pretending it is "
+          "comparable. The split is not published, so nobody outside that lab can "
+          "reproduce it and nobody can score against it.")
+
+#: BACKWARDS-COMPATIBILITY ALIAS, and a correction.
+#:
+#: `ARDMAV_OFFICIAL` used to be `iou_threshold=0.25, split="official-test-15"`, citing
+#: "Guo et al., GLAD / MGMD" -- one Protocol object splicing two papers, binding MGMD's
+#: threshold to GLAD's split. That is precisely the error this module exists to prevent,
+#: and it was compiled into the engine that decides what is comparable: every ARD-MAV
+#: number this repo produced was being scored at a threshold matching NO published number
+#: on that split, and the bar was recorded as 0.55 when the bar is 0.80 at a threshold
+#: twice as strict. Now points at the verified GLAD protocol.
+ARDMAV_OFFICIAL = ARDMAV_GLAD
 
 NPS_OFFICIAL = Protocol(
     matcher="iou", ap_style="ap50", iou_threshold=0.5, split="nps-no-official-split",

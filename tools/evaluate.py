@@ -42,6 +42,7 @@ from benchmarks.scorecard import Scorecard, SequenceResult, pooled_ap  # noqa: E
 from dronedet import metrics as M  # noqa: E402
 from dronedet.detections import DetectionSet  # noqa: E402
 from dronedet.gt import GroundTruth  # noqa: E402
+from dronedet.console import use_utf8_stdio  # noqa: E402
 
 
 def _git(*args: str) -> str:
@@ -164,6 +165,7 @@ def build_scorecard(dataset_key: str, model: str, gt_dir: Path, det_dir: Path, *
 
 
 def main(argv=None) -> int:
+    use_utf8_stdio()
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dataset", required=True, help=f"one of {sorted(DATASETS)}")

@@ -194,10 +194,23 @@ def test_published_table_blocks_a_protocol_mismatch():
 
 
 def test_published_table_allows_a_matching_protocol():
+    """A comparable row is marked comparable -- and an incomparable one still is not.
+
+    This used to assert "NOT COMPARABLE" appeared NOWHERE in an ardmav table, which held
+    only while ardmav had a single published row. It now has several: GLAD at IoU 0.5 on
+    the official 15 videos (ours matches, so it compares), and MGMD at IoU 0.25 on a split
+    it never enumerates (ours cannot compare, and the table must keep saying so).
+
+    Asserting the string is absent would now be asserting that a genuinely incomparable
+    number gets silently compared -- the exact failure `mismatches_with` exists to prevent.
+    """
     card = _card("ours", 0.9, protocol="ardmav-official", split="official-test-15")
     table = C.table_published(card, "ardmav", n_resamples=200)
-    assert "✅ yes" in table
-    assert "NOT COMPARABLE" not in table
+    assert "✅ yes" in table, "the GLAD row shares our protocol and must be comparable"
+    assert "GLAD" in table
+    # The MGMD row differs in threshold AND split, and must stay flagged.
+    assert "NOT COMPARABLE" in table
+    assert "MGMD" in table
 
 
 def test_published_table_never_prints_a_p_value():

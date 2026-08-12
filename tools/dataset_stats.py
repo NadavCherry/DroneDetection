@@ -35,6 +35,7 @@ REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
 from dronedet.metrics import SIZE_BINS, size_bin  # noqa: E402
+from dronedet.console import use_utf8_stdio  # noqa: E402
 
 
 def _iou_after_inflation(w: float, h: float, min_side: float) -> float:
@@ -112,6 +113,7 @@ def load_gt_json(path: Path):
 
 
 def main() -> None:
+    use_utf8_stdio()
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dataset", choices=["ardmav"], help="a known external dataset")

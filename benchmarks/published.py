@@ -19,7 +19,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .protocol import AP50, ARDMAV_OFFICIAL, DVB_OFFICIAL, NPS_OFFICIAL, Protocol
+from .protocol import (AP50, ARDMAV_GLAD, ARDMAV_MGMD, ARDMAV_OFFICIAL, DVB_OFFICIAL,
+                       NPS_OFFICIAL, Protocol)
 
 
 @dataclass(frozen=True)
@@ -40,13 +41,38 @@ class PublishedResult:
 RESULTS: tuple[PublishedResult, ...] = (
 
     # ------------------------------------------------------------------ ARD-MAV
+    # CORRECTED 2026-08-12 against the GLAD paper itself. This block previously held a
+    # single row, "MGMD / GLAD, AP@0.25 = 0.55, on the official 15-video split", which
+    # merged two papers and attached one's threshold to the other's split. The real bar is
+    # 0.80 at IoU 0.5 -- higher, and at a threshold twice as strict.
     PublishedResult(
-        method="MGMD / GLAD", dataset_key="ardmav", metric="AP@0.25", value=0.55,
-        protocol=ARDMAV_OFFICIAL, year=2024, verified=True,
-        source_url="https://arxiv.org/abs/2410.10527",
+        method="GLAD", dataset_key="ardmav", metric="AP@0.5", value=0.80,
+        protocol=ARDMAV_GLAD, year=2024, verified=True,
+        source_url="https://arxiv.org/abs/2312.11008",
         code_url="https://github.com/WestlakeIntelligentRobotics/Global-Local-MAV-Detection",
-        notes="F1 0.69, 28 fps. THE BAR on ARD-MAV, and the largest headroom available: "
-              "0.55 on the official 15-video split at the forgiving IoU 0.25."),
+        notes="THE BAR on the official 15-video split. P 0.92 / R 0.82 over 28,322 "
+              "frames. Ships weights but only 'basic codes' -- no evaluator, so this "
+              "number has never been reproduced outside the authors' lab."),
+    PublishedResult(
+        method="GLAD (small-MAV subset)", dataset_key="ardmav", metric="AP@0.5", value=0.58,
+        protocol=ARDMAV_GLAD, year=2024, verified=True,
+        source_url="https://arxiv.org/abs/2312.11008",
+        notes="P 0.82 / R 0.67. THE ROW TO CONTEST: GLAD's own weakest condition, and the "
+              "one a few-pixel temporal method is built for. Its other two conditions are "
+              "ordinary 0.91 and complex background 0.81."),
+    PublishedResult(
+        method="TPH-YOLOv5l", dataset_key="ardmav", metric="AP@0.5", value=0.73,
+        protocol=ARDMAV_GLAD, year=2024, verified=True,
+        source_url="https://arxiv.org/abs/2312.11008",
+        notes="Best non-GLAD entry in GLAD's own comparison table. Others there: "
+              "YOLOv5s 0.61, MEGA 0.31, Dogfight 0.22."),
+    PublishedResult(
+        method="MGMD", dataset_key="ardmav", metric="AP@0.25", value=0.55,
+        protocol=ARDMAV_MGMD, year=2024, verified=True,
+        source_url="https://arxiv.org/abs/2410.10527",
+        notes="NOT on the official split and NOT comparable to the GLAD rows above -- "
+              "different threshold AND a split MGMD never enumerates. Kept so the number "
+              "can be cited without implying it can be beaten on measurable ground."),
 
     # ------------------------------------------------------------------ ARD100
     PublishedResult(

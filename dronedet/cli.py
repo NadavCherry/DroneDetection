@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from .console import use_utf8_stdio
 
 
 def cmd_detect(a: argparse.Namespace) -> None:
@@ -124,6 +125,7 @@ def cmd_render(a: argparse.Namespace) -> None:
 
 
 def main() -> None:
+    use_utf8_stdio()
     p = argparse.ArgumentParser(prog="dronedet")
     sub = p.add_subparsers(dest="cmd", required=True)
 

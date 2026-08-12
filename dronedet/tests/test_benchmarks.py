@@ -70,7 +70,7 @@ def test_the_repos_native_protocol_is_not_comparable_to_papers():
 
 def test_protocol_describe_is_human_readable():
     assert "τ=12" in SPECKLOCK_CENTRE.describe()
-    assert "IoU≥0.25" in ARDMAV_OFFICIAL.describe()
+    assert "IoU≥0.5" in ARDMAV_OFFICIAL.describe()   # GLAD's threshold; see below
 
 
 # ------------------------------------------------------------------ catalog
@@ -129,10 +129,39 @@ def test_best_for_dataset_excludes_competitor_reported_numbers():
     assert best.method.startswith("YOLOMG")
 
 
-def test_the_ardmav_bar_is_recorded_with_its_forgiving_threshold():
+def test_the_ardmav_bar_is_glad_at_iou_0_5_not_mgmd_at_0_25():
+    """CORRECTED 2026-08-12 against the GLAD paper itself.
+
+    This test used to assert the bar was 0.55 at IoU 0.25 and was called
+    "..._with_its_forgiving_threshold". Both halves were wrong, and the test was pinning
+    the error in place: `ARDMAV_OFFICIAL` had bound MGMD's 0.25 threshold to GLAD's
+    15-video split under a citation naming both papers, so every ARD-MAV number this repo
+    produced was scored at a threshold matching NO published number on that split.
+
+    GLAD, arXiv 2312.11008, experiments section, verbatim: "We set the intersection over
+    union (IOU) threshold between predictions and ground truths to 0.5", reporting AP 0.80
+    over 28,322 frames of the 15 official videos. The bar is higher AND stricter than what
+    was recorded here.
+    """
     bar = published.best_for_dataset("ardmav")
-    assert bar.value == pytest.approx(0.55)
-    assert bar.protocol.iou_threshold == 0.25
+    assert bar.value == pytest.approx(0.80)
+    assert bar.protocol.iou_threshold == 0.5
+    assert bar.protocol.split == "official-test-15"
+
+
+def test_the_mgmd_number_is_not_claimed_to_be_on_the_official_split():
+    """MGMD never enumerates its split, so its 0.55 is not scoreable against.
+
+    Keeping it citable is fine; letting it look comparable is not. The two must therefore
+    be flagged as mismatched on BOTH the threshold and the split -- if a future edit makes
+    them agree on either, a reader could subtract them.
+    """
+    mgmd = [r for r in published.for_dataset("ardmav") if r.method == "MGMD"]
+    assert mgmd, "the MGMD number should still be recorded, just not as comparable"
+    glad = [r for r in published.for_dataset("ardmav") if r.method == "GLAD"][0]
+    reasons = mgmd[0].protocol.mismatches_with(glad.protocol)
+    assert any("IoU" in r for r in reasons), reasons
+    assert any("split" in r.lower() for r in reasons), reasons
 
 
 def test_competitor_reported_numbers_are_flagged():

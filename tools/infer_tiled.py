@@ -22,7 +22,10 @@ channels -- which is the whole claim under test.
 
 Output is a `dronedet.detections.DetectionSet` JSON per video, which is what
 `tools/evaluate.py` scores against `work/ext_datasets/gt/ardmav/<video>.json` under the
-`ardmav-official` protocol (IoU 0.25 on the published 15-video split, i.e. MGMD's).
+`ardmav-official` protocol -- **IoU 0.5** on the published 15-video split, which is GLAD's
+(arXiv 2312.11008: "We set the intersection over union (IOU) threshold between predictions
+and ground truths to 0.5"), where the bar is AP 0.80 overall and 0.58 on its small-MAV
+condition. It is NOT MGMD's IoU 0.25 -- that number is on a split MGMD never enumerates.
 
     python tools/infer_tiled.py --weights work/runs/temporal_ardmav-s0/weights/best.pt \
         --mode temporal --gt-dir work/ext_datasets/gt/ardmav --out-dir work/det/temporal
@@ -42,6 +45,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from dronedet.detections import Detection, DetectionSet  # noqa: E402
+from dronedet.console import use_utf8_stdio  # noqa: E402
 
 TEMPORAL_DT = 6          # must match make_dataset_external.TEMPORAL_DT
 
@@ -164,6 +168,7 @@ def run_video(model, video: Path, mode: str, args) -> DetectionSet:
 
 
 def main(argv: list[str] | None = None) -> int:
+    use_utf8_stdio()
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--weights", required=True)
