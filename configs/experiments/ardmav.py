@@ -104,6 +104,13 @@ BASELINE_LOCAL = ExperimentConfig(
     data="work/dsv3_crop640_lbl24/data.yaml",
     model_cfg="yolov8s-p2.yaml",
     weights="yolov8s.pt",
+    # TWO classes, not one. make_datasets_v3.py pastes a bird bank as an explicit
+    # class 1 (2,614 drone + 3,144 bird boxes in train), which is how the shipped
+    # detector learns to reject birds rather than merely not fire on them. Left at
+    # the ExperimentConfig default of ("drone",) these configs aborted in
+    # tools/train.py's data check before the first batch -- which is the check
+    # doing its job, since a 1-class head on 2-class labels trains silently wrong.
+    classes=("drone", "bird"),
     imgsz=640, batch=8, epochs=60, seed=0,
     tile_px=640, min_side=24.0,
     nwd=False,
@@ -127,6 +134,7 @@ TRUEEXTENT_LOCAL = ExperimentConfig(
     data="work/dsv3_crop640_lbl0/data.yaml",
     model_cfg="yolov8s-p2.yaml",
     weights="yolov8s.pt",
+    classes=("drone", "bird"),          # see baseline_local -- same 2-class labels
     imgsz=640, batch=8, epochs=60, seed=0,
     tile_px=640, min_side=0.0,
     nwd=True, nwd_assign_ratio=0.5, nwd_assign_c=16.0,
