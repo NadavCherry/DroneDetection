@@ -78,7 +78,8 @@ UAV_DETR_B4_640 = VramReference(
 YOLOV8S_P2_MEASURED = VramReference(
     gib=7.08, batch=16, imgsz=640, measured=True,
     source="MEASURED 2026-08-12, RTX 4080 Laptop 12 GiB, yolov8s-p2 @ 640 px, peak "
-           "max_memory_reserved over one epoch; fits 0.37 GiB + 0.419 GiB/sample")
+           "max_memory_reserved over one epoch; fits 0.37 GiB + 0.419 GiB/sample. "
+           "Raw readings: work/_vram_probe.json")
 
 #: The former name, kept so nothing that imported it breaks. It now points at the fact.
 YOLOV8S_P2_ESTIMATE = YOLOV8S_P2_MEASURED
