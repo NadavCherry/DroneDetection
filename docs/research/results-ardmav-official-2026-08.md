@@ -1,7 +1,53 @@
 # Result — ARD-MAV, official 15-video split, at the published protocol
 
-**Run 2026-08-13.** The first number this project has produced that can legitimately sit
-beside a published one.
+**Run 2026-08-13.** The first numbers this project has produced that can legitimately sit
+beside a published one — and the temporal stack, measured on a public benchmark against a
+published bar for the first time.
+
+---
+
+## 0. Headline
+
+Both arms, all 15 official test videos, **matched conf floor 0.05**, IoU 0.5, VOC all-point
+AP. Intervals are a moving-block bootstrap (block = 30 frames), because consecutive frames
+of one flight are not independent.
+
+| condition | n_gt | single-frame | **temporal** | GLAD | our interval vs GLAD |
+|---|---|---|---|---|---|
+| ordinary | 9,230 | 0.942 [0.915, 0.969] | 0.926 [0.896, 0.956] | 0.91 | covers |
+| complex | 9,578 | 0.747 [0.710, 0.783] | 0.798 [0.766, 0.827] | 0.81 | covers |
+| **small MAVs** | 9,352 | 0.513 [0.477, 0.551] | **0.668 [0.633, 0.703]** | **0.58** | **entirely above** |
+| **overall** | 28,160 | 0.740 [0.718, 0.763] | **0.802 [0.780, 0.824]** | **0.80** | covers |
+
+Recall — the quantity the diagnosis identified as failing:
+
+| condition | single-frame | temporal |
+|---|---|---|
+| ordinary | 0.956 | 0.942 |
+| complex | 0.782 | 0.828 |
+| **small** | **0.599** | **0.760** |
+| overall | 0.778 | 0.843 |
+
+**What may be claimed.** On the small-MAV condition our whole interval sits above GLAD's
+published 0.58, and the gain is in the same direction on all five videos. Overall we are
+*indistinguishable* from GLAD — 0.802 against 0.800, with an interval that covers theirs.
+"Indistinguishable" is the correct word; a point estimate 0.002 higher is not a win.
+
+**What may not.** No p-value against GLAD, ever: a published AP is one scalar with no
+distribution. And the paired temporal-vs-single-frame test over the five small sequences is
+**inconclusive** by this project's own rule — bootstrap +0.159 [+0.071, +0.248] excluding
+zero, but permutation p = 0.0624, above 0.05, against a floor of 1/2⁵ = 0.031. Both tests
+must agree; they do not, so the verdict is inconclusive and five sequences is why.
+
+**The trade nobody should hide.** The temporal stack is *not* uniformly better. On ordinary
+scenes it is slightly worse than single-frame appearance (0.926 against 0.942, recall 0.942
+against 0.956) — three grayscale moments discard the colour and texture that a large,
+well-resolved target offers. It buys +0.155 AP where targets are few-pixel and pays about
+0.016 where they are not. That is a real characterisation of the mechanism, not a caveat:
+motion evidence substitutes for appearance evidence, and it is only a bargain when
+appearance has nothing to give.
+
+---
 
 Reproduce:
 
