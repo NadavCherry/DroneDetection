@@ -149,6 +149,24 @@ def test_the_ardmav_bar_is_glad_at_iou_0_5_not_mgmd_at_0_25():
     assert bar.protocol.split == "official-test-15"
 
 
+def test_the_bar_is_not_taken_from_an_easier_subset():
+    """"Best" must mean best on ONE population, not the maximum across populations.
+
+    Adding GLAD's per-condition rows made 0.91 -- its score on the five EASIEST videos --
+    the highest ARD-MAV value on file, and `best_for_dataset` duly offered it as the
+    number to beat for a run scored over all fifteen. Different denominators; the
+    comparison would flatter or damn at random depending on which subset held the maximum.
+    """
+    overall = published.best_for_dataset("ardmav")
+    assert overall.protocol.split == "official-test-15"
+    assert "ordinary" not in overall.method.lower()
+
+    small = published.best_for_dataset("ardmav", split="official-test-15/small")
+    assert small.value == pytest.approx(0.58)
+    # And the two must refuse to be subtracted from each other.
+    assert overall.protocol.mismatches_with(small.protocol)
+
+
 def test_the_glad_conditions_partition_the_official_test_split():
     """GLAD's three conditions must cover the 15 test videos exactly, 5 each.
 

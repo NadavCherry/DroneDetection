@@ -19,7 +19,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .protocol import (AP50, ARDMAV_GLAD, ARDMAV_MGMD, ARDMAV_OFFICIAL, DVB_OFFICIAL,
+from .protocol import (AP50, ARDMAV_GLAD, ARDMAV_GLAD_COMPLEX, ARDMAV_GLAD_ORDINARY,
+                       ARDMAV_GLAD_SMALL, ARDMAV_MGMD, ARDMAV_OFFICIAL, DVB_OFFICIAL,
                        NPS_OFFICIAL, Protocol)
 
 
@@ -68,13 +69,26 @@ RESULTS: tuple[PublishedResult, ...] = (
               "Region, and other codes will be published in the future.' The release is "
               "not the published method, so a re-run measures GLAD-as-released and must "
               "be labelled that way -- never as a refutation of the paper's 0.80."),
+    # The three condition rows carry their OWN split, so a per-condition number can never
+    # be compared against an overall one. It happened: with the small row on
+    # "official-test-15", the first run printed "ours higher" for our overall 0.754
+    # against their small-subset 0.58, when our small-subset number is 0.530 and loses.
     PublishedResult(
-        method="GLAD (small-MAV subset)", dataset_key="ardmav", metric="AP@0.5", value=0.58,
-        protocol=ARDMAV_GLAD, year=2024, verified=True,
+        method="GLAD (small MAVs)", dataset_key="ardmav", metric="AP@0.5", value=0.58,
+        protocol=ARDMAV_GLAD_SMALL, year=2024, verified=True,
         source_url="https://arxiv.org/abs/2312.11008",
-        notes="P 0.82 / R 0.67. THE ROW TO CONTEST: GLAD's own weakest condition, and the "
-              "one a few-pixel temporal method is built for. Its other two conditions are "
-              "ordinary 0.91 and complex background 0.81."),
+        notes="P 0.82 / R 0.67 on phantom19,41,43,46,63. THE ROW TO CONTEST: GLAD's own "
+              "weakest condition and the one a few-pixel temporal method is built for."),
+    PublishedResult(
+        method="GLAD (ordinary scenes)", dataset_key="ardmav", metric="AP@0.5", value=0.91,
+        protocol=ARDMAV_GLAD_ORDINARY, year=2024, verified=True,
+        source_url="https://arxiv.org/abs/2312.11008",
+        notes="P 0.99 / R 0.96 on phantom09,10,30,47,70. Its easiest condition."),
+    PublishedResult(
+        method="GLAD (complex backgrounds)", dataset_key="ardmav", metric="AP@0.5",
+        value=0.81, protocol=ARDMAV_GLAD_COMPLEX, year=2024, verified=True,
+        source_url="https://arxiv.org/abs/2312.11008",
+        notes="P 0.94 / R 0.86 on phantom05,08,58,65,86."),
     PublishedResult(
         method="TPH-YOLOv5l", dataset_key="ardmav", metric="AP@0.5", value=0.73,
         protocol=ARDMAV_GLAD, year=2024, verified=True,
@@ -175,7 +189,30 @@ def for_dataset(dataset_key: str) -> list[PublishedResult]:
                   key=lambda r: -r.value)
 
 
-def best_for_dataset(dataset_key: str) -> PublishedResult | None:
-    """The number to beat. Excludes competitor-reported values, which are unreliable."""
+def best_for_dataset(dataset_key: str, split: str | None = None) -> PublishedResult | None:
+    """The number to beat ON ONE POPULATION. Excludes competitor-reported values.
+
+    `split` matters, and defaults to the dataset's own official protocol rather than to
+    "anything". A maximum taken across populations is not a bar: once GLAD's per-condition
+    rows were added, the highest ARD-MAV value became 0.91 -- its score on the five EASIEST
+    videos -- and this function offered it as the number to beat for a run scored over all
+    fifteen. Different denominators, so the comparison flatters or damns at random
+    depending on which subset happens to hold the maximum.
+
+    `Protocol.mismatches_with` already refuses to subtract two such numbers. This makes the
+    selection agree with that refusal instead of quietly handing over an incomparable row.
+    """
+    from .catalog import DATASETS
+    if split is None:
+        proto = getattr(DATASETS.get(dataset_key), "official_protocol", None)
+        split = proto.split if proto is not None else None
     rs = [r for r in for_dataset(dataset_key) if not r.reported_by_competitor]
+    if split is not None:
+        on_split = [r for r in rs if r.protocol.split == split]
+        # Fall back rather than return nothing. Several datasets record no split on their
+        # published rows at all (ard100's are ''), and for those the filter cannot tell a
+        # subset from the whole -- so it has nothing to protect against, and erasing the
+        # bar would be a worse answer than the unfiltered one. Where splits ARE recorded,
+        # the filter does its job.
+        rs = on_split or rs
     return rs[0] if rs else None

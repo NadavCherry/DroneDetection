@@ -12,3 +12,24 @@
 [21:27:15] single-frame build: waiting for C:\Users\nadav\PycharmProjects\SpeckLock\work\ext_datasets\ardmav_yolo_tiled\data.yaml
 [21:49:15] single-frame build: ready
 [21:49:15] START singleframe_ardmav
+[02:00:31] OK   singleframe_ardmav in 251.3 min
+[02:00:31] SKIP temporal_ardmav: C:\Users\nadav\PycharmProjects\SpeckLock\work\ext_datasets\ardmav_yolo_temporal\data.yaml absent
+[02:00:31] training done; val matrix
+[02:00:58] val singleframe_ardmav on singleframe_val: mAP50=0.7746 mAP50-95=0.5088
+[02:00:58] val: temporal_ardmav has no weights, skipping
+[02:00:58] START infer_singleframe_ardmav
+[02:32:57] OK   infer_singleframe_ardmav in 32.0 min
+[02:32:57] START score_singleframe_ardmav
+[02:32:58] OK   score_singleframe_ardmav in 0.0 min
+[02:32:58] SKIP inference for temporal_ardmav: no weights
+[02:32:58] START compare_vs_published
+[02:45:17] OK   compare_vs_published in 12.3 min
+[02:45:18] overnight driver finished
+[02:45:18] {
+ "singleframe_ardmav|singleframe_val": {
+  "mAP50": 0.7746,
+  "mAP50_95": 0.5088,
+  "precision": 0.9407,
+  "recall": 0.6889
+ }
+}

@@ -14,7 +14,7 @@ Stdlib only, so it runs in the torch-free CI job.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 
 @dataclass(frozen=True)
@@ -132,6 +132,23 @@ ARDMAV_GLAD = Protocol(
           "28,322 frames. GLAD scores AP 0.80 overall (P 0.92 / R 0.82), and by its own "
           "three conditions: ordinary 0.91, complex background 0.81, SMALL MAVs 0.58. "
           "The small-MAV row is the one this project is built to contest.")
+
+#: GLAD's per-condition rows. Same threshold and AP style as ARDMAV_GLAD, DIFFERENT split:
+#: each is 5 of the 15 videos, so a per-condition number and an overall number are not on
+#: the same axis and `mismatches_with` must say so.
+#:
+#: This exists because the first comparison run got it wrong in our favour. With the
+#: small-MAV row carrying split="official-test-15", the table compared our OVERALL AP
+#: (0.754, all 15 videos) against GLAD's SMALL-subset AP (0.58, 5 videos) and printed
+#: "ours higher". Our actual small-subset AP is 0.530, which loses. Same protocol object,
+#: different populations -- the one kind of mismatch a shared `split` string hides.
+ARDMAV_GLAD_ORDINARY = replace(ARDMAV_GLAD, split="official-test-15/ordinary",
+                               notes="phantom09,10,30,47,70. GLAD 0.91.")
+ARDMAV_GLAD_COMPLEX = replace(ARDMAV_GLAD, split="official-test-15/complex",
+                              notes="phantom05,08,58,65,86. GLAD 0.81.")
+ARDMAV_GLAD_SMALL = replace(ARDMAV_GLAD, split="official-test-15/small",
+                            notes="phantom19,41,43,46,63. GLAD 0.58 -- its weakest "
+                                  "condition and the one this project is built to win.")
 
 #: NOT the official split. MGMD scores at IoU 0.25 on a split of its own that it never
 #: enumerates, so a number under this protocol is not placeable beside a GLAD number and
