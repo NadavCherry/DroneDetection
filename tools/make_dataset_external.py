@@ -33,8 +33,20 @@ import numpy as np
 
 REPO = Path(__file__).resolve().parent.parent
 ARD_ROOT = REPO / "data/external/ard_mav/ARD-MAV"
-NPS_VID = REPO / "data/external/nps/videos"          # populated after Videos.zip extract
-NPS_ANN = REPO / "data/external/nps/annots/Video_Annotation"
+NPS_VID = REPO / "data/external/nps/Videos_x/Videos"
+NPS_ANN = REPO / "data/external/nps/ann-v1_x/Video_Annotation-v1"
+
+#: Dogfight's RE-annotations, which are what the published NPS numbers actually use.
+#: `git clone --depth 1 --filter=blob:none --sparse https://github.com/mwaseema/Drone-Detection`
+#: then `git sparse-checkout set annotations`.
+NPS_ANN_DOGFIGHT = REPO / "data/external/nps/dogfight/annotations/NPS-Drones-Dataset"
+
+#: NPS publishes NO official split. This is the de-facto one every comparable paper uses
+#: (Dogfight, TransVisDrone, YOLOMG): clips 1-36 train, 37-40 val, 41-50 test. Quote it as
+#: "the Dogfight split" and never as "the official split", because there is not one.
+NPS_TRAIN = tuple(f"Clip_{i:03d}" for i in range(1, 37))
+NPS_VAL = tuple(f"Clip_{i:03d}" for i in range(37, 41))
+NPS_TEST = tuple(f"Clip_{i:03d}" for i in range(41, 51))
 OUT_ROOT = REPO / "work/ext_datasets"
 
 # ARD-MAV official split (Guo et al.): 15 test videos, rest train/val.
@@ -87,6 +99,100 @@ def parse_nps(clip_id):
             boxes.append([x1, y1, x2, y2])
         out[frame0] = boxes
     return out
+
+
+def parse_nps_dogfight(clip_id):
+    """Dogfight's re-annotation of NPS: ``frame,id,x1,y1,x2,y2`` -> {frame0: [[x1,y1,x2,y2]]}.
+
+    THIS is the annotation set the published NPS numbers are computed on -- TransVisDrone's
+    0.95 and GLAD's 0.89 both use it, not Purdue's originals. Training or scoring against
+    Purdue's would make our NPS number incomparable to every published one, which is the
+    only reason to run NPS at all.
+
+    Three annotation sets ship for this dataset and NO two share a coordinate convention:
+
+        Purdue v1        ``time_layer: F detections: (y1,x1,y2,x2)``   corners, SWAPPED order
+        Purdue v2        ``frame,id,x,y,w,h,conf,-1,-1,-1``            MOT style, sub-pixel
+        Dogfight (here)  ``frame,id,x1,y1,x2,y2``                      corners, normal order
+
+    Reading one with another's parser does not fail. It yields plausible boxes in the wrong
+    places, and on a few-pixel target a transposed corner is a total miss reported as a low
+    score. Hence a separate function per format rather than one that guesses.
+
+    Frame indices are 1-based in the file; the repo works in 0-based decoded frames.
+    """
+    txt = NPS_ANN_DOGFIGHT / f"{clip_id}.txt"
+    out: dict[int, list] = {}
+    for ln in txt.read_text(encoding="utf-8", errors="replace").splitlines():
+        parts = ln.strip().split(",")
+        if len(parts) < 6:
+            continue
+        try:
+            f, _id, x1, y1, x2, y2 = (float(p) for p in parts[:6])
+        except ValueError:
+            continue
+        out.setdefault(int(f) - 1, []).append([x1, y1, x2, y2])
+    return out
+
+
+def _nps_video(clip_id):
+    """Clip_007 -> the .mov on disk. Dogfight zero-pads to 3 digits, Purdue does not."""
+    n = int(clip_id.split("_")[1])
+    for cand in (f"Clip_{n}.mov", f"Clip_{n:03d}.mov", f"Clip_{n}.MOV"):
+        p = NPS_VID / cand
+        if p.exists():
+            return p
+    return None
+
+
+def build_nps_tiled(stride_train, stride_val, min_side, tile=640, temporal=False,
+                    dt=TEMPORAL_DT, chroma_444=False):
+    """NPS-Drones on the Dogfight split, single-frame or temporal.
+
+    Same builder for both arms, differing only in which extractor is called, so the two
+    arms of the A/B cannot drift apart in tiling, stride or negatives.
+    """
+    name = "nps_yolo_temporal" if temporal else "nps_yolo_tiled"
+    root = OUT_ROOT / name
+    stats = {"train": [0, 0], "val": [0, 0]}
+    extractor = extract_yolo_tiled_temporal if temporal else extract_yolo_tiled
+    print(f"NPS {'temporal' if temporal else 'single-frame'} build -> {root}")
+    for split, ids, stride in (("train", NPS_TRAIN, stride_train),
+                               ("val", NPS_VAL, stride_val)):
+        for clip in ids:
+            video = _nps_video(clip)
+            if video is None:
+                print(f"  [{split}] {clip}: NO VIDEO, skipped")
+                continue
+            boxes = parse_nps_dogfight(clip)
+            pos = [f for f, b in boxes.items() if b]
+            chosen = set(pos[::stride])
+            kw = dict(tile=tile)
+            if temporal:
+                kw.update(dt=dt, chroma_444=chroma_444)
+            ni, nb = extractor(video, boxes, chosen,
+                               root / "images" / split, root / "labels" / split,
+                               clip, min_side, **kw)
+            stats[split][0] += ni
+            stats[split][1] += nb
+            print(f"  [{split}] {clip}: {ni} tiles, {nb} boxes", flush=True)
+    write_data_yaml(root)
+    print(f"\nNPS {'TEMPORAL' if temporal else 'TILED'} ({tile}px) -> {root}")
+    print(f"  train: {stats['train'][0]} tiles / {stats['train'][1]} boxes")
+    print(f"  val:   {stats['val'][0]} tiles / {stats['val'][1]} boxes")
+    return root
+
+
+def build_nps_test_gt_dogfight():
+    """Per-video GT jsons for the 10 Dogfight test clips, for tools/evaluate.py."""
+    out = OUT_ROOT / "gt" / "nps"
+    for clip in NPS_TEST:
+        video = _nps_video(clip)
+        if video is None:
+            print(f"  nps-test {clip}: NO VIDEO, skipped")
+            continue
+        no, nb = write_gt_json(video, parse_nps_dogfight(clip), out / f"{clip}.json")
+        print(f"  nps-test {clip}: {no} objs, {nb} boxes -> gt/nps/{clip}.json")
 
 
 # ----------------------------------------------------------------------------- helpers
@@ -754,7 +860,9 @@ if __name__ == "__main__":
     ap.add_argument("--task", required=True,
                     choices=["ardmav-train", "ardmav-train-tiled",
                              "ardmav-temporal-tiled", "ardmav-gt", "nps-gt",
-                             "combined-tiled", "combined-gt", "black-paste", "all"])
+                             "combined-tiled", "combined-gt", "black-paste",
+                             "nps-train-tiled", "nps-temporal-tiled", "nps-gt-dogfight",
+                             "all"])
     ap.add_argument("--stride-train", type=int, default=4)
     ap.add_argument("--stride-val", type=int, default=10)
     ap.add_argument("--min-side", type=int, default=12)
@@ -773,6 +881,14 @@ if __name__ == "__main__":
         build_ardmav_train(a.stride_train, a.stride_val, a.min_side)
     if a.task == "ardmav-train-tiled":
         build_ardmav_train_tiled(a.stride_train, a.stride_val, a.min_side, tile=a.tile)
+    if a.task == "nps-train-tiled":
+        build_nps_tiled(a.stride_train, a.stride_val, a.min_side, tile=a.tile,
+                        temporal=False)
+    if a.task == "nps-temporal-tiled":
+        build_nps_tiled(a.stride_train, a.stride_val, a.min_side, tile=a.tile,
+                        temporal=True, dt=a.dt, chroma_444=a.chroma_444)
+    if a.task == "nps-gt-dogfight":
+        build_nps_test_gt_dogfight()
     if a.task == "ardmav-temporal-tiled":
         build_ardmav_temporal_tiled(a.stride_train, a.stride_val, a.min_side,
                                     tile=a.tile, dt=a.dt, chroma_444=a.chroma_444)

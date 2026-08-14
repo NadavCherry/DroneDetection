@@ -249,6 +249,36 @@ def average_precision(records: list[Record], n_gt: int) -> float:
     return float(ap)
 
 
+def average_precision_11pt(records: list[Record], n_gt: int) -> float:
+    """VOC2007 11-point interpolated AP: mean of max precision at recall >= t, for
+    t in {0.0, 0.1, ..., 1.0}.
+
+    Exists because GLAD -- the bar on ARD-MAV's official split -- defines AP this way, in
+    its own words: "The AP is calculated at 0.5 IOU threshold and is averaged over
+    uniformly spaced 11 points of the precision-recall curve." `average_precision` above
+    is the all-point integral, a DIFFERENT quantity, and subtracting one from the other is
+    exactly the mismatch `Protocol.mismatches_with` exists to refuse.
+
+    The two disagree most where the curve is truncated: 11-point credits nothing above the
+    highest recall reached, so a detector that stops at recall 0.75 scores zero at the
+    three grid points above it. On a benchmark where this project's failure mode IS lost
+    recall, that is not a rounding difference.
+    """
+    scored = [r for r in records if r.outcome in ("tp", "fp")]
+    if not scored or n_gt == 0:
+        return 0.0
+    scored.sort(key=lambda r: -r.score)
+    tp = np.cumsum([1 if r.outcome == "tp" else 0 for r in scored], dtype=float)
+    fp = np.cumsum([1 if r.outcome == "fp" else 0 for r in scored], dtype=float)
+    recall = tp / n_gt
+    precision = tp / np.maximum(tp + fp, 1e-12)
+    total = 0.0
+    for t in np.linspace(0.0, 1.0, 11):
+        at = precision[recall >= t]
+        total += float(at.max()) if at.size else 0.0
+    return total / 11.0
+
+
 def coco_ap(gt, dets, *, targets: set[str] | None = None,
             frame_range: tuple[int, int] | None = None) -> dict[str, float]:
     """AP averaged over IoU 0.50:0.05:0.95, plus AP50 and AP75.
