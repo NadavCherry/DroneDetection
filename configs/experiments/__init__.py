@@ -19,6 +19,7 @@ from .base import (Augmentation, DEFAULT_AUG, ExperimentConfig, NO_PHOTOMETRIC_A
                    UAV_DETR_B4_640, VRAM_SAFETY_FRACTION, VramReference,
                    YOLOV8S_P2_ESTIMATE, YOLOV8S_P2_MEASURED, check_strides)
 from .birds import BIRDS_2CLASS
+from .nps import SINGLEFRAME_NPS, TEMPORAL_NPS
 from .temporal import TEMPORAL_ABLATION_SINGLE, TEMPORAL_ABLATION_STACK
 
 EXPERIMENTS: dict[str, ExperimentConfig] = {c.name: c for c in (
@@ -32,6 +33,8 @@ EXPERIMENTS: dict[str, ExperimentConfig] = {c.name: c for c in (
     TRUEEXTENT_LOCAL,
     SINGLEFRAME_ARDMAV,
     TEMPORAL_ARDMAV,
+    SINGLEFRAME_NPS,
+    TEMPORAL_NPS,
 )}
 
 #: Named sets that must be run together, and the reason they must.
@@ -53,6 +56,8 @@ GROUPS: dict[str, tuple[str, ...]] = {
     # photometric augmentation so that the input representation is the only variable.
     # Running the stack arm alone would be an assertion with a number attached.
     "ardmav_temporal": ("singleframe_ardmav", "temporal_ardmav"),
+    # The same one-variable A/B on a second corpus. One benchmark is an anecdote.
+    "nps_temporal": ("singleframe_nps", "temporal_nps"),
 }
 
 
