@@ -54,9 +54,20 @@ python "$ROOT/cluster/patch_yolomg_seed.py" || { echo "seed patch failed"; exit 
 [ -f yolov5s.pt ] || python -c "
 import torch;torch.hub.download_url_to_file('https://github.com/ultralytics/yolov5/releases/download/v6.1/yolov5s.pt','yolov5s.pt')"
 
-python -u train.py --data "$R/$DS.yaml" --cfg "$CFG" --weights yolov5s.pt \
-    --batch-size 8 --epochs 100 --imgsz 1280 --seed "$SEED" \
-    --name "$NAME" --project "$ROOT/work/sota_runs" --exist-ok --device 0
+### Resume rather than restart. These runs are 32-69 h and the array carries --requeue, so
+### on the old setup a preemption threw away up to three days of GPU time and silently
+### began again at epoch 0. YOLOv5 keeps what it needs in last.pt and its opt.yaml, so
+### --resume continues in place; a fresh run happens only when there is nothing to continue.
+LAST="$ROOT/work/sota_runs/$NAME/weights/last.pt"
+if [ -f "$LAST" ]; then
+    echo "RESUMING from $LAST (modified $(stat -c %y "$LAST"))"
+    python -u train.py --resume "$LAST"
+else
+    echo "fresh run: no checkpoint at $LAST"
+    python -u train.py --data "$R/$DS.yaml" --cfg "$CFG" --weights yolov5s.pt \
+        --batch-size 8 --epochs 100 --imgsz 1280 --seed "$SEED" \
+        --name "$NAME" --project "$ROOT/work/sota_runs" --exist-ok --device 0
+fi
 rc=$?
 
 echo "=== RESULT ==="
