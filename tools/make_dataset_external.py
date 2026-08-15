@@ -119,7 +119,23 @@ def parse_nps_dogfight(clip_id):
     places, and on a few-pixel target a transposed corner is a total miss reported as a low
     score. Hence a separate function per format rather than one that guesses.
 
-    Frame indices are 1-based in the file; the repo works in 0-based decoded frames.
+    FRAME INDICES ARE 0-BASED IN THIS FILE, unlike Purdue's and unlike ARD-MAV's XML.
+    They are used as-is.
+
+    This was got wrong once, and the symptom was a plausible number rather than an error.
+    The code subtracted 1, as it correctly does for the other two formats, which put every
+    box on the previous frame and one box on frame -1. NPS is drone-to-drone footage: in
+    Clip_041 the target moves ~8 px between consecutive frames against a 10 px box, so a
+    one-frame shift drives IoU against the true position to roughly zero. Our NPS AP came
+    out at 0.15 where the published bar is 0.89-0.95, and nothing failed.
+
+    The evidence, so nobody has to re-derive it:
+
+        Clip_041.txt   first line "0,1,680,650,690,660", min frame 0, max frame 1528
+        the video      decodes to 1529 frames
+
+    0..1528 inclusive is exactly 1529 frames, so the annotations are 0-based and complete.
+    `test_nps_dogfight_frames_are_zero_based` pins this against the shipped file.
     """
     txt = NPS_ANN_DOGFIGHT / f"{clip_id}.txt"
     out: dict[int, list] = {}
@@ -131,7 +147,9 @@ def parse_nps_dogfight(clip_id):
             f, _id, x1, y1, x2, y2 = (float(p) for p in parts[:6])
         except ValueError:
             continue
-        out.setdefault(int(f) - 1, []).append([x1, y1, x2, y2])
+        if f < 0:
+            raise ValueError(f"{txt.name}: negative frame index {f}")
+        out.setdefault(int(f), []).append([x1, y1, x2, y2])
     return out
 
 
