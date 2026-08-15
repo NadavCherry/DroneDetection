@@ -32,7 +32,7 @@ this repo that isolates one variable. The tables must keep the two kinds of clai
 LAYOUT PRODUCED (what YOLOMG's data yaml expects)
 -------------------------------------------------
     <root>/images/<split>/<video>_<frame>.jpg     RGB, full frame
-    <root>/mask/<split>/<video>_<frame>.jpg       mask32, full frame, JPEG as upstream
+    <root>/images2/<split>/<video>_<frame>.jpg    mask32, full frame, JPEG as upstream
     <root>/labels/<split>/<video>_<frame>.txt     YOLO, class cx cy w h, normalised
     <root>/{train,val,test}.txt                   image paths
     <root>/{train2,val2,test2}.txt                mask paths, LINE-ALIGNED with the above
@@ -65,6 +65,13 @@ from tools.sota.motion_mask import YOLOMG_MASK32_DT, fd5_mask  # noqa: E402
 #: default of 95; we state it rather than inherit it, so a future OpenCV cannot move it.
 JPEG_Q = [cv2.IMWRITE_JPEG_QUALITY, 95]
 
+#: The mask stream MUST live in a directory called `images2`, not `mask`. YOLOMG finds a
+#: mask's labels with `utils.datasets.img2label_paths2`, which rewrites the substring
+#: `/images2/` to `/labels/` and nothing else. Under any other name the rewrite is a no-op,
+#: the loader looks for labels next to the masks, finds none, and trains the motion branch
+#: against an empty label set -- no error, just a crippled baseline. Naming it is the fix.
+MASK_DIR = "images2"
+
 
 def _frames_needed(indices: list[int], dt: int) -> set[int]:
     """Every decoded frame the masks require: each target plus its two taps."""
@@ -77,7 +84,7 @@ def _frames_needed(indices: list[int], dt: int) -> set[int]:
 def _write_pair(root: Path, split: str, stem: str, frame, mask, boxes, w, h) -> bool:
     """Write one image/mask/label triple. Returns False if the image failed to encode."""
     img_p = root / "images" / split / f"{stem}.jpg"
-    msk_p = root / "mask" / split / f"{stem}.jpg"
+    msk_p = root / MASK_DIR / split / f"{stem}.jpg"
     lbl_p = root / "labels" / split / f"{stem}.txt"
     if not cv2.imwrite(str(img_p), frame, JPEG_Q):
         return False
@@ -209,7 +216,7 @@ def write_lists(root: Path) -> dict:
         imgs = sorted((root / "images" / split).glob("*.jpg"))
         if not imgs:
             empty.append(split)
-        pairs = [(p, root / "mask" / split / p.name) for p in imgs]
+        pairs = [(p, root / MASK_DIR / split / p.name) for p in imgs]
         missing = [p.name for p, m in pairs if not m.exists()]
         if missing:
             raise RuntimeError(f"{split}: {len(missing)} images have no mask, "
@@ -261,7 +268,7 @@ def main():
 
     root = Path(a.out) if a.out else OUT_ROOT / f"yolomg_{a.dataset}"
     for split in ("train", "val", "test"):
-        for sub in ("images", "mask", "labels"):
+        for sub in ("images", MASK_DIR, "labels"):
             (root / sub / split).mkdir(parents=True, exist_ok=True)
 
     builder = {"nps": build_nps, "ardmav": build_ardmav}[a.dataset]

@@ -14,13 +14,14 @@ import pytest
 
 cv2 = pytest.importorskip("cv2")
 
-from tools.sota.build_yolomg import _frames_needed, _write_pair, write_lists
+from tools.sota.build_yolomg import (MASK_DIR, _frames_needed, _write_pair,
+                                     write_lists)
 
 
 def _fake_build(root, n=6, drop_mask=None):
     """All three splits get frames: `write_lists` refuses a build with an empty split, and
     a real build always has all three."""
-    for sub in ("images", "mask", "labels"):
+    for sub in ("images", MASK_DIR, "labels"):
         for split in ("train", "val", "test"):
             (root / sub / split).mkdir(parents=True, exist_ok=True)
     frame = np.full((64, 64, 3), 120, dtype=np.uint8)
@@ -29,7 +30,7 @@ def _fake_build(root, n=6, drop_mask=None):
             _write_pair(root, split, f"clip_{i:06d}", frame,
                         np.zeros((64, 64)), [[10, 10, 20, 20]], 64, 64)
     if drop_mask is not None:
-        (root / "mask" / "train" / f"clip_{drop_mask:06d}.jpg").unlink()
+        (root / MASK_DIR / "train" / f"clip_{drop_mask:06d}.jpg").unlink()
     return root
 
 
@@ -43,7 +44,8 @@ def test_lists_are_line_aligned(tmp_path):
     assert [p.rsplit("/", 1)[-1].rsplit("\\", 1)[-1] for p in a] == \
            [p.rsplit("/", 1)[-1].rsplit("\\", 1)[-1] for p in b]
     assert "/images/" in a[0].replace("\\", "/")
-    assert "/mask/" in b[0].replace("\\", "/")
+    # `images2`, not `mask`: YOLOMG's img2label_paths2 only rewrites that exact substring.
+    assert "/images2/" in b[0].replace("\\", "/")
 
 
 def test_a_missing_mask_is_refused_rather_than_silently_shifting_the_pairing(tmp_path):
@@ -55,7 +57,7 @@ def test_a_missing_mask_is_refused_rather_than_silently_shifting_the_pairing(tmp
 
 def test_labels_are_normalised_yolo_and_survive_the_round_trip(tmp_path):
     root = tmp_path / "ds"
-    for sub in ("images", "mask", "labels"):
+    for sub in ("images", MASK_DIR, "labels"):
         (root / sub / "train").mkdir(parents=True, exist_ok=True)
     frame = np.full((100, 200, 3), 90, dtype=np.uint8)
 
@@ -73,7 +75,7 @@ def test_labels_are_normalised_yolo_and_survive_the_round_trip(tmp_path):
 
 def test_degenerate_boxes_are_dropped_not_written_as_zero_area(tmp_path):
     root = tmp_path / "ds"
-    for sub in ("images", "mask", "labels"):
+    for sub in ("images", MASK_DIR, "labels"):
         (root / sub / "train").mkdir(parents=True, exist_ok=True)
     frame = np.full((100, 100, 3), 90, dtype=np.uint8)
 
@@ -90,7 +92,7 @@ def test_an_empty_build_is_refused_rather_than_declared_successful(tmp_path):
     case-sensitive filesystem, and the build reported exit 0 with a BUILD.json and three
     perfectly line-aligned lists of zero pairs. Every downstream check passed."""
     root = tmp_path / "ds"
-    for sub in ("images", "mask", "labels"):
+    for sub in ("images", MASK_DIR, "labels"):
         for split in ("train", "val", "test"):
             (root / sub / split).mkdir(parents=True, exist_ok=True)
 
