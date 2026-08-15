@@ -38,8 +38,10 @@ import json
 import statistics as st
 import sys
 import time
+from collections import deque
 from pathlib import Path
 
+import cv2
 import numpy as np
 
 REPO = Path(__file__).resolve().parent.parent.parent
@@ -59,25 +61,68 @@ def _summarise(samples_ms: list[float]) -> dict:
             "fps_at_p50": round(1000.0 / q(0.50), 1) if q(0.50) > 0 else None}
 
 
-def bench_ours(weights: str, imgsz: int, tiles: int, half: bool, n: int, warmup: int):
-    """Ultralytics path: K tiles in one batched forward = one frame."""
+def bench_ours(weights: str, imgsz: int, frame_hw: tuple[int, int], overlap: int,
+               conf: float, max_det: int, half: bool, n: int, warmup: int):
+    """One full frame: stabilise, build the temporal stack, tile it, run every tile.
+
+    The first version of this timed only `model(imgs)` on pre-made random tiles, while
+    `bench_yolomg` timed its mask construction inside the total -- so the published table
+    charged the competitor for its front end and us for none of ours, in a module whose
+    docstring promises the opposite. That is the sharpest possible thumb on the scale in a
+    latency comparison, and it was in our favour.
+
+    Two further corrections, both the same mistake of describing rather than measuring:
+
+      * the tile count is DERIVED from `tile_origins` at the real frame size, not passed
+        in. It was passed as 6; a 1920x1080 frame is 8 tiles, so our ms/frame was understated
+        by about a quarter.
+      * `conf` and `max_det` match the evaluated runs (0.001 / 30 per tile). NMS cost is
+        dominated by candidate count, and benchmarking at ultralytics' default 0.25 would
+        measure a configuration that produced no published AP.
+    """
     import torch
     from ultralytics import YOLO
 
-    model = YOLO(weights)
-    imgs = [np.random.randint(0, 255, (imgsz, imgsz, 3), np.uint8) for _ in range(tiles)]
-    for _ in range(warmup):
-        model(imgs, imgsz=imgsz, verbose=False, device=0, half=half)
-    _sync(torch)
+    sys.path.insert(0, str(REPO / "tools"))
+    from dronedet.stabilize import Stabilizer
+    from tools.infer_tiled import tile_origins
+    from tools.make_dataset_external import _stack_aligned_to_now
 
-    samples = []
-    for _ in range(n):
+    h, w = frame_hw
+    model = YOLO(weights)
+    origins = tile_origins(w, h, imgsz, overlap)
+    rng = np.random.default_rng(0)
+    frames = [rng.integers(0, 255, (h, w, 3), dtype=np.uint8) for _ in range(13)]
+
+    pre, fwd, tot = [], [], []
+    for i in range(warmup + n):
         t0 = time.perf_counter()
-        model(imgs, imgsz=imgsz, verbose=False, device=0, half=half)
+        stab = Stabilizer("translation")
+        buf: deque = deque(maxlen=13)
+        for f in frames:                     # the real front end: stabilise every tap
+            m = stab.update(f)
+            buf.append((cv2.cvtColor(f, cv2.COLOR_BGR2GRAY),
+                        float(m[0, 2]), float(m[1, 2])))
+        img = np.dstack(_stack_aligned_to_now(buf, 6))
+        crops = [img[y:y + imgsz, x:x + imgsz] for x, y in origins]
         _sync(torch)
-        samples.append((time.perf_counter() - t0) * 1000.0)
-    return {"arm": "ours", "weights": weights, "imgsz": imgsz, "tiles_per_frame": tiles,
-            "half": half, "engine": Path(weights).suffix, **_summarise(samples)}
+        t1 = time.perf_counter()
+        model(crops, imgsz=imgsz, conf=conf, max_det=max_det,
+              verbose=False, device=0, half=half)
+        _sync(torch)
+        t2 = time.perf_counter()
+        if i >= warmup:
+            pre.append((t1 - t0) * 1000.0)
+            fwd.append((t2 - t1) * 1000.0)
+            tot.append((t2 - t0) * 1000.0)
+
+    out = {"arm": "ours", "weights": weights, "imgsz": imgsz,
+           "frame_hw": list(frame_hw), "tiles_per_frame": len(origins),
+           "overlap": overlap, "conf": conf, "max_det_per_tile": max_det,
+           "half": half, "engine": Path(weights).suffix, **_summarise(tot)}
+    out["preprocess"] = _summarise(pre)      # stabilise 13 taps + build the stack + tile
+    out["forward_only"] = _summarise(fwd)
+    return out
 
 
 def bench_yolomg(weights: str, imgsz: int, frame_hw: tuple[int, int], half: bool,
@@ -87,6 +132,7 @@ def bench_yolomg(weights: str, imgsz: int, frame_hw: tuple[int, int], half: bool
 
     sys.path.insert(0, str(REPO / "third_party" / "YOLOMG"))
     from models.experimental import attempt_load
+    from utils.general import non_max_suppression
 
     from tools.sota.infer_yolomg import _letterbox, _to_tensor
     from tools.sota.motion_mask import fd5_mask
@@ -113,7 +159,11 @@ def bench_yolomg(weights: str, imgsz: int, frame_hw: tuple[int, int], half: bool
         _sync(torch)
         t1 = time.perf_counter()
         with torch.no_grad():
-            model(x1, x2)
+            pred = model(x1, x2)[0]
+            # NMS inside the timed region, at the thresholds infer_yolomg actually uses.
+            # Ours goes through ultralytics' predict path, which includes its NMS; timing
+            # only the raw forward here would re-introduce the asymmetry from the other side.
+            non_max_suppression(pred, 0.001, 0.6, max_det=300)
         _sync(torch)
         t2 = time.perf_counter()
         if i >= warmup:
@@ -134,10 +184,17 @@ def main():
     ap.add_argument("--arm", required=True, choices=("ours", "yolomg"))
     ap.add_argument("--weights", required=True)
     ap.add_argument("--imgsz", type=int, default=640)
-    ap.add_argument("--tiles", type=int, default=6,
-                    help="ours: tiles per full frame; one batched forward is ONE frame")
+    ap.add_argument("--overlap", type=int, default=128,
+                    help="ours: tile overlap. The TILE COUNT is derived from --frame-hw "
+                         "rather than passed, because passing it got it wrong: 6 was used "
+                         "where a 1920x1080 frame is 8 tiles.")
+    ap.add_argument("--conf", type=float, default=0.001,
+                    help="must match the evaluated runs -- NMS cost lives in the candidate "
+                         "count, so benchmarking at a floor no published AP used is fiction")
+    ap.add_argument("--max-det", type=int, default=30, help="ours: per TILE")
     ap.add_argument("--frame-hw", type=int, nargs=2, default=(1080, 1920),
-                    help="yolomg: source frame size the mask is built at")
+                    help="source frame size, for BOTH arms: ours derives its tile count "
+                         "from it, the competitor builds its mask at it")
     ap.add_argument("--half", action="store_true")
     ap.add_argument("--n", type=int, default=100)
     ap.add_argument("--warmup", type=int, default=20)
@@ -145,7 +202,8 @@ def main():
     a = ap.parse_args()
 
     if a.arm == "ours":
-        r = bench_ours(a.weights, a.imgsz, a.tiles, a.half, a.n, a.warmup)
+        r = bench_ours(a.weights, a.imgsz, tuple(a.frame_hw), a.overlap, a.conf,
+                       a.max_det, a.half, a.n, a.warmup)
     else:
         r = bench_yolomg(a.weights, a.imgsz, tuple(a.frame_hw), a.half, a.n, a.warmup)
 

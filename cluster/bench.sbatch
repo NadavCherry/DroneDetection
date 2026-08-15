@@ -24,10 +24,10 @@ MG="$ROOT/work/sota_runs/yolomg_ardmav_seed0/weights/best.pt"
 source activate speck
 echo "=== ours, PyTorch fp32 ==="
 PYTHONPATH=. python -u tools/sota/bench_both.py --arm ours --weights "$OURS" \
-    --imgsz 640 --tiles 6 --out "$OUT/ours_pt_fp32.json" || echo "FAILED"
+    --imgsz 640 --frame-hw 1080 1920 --out "$OUT/ours_pt_fp32.json" || echo "FAILED"
 echo "=== ours, PyTorch fp16 ==="
 PYTHONPATH=. python -u tools/sota/bench_both.py --arm ours --weights "$OURS" \
-    --imgsz 640 --tiles 6 --half --out "$OUT/ours_pt_fp16.json" || echo "FAILED"
+    --imgsz 640 --frame-hw 1080 1920 --half --out "$OUT/ours_pt_fp16.json" || echo "FAILED"
 
 echo "=== ours, TensorRT FP16 ==="
 ### Export via ultralytics, then bench the .engine through the same code path, so the
@@ -35,12 +35,12 @@ echo "=== ours, TensorRT FP16 ==="
 PYTHONPATH=. python -u -c "
 from ultralytics import YOLO
 m = YOLO('$OURS')
-p = m.export(format='engine', imgsz=640, half=True, batch=6, device=0)
+p = m.export(format='engine', imgsz=640, half=True, batch=8, device=0)
 print('ENGINE:', p)" 2>&1 | tail -5
 ENG="${OURS%.pt}.engine"
 if [ -f "$ENG" ]; then
     PYTHONPATH=. python -u tools/sota/bench_both.py --arm ours --weights "$ENG" \
-        --imgsz 640 --tiles 6 --half --out "$OUT/ours_trt_fp16.json" || echo "FAILED"
+        --imgsz 640 --frame-hw 1080 1920 --half --out "$OUT/ours_trt_fp16.json" || echo "FAILED"
 else
     echo "*** no engine produced -- TensorRT row will be reported as unavailable, not guessed"
 fi

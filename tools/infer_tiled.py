@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import sys
 import time
 from collections import deque
@@ -175,6 +176,34 @@ def run_video(model, video: Path, mode: str, args) -> DetectionSet:
     return ds
 
 
+class _NMSTimeLimitWatch(logging.Handler):
+    """Count ultralytics' 'NMS time limit exceeded' warnings.
+
+    The `--conf` help below records the measurement: at a low enough floor ultralytics'
+    internal NMS hits a wall-clock limit and RETURNS WHAT IT HAS, mid-frame. It logs a
+    warning and carries on. Boxes vanish, the run stops being deterministic, and the
+    detection JSON is well-formed and slightly wrong -- the exact failure shape this
+    project keeps meeting.
+
+    Both arms must be scored at the same floor (0.001, matching YOLOMG's own val.py), so
+    raising ours is not available: it would truncate our precision-recall curve and not
+    theirs. Instead, make the truncation impossible to miss. A run that trips this is
+    failed rather than published.
+    """
+
+    def __init__(self):
+        super().__init__(level=logging.WARNING)
+        self.hits = 0
+        self.samples: list[str] = []
+
+    def emit(self, record):
+        msg = str(record.getMessage())
+        if "time limit" in msg.lower() and "nms" in msg.lower():
+            self.hits += 1
+            if len(self.samples) < 3:
+                self.samples.append(msg)
+
+
 def main(argv: list[str] | None = None) -> int:
     use_utf8_stdio()
     ap = argparse.ArgumentParser(description=__doc__,
@@ -207,6 +236,10 @@ def main(argv: list[str] | None = None) -> int:
     a = ap.parse_args(argv)
 
     from ultralytics import YOLO
+    # Armed before the model runs so no frame escapes the watch.
+    nms_watch = _NMSTimeLimitWatch()
+    for name in ("ultralytics", "ultralytics.utils", ""):
+        logging.getLogger(name).addHandler(nms_watch)
     model = YOLO(a.weights)
 
     gts = sorted(Path(a.gt_dir).glob("*.json"))
@@ -242,6 +275,19 @@ def main(argv: list[str] | None = None) -> int:
               f"{a.video_root} (e.g. {missing[:3]}). Scoring would report these as total "
               f"misses and hand you a believable AP of 0.", file=sys.stderr)
         return 2
+
+    # Same class of failure, different mechanism: ultralytics' NMS returns what it has when
+    # it runs out of time, logs a warning, and carries on. The boxes it dropped are gone
+    # from a detection file that still looks complete, and the run is no longer
+    # deterministic. We cannot raise --conf out of the danger zone because the floor has to
+    # equal the competitor's, so instead the truncation is made fatal.
+    if nms_watch.hits:
+        print(f"\nABORT: ultralytics' NMS hit its time limit on {nms_watch.hits} call(s) "
+              f"and returned partial results -- boxes were silently dropped and this run is "
+              f"not reproducible. The time budget is shared across a batch, so lower "
+              f"--batch (currently {a.batch}); --conf must stay at the competitor's floor. "
+              f"Sample: {nms_watch.samples[:1]}", file=sys.stderr)
+        return 3
     return 0
 
 

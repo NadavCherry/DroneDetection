@@ -42,7 +42,7 @@ ls "$GT" | head -3
 PYTHONPATH=. python -u tools/infer_tiled.py --weights "$W" --mode "$MODE" \
     --gt-dir "$GT" --out-dir "$DET" \
     --video-root "$ROOT/data/external/ard_mav/ARD-MAV/videos" \
-    --conf 0.001 --device 0
+    --conf 0.001 --batch 1 --device 0
 rc=$?
 echo "infer exit=$rc"
 [ $rc -ne 0 ] && exit $rc
@@ -51,26 +51,15 @@ PYTHONPATH=. python -u tools/evaluate.py --dataset ardmav --official-split --mod
     --gt "$GT" --dets "$DET" --seed "$SEED" --weights "$W" \
     --out "$ROOT/work/scorecards/${RUN}.json"
 rc=$?
-### An AP of exactly 0 with a full set of sequences is almost never a model result -- it is
-### a plumbing result. It is what a wrong --video-root produces, because evaluate.py
-### correctly scores unmatched sequences as total misses rather than skipping them. Six NPS
-### scorecards already came back at 0.000 that way, complete and well-formed and wrong.
-### Refuse to report success on it; a real zero can be re-run with this guard removed.
-PYTHONPATH=. python - "$ROOT/work/scorecards/${RUN}.json" <<'PYCHK'
-import json, sys
-d = json.load(open(sys.argv[1], encoding="utf-8"))
-ap, seqs = d.get("ap"), d.get("sequences", [])
-frames = sum(s.get("n_frames", 0) for s in seqs) if seqs else 0
-print(f"  scorecard: AP={ap}  sequences={len(seqs)}  frames={frames}")
-if not seqs:
-    sys.exit("ABORT: scorecard has no sequences")
-if frames == 0:
-    sys.exit("ABORT: scorecard scored 0 frames -- inference produced nothing")
-if ap in (None, 0, 0.0):
-    sys.exit(f"ABORT: AP={ap} over {len(seqs)} sequences -- this is a plumbing failure, "
-             f"not a model result")
-PYCHK
+### The scorecard has no "ap" field -- AP is computed on demand by pooled_ap, so the
+### first version of this guard read d.get("ap"), got None every time, and would have
+### aborted every job regardless of result. A guard that fires on success gets deleted.
+### tools/check_scorecard.py computes AP the way tools/compare.py does, and also
+### catches the partial failure the pooled number hides: a sequence scored over 0
+### frames is being charged as a total miss while the others look fine.
+PYTHONPATH=. python tools/check_scorecard.py "$ROOT/work/scorecards/${RUN}.json"
 rc=$?
+
 echo "=== RESULT ==="; echo "evaluate exit=$rc"
 [ $rc -eq 0 ] && python -c "
 import json;d=json.load(open('$ROOT/work/scorecards/${RUN}.json'))
