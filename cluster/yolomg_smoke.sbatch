@@ -43,7 +43,7 @@ echo; echo "=== PROBE: do labels and masks actually reach the training loop? ===
 ### and the other means the competitor trains on nothing. Guessing is not good enough
 ### when six GPU-days ride on it, so count the targets coming out of THEIR dataloader.
 cd "$MG"
-PYTHONPATH="$MG" python -u "$ROOT/cluster/probe_yolomg_loader.py" \n    --data "$ROOT/work/smoke/smoke.yaml" --yolomg "$MG" --imgsz 640 --batch 4
+PYTHONPATH="$MG" python -u "$ROOT/cluster/probe_yolomg_loader.py" --data "$ROOT/work/smoke/smoke.yaml" --yolomg "$MG" --imgsz 640 --batch 4
 prc=$?
 if [ $prc -ne 0 ]; then echo "YOLOMG SMOKE FAILED (loader probe)"; exit $prc; fi
 

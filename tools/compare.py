@@ -34,7 +34,7 @@ sys.path.insert(0, str(REPO))
 from benchmarks.protocol import BY_KEY as PROTOCOLS  # noqa: E402
 from benchmarks.published import for_dataset  # noqa: E402
 from benchmarks.fast_bootstrap import (  # noqa: E402
-    paired_bootstrap_pooled_ap, paired_permutation_pooled_ap)
+    PooledAPResampler, paired_bootstrap_pooled_ap, paired_permutation_pooled_ap)
 from benchmarks.scorecard import (  # noqa: E402
     Scorecard, pooled_ap, pooled_precision, pooled_recall)
 from dronedet.stats import (  # noqa: E402
@@ -235,10 +235,15 @@ def _bootstrap_own(card: Scorecard, *, n_resamples: int, seed: int) -> tuple[flo
     n = len(seqs)
     if n == 0:
         return (float("nan"), float("nan"))
+    # Same fast path as the paired test: sort the detections once, then a draw is a
+    # re-weighted cumulative sum. Left on the slow path this was the reason a comparison
+    # job still took over an hour after the paired tests were made fast -- 10,000 calls to
+    # pooled_ap at 354 ms each, hidden one function below the one I had already fixed.
+    r = PooledAPResampler(seqs)
     vals = np.empty(n_resamples)
     for i in range(n_resamples):
         idx = rng.integers(0, n, size=n)
-        vals[i] = pooled_ap([seqs[j] for j in idx])
+        vals[i] = r.ap_for_counts(np.bincount(idx, minlength=n).astype(float))
     return float(np.percentile(vals, 2.5)), float(np.percentile(vals, 97.5))
 
 
