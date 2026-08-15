@@ -37,7 +37,17 @@ PY
 echo; echo "=== data yaml ==="
 cat "$R/$DS.yaml"
 
-echo; echo "=== 3-epoch smoke train (tiny subset via --epochs 3 on a truncated list) ==="
+echo; echo "=== PROBE: do labels and masks actually reach the training loop? ==="
+### The 3-epoch run below prints "Labels 0" in its val table, while the dataset scan in
+### the same log says "N found, 0 missing, 0 empty, 0 corrupt". One of those is cosmetic
+### and the other means the competitor trains on nothing. Guessing is not good enough
+### when six GPU-days ride on it, so count the targets coming out of THEIR dataloader.
+cd "$MG"
+PYTHONPATH="$MG" python -u "$ROOT/cluster/probe_yolomg_loader.py" \n    --data "$ROOT/work/smoke/smoke.yaml" --yolomg "$MG" --imgsz 640 --batch 4
+prc=$?
+if [ $prc -ne 0 ]; then echo "YOLOMG SMOKE FAILED (loader probe)"; exit $prc; fi
+
+echo "=== 3-epoch smoke train (tiny subset via --epochs 3 on a truncated list) ==="
 mkdir -p "$ROOT/work/smoke"
 head -200 "$R/train.txt" > "$ROOT/work/smoke/t.txt"
 head -200 "$R/train2.txt" > "$ROOT/work/smoke/t2.txt"

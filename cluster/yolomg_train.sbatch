@@ -41,6 +41,11 @@ echo "data: $(wc -l < "$R/train.txt") train / $(wc -l < "$R/val.txt") val / $(wc
 ### here because it is a deviation from their published ARD100 setup that we cannot close.
 CFG=models/NPS_uav_s.yaml
 
+### Their trainer seeds with init_seeds(1 + RANK), and RANK is -1 on one GPU -- so every
+### run would seed identically and our "3 seeds" would be 3 byte-identical runs, giving a
+### confidence interval over a sample with zero variance by construction. Idempotent.
+python "$ROOT/cluster/patch_yolomg_seed.py" || { echo "seed patch failed"; exit 1; }
+
 [ -f yolov5s.pt ] || python -c "
 import torch;torch.hub.download_url_to_file('https://github.com/ultralytics/yolov5/releases/download/v6.1/yolov5s.pt','yolov5s.pt')"
 
