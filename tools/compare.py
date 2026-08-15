@@ -33,10 +33,13 @@ sys.path.insert(0, str(REPO))
 
 from benchmarks.protocol import BY_KEY as PROTOCOLS  # noqa: E402
 from benchmarks.published import for_dataset  # noqa: E402
+from benchmarks.fast_bootstrap import (  # noqa: E402
+    paired_bootstrap_pooled_ap, paired_permutation_pooled_ap)
 from benchmarks.scorecard import (  # noqa: E402
     Scorecard, pooled_ap, pooled_precision, pooled_recall)
 from dronedet.stats import (  # noqa: E402
-    compare_with_published, holm, mcnemar, paired_bootstrap_diff, paired_permutation_test,
+    BootstrapResult, compare_with_published, holm, mcnemar,
+    paired_bootstrap_diff, paired_permutation_test,
     wilson)
 from dronedet.console import use_utf8_stdio  # noqa: E402
 
@@ -53,8 +56,21 @@ def compare_pair(a: Scorecard, b: Scorecard, *, n_resamples: int = 10000,
     ua = [ia[k] for k in common]
     ub = [ib[k] for k in common]
 
-    boot = paired_bootstrap_diff(ua, ub, pooled_ap, n_resamples=n_resamples, seed=seed)
-    perm = paired_permutation_test(ua, ub, pooled_ap, n_resamples=n_resamples, seed=seed)
+    # The fast path, not a different statistic: benchmarks/fast_bootstrap sorts the
+    # detections once and re-weights them per draw instead of rebuilding and re-sorting a
+    # 400k-element Python list 20,000 times. dronedet/tests/test_fast_bootstrap.py asserts
+    # equality with pooled_ap and with the slow permutation test to 1e-12.
+    #
+    # This is not an optimisation for its own sake. At the conf floor both arms are now
+    # scored at (0.001, matching the competitor's), one pooled_ap call takes 354 ms, so the
+    # old path needed 118 minutes per seed for the bootstrap alone. A statistic nobody can
+    # afford to run does not get reported, and then the table has no significance column.
+    fb = paired_bootstrap_pooled_ap(ua, ub, n_resamples=n_resamples, seed=seed)
+    boot = BootstrapResult(observed=fb["observed"], lo=fb["lo"], hi=fb["hi"],
+                           p_value=fb["p"], n_units=fb["n_units"],
+                           n_resamples=fb["n_resamples"],
+                           statistic_a=pooled_ap(ua), statistic_b=pooled_ap(ub))
+    perm = paired_permutation_pooled_ap(ua, ub, n_resamples=n_resamples, seed=seed)
 
     # McNemar on per-sequence wins: how many sequences did each win outright? This asks a
     # different question from AP — "is it better more often" rather than "is it better on
