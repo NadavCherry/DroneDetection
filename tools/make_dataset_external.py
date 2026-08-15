@@ -176,7 +176,11 @@ def build_nps_tiled(stride_train, stride_val, min_side, tile=640, temporal=False
             stats[split][0] += ni
             stats[split][1] += nb
             print(f"  [{split}] {clip}: {ni} tiles, {nb} boxes", flush=True)
-    write_data_yaml(root)
+    write_data_yaml(root, build={"task": name, "min_side": float(min_side),
+                                 "tile": tile, "temporal": temporal,
+                                 "dt": dt if temporal else None,
+                                 "split": "dogfight-1-36/37-40/41-50",
+                                 "annotations": "dogfight"})
     print(f"\nNPS {'TEMPORAL' if temporal else 'TILED'} ({tile}px) -> {root}")
     print(f"  train: {stats['train'][0]} tiles / {stats['train'][1]} boxes")
     print(f"  val:   {stats['val'][0]} tiles / {stats['val'][1]} boxes")
@@ -609,7 +613,9 @@ def build_ardmav_train_tiled(stride_train, stride_val, min_side, tile=640):
             stats[split][0] += ni
             stats[split][1] += nb
             print(f"  [{split}] {vid}: {ni} tiles, {nb} boxes")
-    write_data_yaml(root)
+    write_data_yaml(root, build={"task": "ardmav-train-tiled",
+                                 "min_side": float(min_side), "tile": tile,
+                                 "temporal": False})
     print(f"\nARD-MAV TILED YOLO ({tile}px) -> {root}")
     print(f"  train: {stats['train'][0]} tiles / {stats['train'][1]} boxes")
     print(f"  val:   {stats['val'][0]} tiles / {stats['val'][1]} boxes")
@@ -648,7 +654,10 @@ def build_ardmav_temporal_tiled(stride_train, stride_val, min_side, tile=640,
             stats[split][0] += ni
             stats[split][1] += nb
             print(f"  [{split}] {vid}: {ni} tiles, {nb} boxes")
-    write_data_yaml(root)
+    write_data_yaml(root, build={"task": "ardmav-temporal-tiled",
+                                 "min_side": float(min_side), "tile": tile,
+                                 "temporal": True, "dt": dt,
+                                 "chroma_444": chroma_444})
     print(f"\nARD-MAV TEMPORAL YOLO ({tile}px, dt={dt}) -> {root}")
     print(f"  train: {stats['train'][0]} tiles / {stats['train'][1]} boxes")
     print(f"  val:   {stats['val'][0]} tiles / {stats['val'][1]} boxes")
@@ -782,12 +791,35 @@ def write_gt_json(video_path, boxes_by_frame, out_path):
     return len(objects), sum(len(o["frames"]) for o in objects.values())
 
 
-def write_data_yaml(root, names=("drone",)):
+def write_data_yaml(root, names=("drone",), build: dict | None = None):
     lines = [f"path: {root.resolve()}", "train: images/train", "val: images/val",
              "names:"]
     for i, n in enumerate(names):
         lines.append(f"  {i}: {n}")
     (root / "data.yaml").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    # BUILD.json: what this build actually DID, recorded by the code that did it.
+    #
+    # `tools/train.py` has to know whether labels on disk are true extents or inflated,
+    # because both ARD-MAV builds write to the same directory and running the headline
+    # experiment against the control's labels produces a plausible curve. It used to infer
+    # that from box statistics, and inference is genuinely ambiguous here: `--label-px 24`
+    # writes every box at exactly 24 (a fixed size), while `--min-side 12` is a FLOOR that
+    # only lifts boxes already below it -- and NPS piles up at 10 px naturally because
+    # Dogfight's corners are integers. No threshold on the size distribution separates
+    # "floored at 10" from "genuinely smallest at 10".
+    #
+    # The builder does not have to guess: it knows. Recording it turns a heuristic into a
+    # fact, and the heuristic stays only as a fallback for datasets built before this.
+    if build is not None:
+        (root / "BUILD.json").write_text(
+            json.dumps({"built_utc": _utcnow(), **build}, indent=2) + "\n",
+            encoding="utf-8")
+
+
+def _utcnow() -> str:
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
 # ----------------------------------------------------------------------------- builders

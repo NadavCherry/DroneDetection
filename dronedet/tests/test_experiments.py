@@ -68,6 +68,12 @@ def _write_dataset(root: Path, min_side: float, tile: int = 640,
                 f"0 0.500000 0.500000 {s / tile:.6f} {s / tile:.6f}\n", encoding="utf-8")
     (root / "data.yaml").write_text(
         f"path: {root.resolve()}\ntrain: images/train\nval: images/val\nnames:\n  0: drone\n", encoding="utf-8")
+    # Real builders record what they built (tools/make_dataset_external.write_data_yaml),
+    # and the inflation check trusts that record over any inference from box sizes. A
+    # fixture without it would exercise only the legacy path.
+    (root / "BUILD.json").write_text(
+        json.dumps({"task": "test-fixture", "min_side": float(min_side), "tile": tile}),
+        encoding="utf-8")
     return root / "data.yaml"
 
 
@@ -344,6 +350,44 @@ def test_inflated_config_against_a_true_extent_dataset_is_refused(tmp_path):
                               / "labels" / "train", 640)
     msg = T.check_label_inflation(stats, min_side=12.0)
     assert msg and "smaller --min-side" in msg
+
+
+def test_a_large_true_extent_corpus_is_not_mistaken_for_an_inflated_one(tmp_path):
+    """NPS-Drones, the regression. Its true-extent boxes are 10-25 px with integer
+    corners, so its smallest box is 10.00 -- larger than ARD-MAV's and not inflated.
+
+    The old rule rejected exactly this: it refused any true-extent build whose smallest
+    sampled box was >= 8 px, a threshold calibrated on ARD-MAV alone. Six NPS training
+    jobs died in two seconds against a perfectly good dataset. A guard that fires on a
+    correct dataset teaches people to override guards, which is worse than no guard.
+    """
+    root = tmp_path / "nps_like"
+    for split, n in (("train", 24), ("val", 8)):
+        (root / "images" / split).mkdir(parents=True, exist_ok=True)
+        (root / "labels" / split).mkdir(parents=True, exist_ok=True)
+        for i in range(n):
+            side = [10.0, 11.0, 12.0, 14.0, 18.0, 25.0][i % 6]   # integer-quantised, all >= 10
+            (root / "images" / split / f"f{i:04d}.jpg").write_bytes(b"\xff\xd8x" + bytes([i % 251]))
+            (root / "labels" / split / f"f{i:04d}.txt").write_text(
+                f"0 0.5 0.5 {side/640:.6f} {side/640:.6f}\n", encoding="utf-8")
+    (root / "BUILD.json").write_text(json.dumps({"min_side": 0.0}), encoding="utf-8")
+
+    stats = T.label_box_stats(root / "labels" / "train", 640)
+    assert stats["min_side_px"] >= 10.0, "fixture should model NPS's larger targets"
+    assert T.check_label_inflation(stats, min_side=0.0) is None
+
+
+def test_a_dataset_with_no_build_record_warns_rather_than_refusing(tmp_path, capsys):
+    """Legacy datasets predate BUILD.json, and inflation is NOT decidable from the box
+    distribution: `--min-side 12` is a floor whose spike is partial, and a genuinely
+    small-target corpus can pile up at its minimum through integer quantisation. The two
+    overlap. So without the record, say so and continue rather than guess and block."""
+    root = _write_dataset(tmp_path / "legacy", 12.0).parent
+    (root / "BUILD.json").unlink()
+    stats = T.label_box_stats(root / "labels" / "train", 640)
+    assert stats.get("build_min_side") is None
+    assert T.check_label_inflation(stats, min_side=0.0) is None      # no rejection
+    assert "no BUILD.json" in capsys.readouterr().err                # but it is said
 
 
 def test_matching_inflation_passes_both_ways(tmp_path):

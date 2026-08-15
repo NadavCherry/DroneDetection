@@ -40,6 +40,7 @@ the torch-free CI job.
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import dataclasses
 import hashlib
 import json
@@ -62,11 +63,18 @@ from dronedet.console import use_utf8_stdio  # noqa: E402
 
 MANIFEST_SCHEMA_VERSION = 2
 
-#: Below this, a "true extent" ARD-MAV build should certainly have some boxes: its median
-#: target is 11.8 px and 21.3% of its boxes are very-tiny (2-8 px). If the smallest box in
-#: a sample is bigger than this, the labels on disk were inflated by a builder run the
-#: config does not know about.
+#: RETIRED as a rejection threshold, kept because the manifest records it and older
+#: manifests can then still be read. It was ARD-MAV-specific (median 11.8 px, 21.3 % of
+#: boxes in 2-8 px) and wrongly rejected a correct NPS build whose true-extent minimum is
+#: 10 px. See `check_label_inflation` for what replaced it.
 TRUE_EXTENT_MAX_MIN_SIDE_PX = 8.0
+
+#: A fixed-size label writes every box at exactly `min_side`, so one width owns almost the
+#: whole sample -- measured at 1 distinct width for `--label-px 24`. Real extents spread:
+#: ARD-MAV 54 distinct widths, NPS 15 (its corners are integers, so it quantises). 0.90
+#: sits far above any true-extent build seen here and far below an inflated one, and it is
+#: a property of the LABELS rather than of the dataset's target sizes.
+INFLATION_MODAL_SHARE = 0.90
 
 #: Label sides are written with 6 decimal places, so a normalised side round-trips to
 #: within ~0.001 px on a 640 px tile. Half a pixel of slack is generous.
@@ -290,6 +298,14 @@ def label_box_stats(labels_dir: Path, tile_px: int, sample: int = 2000) -> dict[
             sides_px.append(min(w, h))
             n_boxes += 1
 
+    #: Descriptive only -- the inflation decision now comes from the build's own
+    #: BUILD.json (see `check_label_inflation`). Kept because it is cheap, it lands in the
+    #: manifest, and it is what a human reads when a number looks wrong.
+    #: Counter, not `list.count` per distinct value: the latter is O(n x distinct) and on a
+    #: real sample took the test suite from ~40 s to 68 minutes.
+    counts = Counter(round(s, 2) for s in sides_px)
+    modal_share = (max(counts.values()) / len(sides_px)) if sides_px else 0.0
+
     stats: dict[str, Any] = {
         "present": True,
         "labels_dir": str(labels_dir),
@@ -299,6 +315,11 @@ def label_box_stats(labels_dir: Path, tile_px: int, sample: int = 2000) -> dict[
         "n_boxes_sampled": n_boxes,
         "class_ids": sorted(class_ids),
         "tile_px_assumed": tile_px,
+        "n_distinct_sides": len(counts),
+        # What the builder RECORDED, when it recorded anything. This is the field the
+        # inflation check actually trusts; everything else about size is descriptive.
+        "build_min_side": _recorded_min_side(labels_dir),
+        "modal_side_share": round(modal_share, 4),
     }
     if sides_px:
         sides_px.sort()
@@ -363,6 +384,20 @@ def dataset_manifest(data_yaml: Path, tile_px: int, sample: int = 2000,
     return out
 
 
+def _recorded_min_side(labels_dir: Path):
+    """`min_side` from the dataset's BUILD.json, or None when it predates that file.
+
+    Looks beside the dataset root (labels/<split>/ -> ../../BUILD.json). Returns None
+    rather than raising on anything unreadable: a missing or malformed provenance file
+    must degrade the check to "unknown", never fail a training run that is otherwise fine.
+    """
+    try:
+        rec = json.loads((labels_dir.parent.parent / "BUILD.json").read_text(encoding="utf-8"))
+        return rec.get("min_side")
+    except Exception:                                          # noqa: BLE001
+        return None
+
+
 def check_label_inflation(stats: dict[str, Any], min_side: float) -> str | None:
     """Refuse to train when the labels on disk contradict the config's `min_side`.
 
@@ -381,11 +416,34 @@ def check_label_inflation(stats: dict[str, Any], min_side: float) -> str | None:
                     f"smallest sampled box is {observed:.2f} px -- the dataset on disk "
                     f"was built with a smaller --min-side")
         return None
-    if observed >= TRUE_EXTENT_MAX_MIN_SIDE_PX:
-        return (f"config claims TRUE EXTENTS (min_side 0), but the smallest box in a "
-                f"sample of {stats.get('n_boxes_sampled')} is {observed:.2f} px "
-                f"(>= {TRUE_EXTENT_MAX_MIN_SIDE_PX:g}) -- this looks like an inflated "
-                f"build. Rebuild with --min-side 0 before running this experiment")
+    # Claimed true extents. Prefer the build's own record over any inference.
+    recorded = stats.get("build_min_side")
+    if recorded is not None:
+        if float(recorded) > 0:
+            return (f"config claims TRUE EXTENTS (min_side 0), but the build on disk "
+                    f"records min_side {float(recorded):g} px in BUILD.json -- that is "
+                    f"the inflated build. Rebuild with --min-side 0")
+        return None
+
+    # No BUILD.json: a dataset built before builders recorded themselves. Fall back to the
+    # old statistic, but only as a WARNING-shaped hint, never as a rejection.
+    #
+    # It cannot be a rejection because it is not decidable from the distribution. The old
+    # rule rejected any true-extent build whose smallest sampled box was >= 8 px, which
+    # was calibrated on ARD-MAV alone (median 11.8 px, 21.3 % of boxes in 2-8 px). It
+    # rejected a correct NPS build: NPS targets run 10-25 px with integer corners from
+    # Dogfight's annotations, so 10.00 is genuinely its smallest box. And a modal-share
+    # test does not save it either -- `--min-side 12` is a FLOOR that only lifts boxes
+    # already below it, so its spike is partial, while NPS piles up at 10 px naturally
+    # from integer quantisation. The two overlap; no threshold separates them.
+    #
+    # A guard that fires on a correct dataset teaches people to override guards, so this
+    # one now defers to the fact and stops guessing.
+    if float(stats.get("min_side_px", 0.0)) >= TRUE_EXTENT_MAX_MIN_SIDE_PX:
+        print(f"NOTE: no BUILD.json for this dataset and its smallest sampled box is "
+              f"{stats['min_side_px']:.2f} px. That is normal for a corpus with larger "
+              f"targets (NPS is 10-25 px) and suspicious for one with small ones. "
+              f"Rebuild to get a recorded min_side.", file=sys.stderr)
     return None
 
 
