@@ -52,6 +52,43 @@ def test_camera_pan_alone_leaves_almost_no_residual():
     assert interior.mean() < 12.0, f"pan leaked into the mask: mean {interior.mean():.1f}"
 
 
+@pytest.mark.parametrize("h,w", [
+    (540, 960),      # S = 2.0, 2.0   -- what the original tests happened to use
+    (1080, 1920),    # S = 1.0, 1.0   -- the ONLY size where the naive code is correct
+    (960, 1280),     # S = 1.5, 1.125 -- 20 of NPS's 50 clips, and ANISOTROPIC
+    (2160, 3840),    # S = 0.5, 0.5
+])
+def test_compensation_holds_at_every_source_resolution(h, w):
+    """The regression that a single-resolution test cannot see.
+
+    `motion_compensate` estimates its homography in a FIXED 1920x1080 tracking space and
+    then warps the frame at its native size. Those agree only at exactly 1920x1080; at any
+    other resolution every translation term is off by the resize factor and the mask fills
+    with uncompensated camera motion.
+
+    The original tests all ran at 960x540 and asserted `interior.mean() < 12.0` -- loose
+    enough to pass at 6.35 when the correct answer is 0.00. So they passed, at one size,
+    against broken code. This runs the SAME physical pan at four resolutions and holds all
+    of them to the same standard, which is the only way the defect becomes visible.
+
+    ARD-MAV is entirely 1920x1080, so this fires only on NPS -- where it hit all four
+    validation clips, i.e. the competitor's own model selection.
+    """
+    bg = _textured_background(h, w)
+    # Same pan as a fraction of the frame, so every resolution sees the same motion.
+    dx, dy = w * 0.00625, h * 0.00556
+    frames = [_shift(bg, -dx * k, -dy * k) for k in (0, 1, 2)]
+
+    mask = fd5_mask(*frames)
+
+    m = max(40, int(0.05 * min(h, w)))
+    interior = mask[m:-m, m:-m]
+    assert interior.mean() < 1.5, (
+        f"{w}x{h}: pan left {interior.mean():.2f} mean residual in the mask -- the "
+        f"homography is being applied in a different coordinate space than it was "
+        f"estimated in")
+
+
 def test_an_object_moving_against_a_panning_camera_survives():
     """The signal the comparator is built on: after compensation, what is left is what
     moved differently from the scene."""

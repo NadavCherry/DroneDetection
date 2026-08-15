@@ -65,6 +65,21 @@ from tools.sota.motion_mask import YOLOMG_MASK32_DT, fd5_mask  # noqa: E402
 #: default of 95; we state it rather than inherit it, so a future OpenCV cannot move it.
 JPEG_Q = [cv2.IMWRITE_JPEG_QUALITY, 95]
 
+#: Source resolutions, measured on the cluster rather than assumed -- an earlier comment
+#: here guessed "NPS is 4K" and was wrong. These decide whether the coordinate-space
+#: correction in `motion_mask` (deviation 4) is reachable, so they are recorded:
+#:
+#:   ARD-MAV   60/60 videos at 1920x1080      -> correction is a no-op throughout
+#:   NPS       30/50 at 1920x1080, 20/50 at 1280x960
+#:             affected: train 14,15,17,18,19,20,26,27,28,32,33,34
+#:                       val   37,38,39,40   <- ALL of them
+#:                       test  43,44,45,46
+#:
+#: The val split mattering most: without the correction the competitor would select its
+#: best checkpoint on a validation set whose motion stream was entirely corrupt.
+SOURCE_RESOLUTIONS = {"ardmav": {(1920, 1080): 60},
+                      "nps": {(1920, 1080): 30, (1280, 960): 20}}
+
 #: The mask stream MUST live in a directory called `images2`, not `mask`. YOLOMG finds a
 #: mask's labels with `utils.datasets.img2label_paths2`, which rewrites the substring
 #: `/images2/` to `/labels/` and nothing else. Under any other name the rewrite is a no-op,
@@ -111,7 +126,7 @@ def _emit_video(root: Path, split: str, vid: str, boxes_by_frame: dict,
 
       memory  -- the obvious implementation collects every frame the masks need into a
                  dict first. On a 1920x1080 ARD-MAV video with ~250 targets that is 750
-                 frames, about 4.6 GB, and NPS is 4K. A ring buffer holds five.
+                 frames, about 4.6 GB. A ring buffer holds five.
       speed   -- `cap.set(CAP_PROP_POS_FRAMES, i)` is not a cheap operation: it seeks to
                  the preceding keyframe and re-decodes forward. Three of those per target,
                  against one linear decode for the whole video.

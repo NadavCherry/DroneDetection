@@ -34,6 +34,46 @@ THE DEVIATIONS, ALL OF THEM
 3. Grayscale input. `motion_compensate` is called on already-grayscaled, already-blurred
    frames in every one of their FD*_mask callers, so the `cv2.resize` inside it operates
    on a single channel. We keep that contract and assert it.
+4. THE HOMOGRAPHY IS MAPPED BACK INTO NATIVE COORDINATES. This one changes numbers, so
+   the reasoning is set out in full below.
+
+DEVIATION 4, IN FULL
+--------------------
+Upstream estimates the homography between points in a fixed 1920x1080 tracking space -- it
+resizes both frames to `960*SCALE x 540*SCALE` regardless of the source -- and then hands
+that matrix straight to `cv2.warpPerspective` on the frame at its NATIVE resolution. The
+two coordinate systems only agree when the source is exactly 1920x1080. Anywhere else,
+every translation term is off by the resize factor, the warp under-compensates the camera,
+and the "motion mask" fills with residual ego-motion across the whole frame -- which is the
+precise failure the mask exists to avoid.
+
+Measured, same physical pan, mean interior residual before -> after this fix:
+
+    960x540      6.35 -> 0.00
+    1920x1080    0.00 -> 0.00      (S is the identity; bit-identical no-op)
+    1920x1280    1.91 -> 0.18
+    3840x2160   12.49 -> 0.00      (H carried exactly half the true pan)
+
+WHY THIS IS NOT "IMPROVING THE COMPETITOR", WHICH THIS PACKAGE OTHERWISE FORBIDS
+-------------------------------------------------------------------------------
+Every video in ARD-MAV, and in upstream's own ARD100, is 1920x1080. There the resize is the
+identity and this code path is unreachable, so no published YOLOMG number was ever produced
+under the broken condition and correcting it cannot flatter them relative to their paper.
+
+NPS is where it bites: 20 of its 50 clips are 1280x960 -- including ALL FOUR validation
+clips, so YOLOMG would have selected `best.pt` on a validation set whose motion stream was
+100% corrupt, plus 12 training and 4 test clips. NPS is also the dataset where YOLOMG
+publish AP@0.5 = 0.95. Beating a 0.95 method on its own benchmark, having silently broken
+the input its headline contribution rests on, is a retraction, not a result.
+
+And the asymmetry is what settles it: OUR arm already gets this right. `dronedet/stabilize`
+rescales its translation back to full-resolution pixels after estimating on a downscaled
+frame. Applying the correction to ourselves and not to the competitor is exactly the thumb
+on the scale this package exists to prevent.
+
+Reproducing the method faithfully means reproducing what the method IS -- ego-compensate,
+then difference -- not carrying a coordinate-space defect onto data where it fires and the
+authors' data never did.
 
 WHAT WE DO **NOT** CHANGE, ON PURPOSE
 -------------------------------------
@@ -111,6 +151,22 @@ def motion_compensate(frame1: np.ndarray, frame2: np.ndarray):
         homography, _status = cv2.findHomography(good_new, good_old, cv2.RANSAC, 3.0)
         if homography is None:            # RANSAC can fail outright on degenerate input
             homography = _NEAR_IDENTITY.copy()
+
+    # Deviation 4, and the one that actually changes numbers -- see the module docstring.
+    # `homography` was estimated between points living in the fixed 1920x1080 tracking
+    # space above, but `warpPerspective` below is handed frame1 at its NATIVE resolution
+    # with dsize from frame2's native shape. Feeding native coordinates to a matrix
+    # expressed in tracking coordinates scales every translation term by the resize
+    # factor. Map it across: for S mapping native -> tracking, H_native = S^-1 H S.
+    #
+    # At exactly 1920x1080 S is the identity and this is a bit-identical no-op, which is
+    # why the defect is invisible on ARD-MAV (all 60 videos are 1920x1080) and on
+    # upstream's own ARD100. It fires on 20 of NPS's 50 clips, which are 1280x960 --
+    # anisotropically, 1.5x in x against 1.125x in y.
+    sx, sy = (960 * _SCALE) / width, (540 * _SCALE) / height
+    if (sx, sy) != (1.0, 1.0):
+        S = np.array([[sx, 0.0, 0.0], [0.0, sy, 0.0], [0.0, 0.0, 1.0]])
+        homography = np.linalg.inv(S) @ homography @ S
 
     compensated = cv2.warpPerspective(
         frame1, homography, (width, height),
