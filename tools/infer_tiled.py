@@ -174,6 +174,31 @@ def run_video(model, video: Path, mode: str, args) -> DetectionSet:
     return ds
 
 
+#: Container extensions seen across the corpora this repo scores. ARD-MAV ships .mp4 and
+#: NPS ships .mov, and case varies between releases -- `Clip_5.mov` vs `Clip_005.MOV`.
+#: Hard-coding ".mp4" here cost six NPS scorecards that all read AP = 0.000.
+_VIDEO_EXTS = (".mp4", ".mov", ".MOV", ".MP4", ".avi", ".AVI", ".m4v", ".mkv")
+
+
+def _resolve_video(root: Path, stem: str) -> Path | None:
+    """The video for a GT stem, whatever container and case it happens to use."""
+    for ext in _VIDEO_EXTS:
+        p = root / f"{stem}{ext}"
+        if p.exists():
+            return p
+    # Some NPS releases drop the zero padding: Clip_041 on disk as Clip_41.
+    if "_" in stem:
+        head, _, tail = stem.rpartition("_")
+        if tail.isdigit():
+            for cand in (f"{head}_{int(tail)}", f"{head}_{int(tail):03d}"):
+                for ext in _VIDEO_EXTS:
+                    p = root / f"{cand}{ext}"
+                    if p.exists():
+                        return p
+    hits = sorted(root.glob(f"{stem}.*"))
+    return hits[0] if hits else None
+
+
 def main(argv: list[str] | None = None) -> int:
     use_utf8_stdio()
     ap = argparse.ArgumentParser(description=__doc__,
@@ -215,10 +240,12 @@ def main(argv: list[str] | None = None) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     print(f"{len(gts)} videos, mode={a.mode}, tile={a.tile}, overlap={a.overlap}")
 
+    missing = []
     for i, gt in enumerate(gts, 1):
-        video = Path(a.video_root) / f"{gt.stem}.mp4"
-        if not video.exists():
-            print(f"  [{i}/{len(gts)}] {gt.stem}: MISSING {video}")
+        video = _resolve_video(Path(a.video_root), gt.stem)
+        if video is None:
+            print(f"  [{i}/{len(gts)}] {gt.stem}: MISSING under {a.video_root}")
+            missing.append(gt.stem)
             continue
         t0 = time.time()
         ds = run_video(model, video, a.mode, a)
@@ -227,6 +254,18 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  [{i}/{len(gts)}] {gt.stem}: {len(ds.frames)} frames, {n} dets, "
               f"{time.time() - t0:.0f}s", flush=True)
     print(f"wrote -> {out_dir}")
+
+    # A missing video is not a warning. Downstream, `tools/evaluate.py` correctly scores a
+    # sequence with no detections as a TOTAL MISS rather than skipping it -- so a wrong
+    # --video-root does not crash, it produces a complete, plausible scorecard reading
+    # AP = 0.000. That happened: NPS ships .mov and this looked only for .mp4, and six
+    # runs' worth of scorecards came back at zero for a reason having nothing to do with
+    # the models. Refuse to exit 0 on it.
+    if missing:
+        print(f"\nABORT: {len(missing)} of {len(gts)} videos could not be resolved under "
+              f"{a.video_root} (e.g. {missing[:3]}). Scoring would report these as total "
+              f"misses and hand you a believable AP of 0.", file=sys.stderr)
+        return 2
     return 0
 
 
