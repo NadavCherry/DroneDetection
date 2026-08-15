@@ -18,14 +18,16 @@ from tools.sota.build_yolomg import _frames_needed, _write_pair, write_lists
 
 
 def _fake_build(root, n=6, drop_mask=None):
+    """All three splits get frames: `write_lists` refuses a build with an empty split, and
+    a real build always has all three."""
     for sub in ("images", "mask", "labels"):
-        (root / sub / "train").mkdir(parents=True, exist_ok=True)
-        (root / sub / "val").mkdir(parents=True, exist_ok=True)
-        (root / sub / "test").mkdir(parents=True, exist_ok=True)
+        for split in ("train", "val", "test"):
+            (root / sub / split).mkdir(parents=True, exist_ok=True)
     frame = np.full((64, 64, 3), 120, dtype=np.uint8)
-    for i in range(n):
-        _write_pair(root, "train", f"clip_{i:06d}", frame,
-                    np.zeros((64, 64)), [[10, 10, 20, 20]], 64, 64)
+    for split, k in (("train", n), ("val", 2), ("test", 2)):
+        for i in range(k):
+            _write_pair(root, split, f"clip_{i:06d}", frame,
+                        np.zeros((64, 64)), [[10, 10, 20, 20]], 64, 64)
     if drop_mask is not None:
         (root / "mask" / "train" / f"clip_{drop_mask:06d}.jpg").unlink()
     return root
@@ -81,6 +83,19 @@ def test_degenerate_boxes_are_dropped_not_written_as_zero_area(tmp_path):
     lines = (root / "labels" / "train" / "v_000000.txt").read_text(
         encoding="utf-8").strip().splitlines()
     assert len(lines) == 1, "the zero-width box should have been dropped"
+
+
+def test_an_empty_build_is_refused_rather_than_declared_successful(tmp_path):
+    """This one really happened: `Videos` instead of `videos` matched nothing on a
+    case-sensitive filesystem, and the build reported exit 0 with a BUILD.json and three
+    perfectly line-aligned lists of zero pairs. Every downstream check passed."""
+    root = tmp_path / "ds"
+    for sub in ("images", "mask", "labels"):
+        for split in ("train", "val", "test"):
+            (root / sub / split).mkdir(parents=True, exist_ok=True)
+
+    with pytest.raises(RuntimeError, match="refusing to declare an empty dataset"):
+        write_lists(root)
 
 
 def test_taps_requested_match_the_documented_aperture():

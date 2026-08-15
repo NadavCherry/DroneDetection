@@ -154,8 +154,23 @@ def build_nps(root: Path, stride: int, dt: int = YOLOMG_MASK32_DT):
     return stats
 
 
+def _ard_video(vid: str) -> Path | None:
+    """ARD-MAV's video directory is lowercase `videos`, which the rest of the repo already
+    knows (`_ard_all` globs it). Spelling it `Videos` here cost a build: it silently
+    matched nothing on Linux and produced a complete, valid, EMPTY dataset -- exit 0, a
+    BUILD.json, and three line-aligned lists of zero pairs. Resolve it case-insensitively
+    and fail loudly on nothing found."""
+    for parent in (ARD_ROOT / "videos", ARD_ROOT / "Videos"):
+        p = parent / f"{vid}.mp4"
+        if p.exists():
+            return p
+    return None
+
+
 def build_ardmav(root: Path, stride: int, dt: int = YOLOMG_MASK32_DT):
     all_ids = _ard_all()
+    if not all_ids:
+        raise RuntimeError(f"no ARD-MAV videos under {ARD_ROOT / 'videos'}")
     splits = {"train": [v for v in all_ids
                         if v not in ARD_TEST_IDS and v not in ARD_VAL_IDS],
               "val": ARD_VAL_IDS, "test": ARD_TEST_IDS}
@@ -163,9 +178,9 @@ def build_ardmav(root: Path, stride: int, dt: int = YOLOMG_MASK32_DT):
     for split, vids in splits.items():
         tot_f = tot_b = 0
         for vid in vids:
-            vp = ARD_ROOT / "Videos" / f"{vid}.mp4"
-            if not vp.exists():
-                print(f"  [{split}] {vid}: NO VIDEO at {vp}", flush=True)
+            vp = _ard_video(vid)
+            if vp is None:
+                print(f"  [{split}] {vid}: NO VIDEO under {ARD_ROOT}", flush=True)
                 continue
             read, n, cap = _video_reader(vp)
             try:
@@ -189,8 +204,11 @@ def write_lists(root: Path) -> dict:
     baseline. So: derive both lists from one sorted list, then assert stem equality.
     """
     counts = {}
+    empty = []
     for split in ("train", "val", "test"):
         imgs = sorted((root / "images" / split).glob("*.jpg"))
+        if not imgs:
+            empty.append(split)
         pairs = [(p, root / "mask" / split / p.name) for p in imgs]
         missing = [p.name for p, m in pairs if not m.exists()]
         if missing:
@@ -206,6 +224,15 @@ def write_lists(root: Path) -> dict:
         assert all(Path(x).name == Path(y).name for x, y in zip(a, b)), \
             f"{split}: image/mask lists are not line-aligned"
         counts[split] = len(a)
+    if empty:
+        # An empty build is the most dangerous outcome this script has, because every
+        # downstream check passes: exit 0, a BUILD.json, three lists that are trivially
+        # line-aligned. It cost one build already (a capital V in a directory name) and
+        # would have cost a night of GPU time had the training job not tripped over it.
+        raise RuntimeError(
+            f"no images were written for split(s) {empty} -- refusing to declare an empty "
+            f"dataset built. Check that the source videos resolved: an empty build is "
+            f"indistinguishable from a good one downstream.")
     return counts
 
 
