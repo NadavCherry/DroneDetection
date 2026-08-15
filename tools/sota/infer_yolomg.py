@@ -44,6 +44,7 @@ sys.path.insert(0, str(MG))
 sys.path.insert(0, str(REPO))
 
 from tools.sota.motion_mask import YOLOMG_MASK32_DT, fd5_mask  # noqa: E402
+from tools.video_paths import resolve_all  # noqa: E402
 
 
 def _letterbox(im, new_shape=1280, stride=32):
@@ -133,8 +134,13 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--weights", required=True)
-    ap.add_argument("--videos", required=True, nargs="+",
-                    help="test video paths, one JSON written per video stem")
+    ap.add_argument("--gt-dir", required=True,
+                    help="directory of per-sequence GT JSONs; NAMES the sequences. Videos "
+                         "are resolved from --video-root by the same code our own arm "
+                         "uses, and the output JSON is named after the GT stem -- NPS "
+                         "ships Clip_41.mov against a GT called Clip_041, and naming the "
+                         "output after the video would score every sequence as a miss.")
+    ap.add_argument("--video-root", required=True)
     ap.add_argument("--out", required=True, help="output directory for detection JSONs")
     ap.add_argument("--imgsz", type=int, default=1280)
     ap.add_argument("--dt", type=int, default=YOLOMG_MASK32_DT)
@@ -151,12 +157,22 @@ def main():
     model = attempt_load(a.weights, map_location=device).eval()
 
     out = Path(a.out)
-    for v in a.videos:
-        vp = Path(v)
-        nf, nd = run_video(model, vp, out / f"{vp.stem}.json", a.imgsz, a.conf,
+    pairs, missing = resolve_all(Path(a.video_root), Path(a.gt_dir))
+    if missing:
+        # Not a warning. evaluate.py scores an unmatched sequence as a TOTAL MISS with its
+        # full ground truth still charged, so a filename problem here would deflate the
+        # COMPETITOR's AP and publish a wrong number in the direction that costs a
+        # retraction. Our arm aborts on this; so does theirs.
+        print(f"ABORT: {len(missing)} of {len(pairs) + len(missing)} GT sequences have no "
+              f"video under {a.video_root}: {missing[:5]}", file=sys.stderr)
+        return 2
+    print(f"{len(pairs)} sequences to score", flush=True)
+    for stem, vp in pairs:
+        nf, nd = run_video(model, vp, out / f"{stem}.json", a.imgsz, a.conf,
                            a.iou, a.dt, device, a.method)
-        print(f"  {vp.stem}: {nf} frames, {nd} detections", flush=True)
+        print(f"  {stem} ({vp.name}): {nf} frames, {nd} detections", flush=True)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

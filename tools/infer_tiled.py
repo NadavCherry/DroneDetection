@@ -46,6 +46,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from dronedet.detections import Detection, DetectionSet  # noqa: E402
 from dronedet.console import use_utf8_stdio  # noqa: E402
+from tools.video_paths import resolve_video as _resolve_video  # noqa: E402
 
 TEMPORAL_DT = 6          # must match make_dataset_external.TEMPORAL_DT
 
@@ -172,31 +173,6 @@ def run_video(model, video: Path, mode: str, args) -> DetectionSet:
                         found.append(d)
         ds.add(idx, merge_by_centre(found, args.merge_dist))
     return ds
-
-
-#: Container extensions seen across the corpora this repo scores. ARD-MAV ships .mp4 and
-#: NPS ships .mov, and case varies between releases -- `Clip_5.mov` vs `Clip_005.MOV`.
-#: Hard-coding ".mp4" here cost six NPS scorecards that all read AP = 0.000.
-_VIDEO_EXTS = (".mp4", ".mov", ".MOV", ".MP4", ".avi", ".AVI", ".m4v", ".mkv")
-
-
-def _resolve_video(root: Path, stem: str) -> Path | None:
-    """The video for a GT stem, whatever container and case it happens to use."""
-    for ext in _VIDEO_EXTS:
-        p = root / f"{stem}{ext}"
-        if p.exists():
-            return p
-    # Some NPS releases drop the zero padding: Clip_041 on disk as Clip_41.
-    if "_" in stem:
-        head, _, tail = stem.rpartition("_")
-        if tail.isdigit():
-            for cand in (f"{head}_{int(tail)}", f"{head}_{int(tail):03d}"):
-                for ext in _VIDEO_EXTS:
-                    p = root / f"{cand}{ext}"
-                    if p.exists():
-                        return p
-    hits = sorted(root.glob(f"{stem}.*"))
-    return hits[0] if hits else None
 
 
 def main(argv: list[str] | None = None) -> int:

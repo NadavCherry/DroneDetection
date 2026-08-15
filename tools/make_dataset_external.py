@@ -859,7 +859,25 @@ def build_ardmav_test_gt():
 
 
 def build_nps_test_gt():
-    out = OUT_ROOT / "gt" / "nps"
+    """Purdue's ORIGINAL v1 annotations, for all 50 clips. NOT the benchmark ground truth.
+
+    This writes to `gt/nps_purdue_v1`, deliberately not to `gt/nps`, and the separation is
+    load-bearing rather than tidy-minded. `tools/evaluate.py` defines the evaluated set as
+    `gt_dir.glob("*.json")` -- whatever files are in the directory ARE the test set. Both
+    this function and `build_nps_test_gt_dogfight` used to write to `gt/nps`, so:
+
+      * running this one filled the "test set" with all 50 clips, 36 of which are TRAINING
+        clips, and the reported AP would have covered data the models were fitted on;
+      * whichever ran last silently decided which annotation convention the 10 real test
+        clips were scored under, and the two do not agree -- Purdue v1 is
+        `(y1,x1,y2,x2)` while Dogfight's is `(x1,y1,x2,y2)` (see `parse_nps_dogfight`).
+        A transposed corner on a few-pixel target is a total miss reported as a low score.
+
+    Every published NPS number this project compares against -- TransVisDrone 0.95,
+    GLAD 0.89 -- is computed on Dogfight's re-annotations, so `gt/nps` is Dogfight's and
+    this one lives elsewhere.
+    """
+    out = OUT_ROOT / "gt" / "nps_purdue_v1"
     for txt in sorted(NPS_ANN.glob("Clip_*_gt.txt")):
         clip = txt.stem.replace("_gt", "")
         vid = _find_nps_video(clip)
@@ -868,7 +886,11 @@ def build_nps_test_gt():
             continue
         boxes = parse_nps(clip)
         no, nb = write_gt_json(vid, boxes, out / f"{clip}.json")
-        print(f"  nps-test {clip} ({vid.name}): {no} objs, {nb} boxes")
+        print(f"  nps-purdue-v1 {clip} ({vid.name}): {no} objs, {nb} boxes")
+    print(f"\nwrote Purdue v1 GT for ALL 50 clips -> {out}\n"
+          f"  This is NOT the benchmark test set. Scoring against it would include 36\n"
+          f"  training clips and use a different corner convention. The benchmark GT is\n"
+          f"  gt/nps, built by --task nps-gt-dogfight.")
 
 
 def _ard_all():
