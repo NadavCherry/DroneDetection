@@ -14,8 +14,8 @@ import pytest
 
 cv2 = pytest.importorskip("cv2")
 
-from tools.sota.build_yolomg import (MASK_DIR, _frames_needed, _write_pair,
-                                     write_lists)
+from tools.sota.build_yolomg import (MASK_DIR, _emit_video, _frames_needed,
+                                     _write_pair, write_lists)
 
 
 def _fake_build(root, n=6, drop_mask=None):
@@ -98,6 +98,56 @@ def test_an_empty_build_is_refused_rather_than_declared_successful(tmp_path):
 
     with pytest.raises(RuntimeError, match="refusing to declare an empty dataset"):
         write_lists(root)
+
+
+class _FakeCap:
+    """A capture whose frame i is a solid image of value i, so the emitter's choice of
+    frame is readable straight off the pixels."""
+
+    def __init__(self, n, h=64, w=64):
+        self.n, self.h, self.w, self.i = n, h, w, -1
+
+    def read(self):
+        self.i += 1
+        if self.i >= self.n:
+            return False, None
+        return True, np.full((self.h, self.w, 3), self.i % 256, dtype=np.uint8)
+
+    def release(self):
+        pass
+
+
+def test_the_sequential_emitter_writes_the_target_frame_not_a_neighbour(tmp_path):
+    """The ring buffer replaced a seek-per-tap implementation, and an off-by-one in the
+    'which frame is at the centre' arithmetic would misalign every image against its own
+    label -- silently, since both still exist and both still look like a drone video."""
+    root = tmp_path / "ds"
+    for sub in ("images", MASK_DIR, "labels"):
+        (root / sub / "train").mkdir(parents=True, exist_ok=True)
+
+    boxes = {f: [[10, 10, 20, 20]] for f in range(0, 40)}
+    n, nb = _emit_video(root, "train", "v", boxes, _FakeCap(40), 40, stride=8, dt=2)
+
+    assert n > 0 and nb == n
+    for p in sorted((root / "images" / "train").glob("*.jpg")):
+        idx = int(p.stem.split("_")[-1])
+        written = cv2.imread(str(p))[0, 0, 0]
+        assert abs(int(written) - idx) <= 1, (
+            f"{p.name} holds frame {written}, not {idx}: the buffer centre is off")
+
+
+def test_the_emitter_respects_stride_and_edge_margins(tmp_path):
+    root = tmp_path / "ds"
+    for sub in ("images", MASK_DIR, "labels"):
+        (root / sub / "train").mkdir(parents=True, exist_ok=True)
+
+    boxes = {f: [[10, 10, 20, 20]] for f in range(40)}
+    _emit_video(root, "train", "v", boxes, _FakeCap(40), 40, stride=8, dt=2)
+
+    got = sorted(int(p.stem.split("_")[-1])
+                 for p in (root / "images" / "train").glob("*.jpg"))
+    assert all(f % 8 == 0 for f in got), f"stride not honoured: {got}"
+    assert all(2 <= f < 38 for f in got), f"a tap would have fallen off the end: {got}"
 
 
 def test_taps_requested_match_the_documented_aperture():

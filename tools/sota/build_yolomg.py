@@ -103,22 +103,47 @@ def _write_pair(root: Path, split: str, stem: str, frame, mask, boxes, w, h) -> 
 
 
 def _emit_video(root: Path, split: str, vid: str, boxes_by_frame: dict,
-                read_frame, n_frames: int, stride: int, dt: int) -> tuple[int, int]:
-    """Emit every `stride`-th annotated frame of one video. -> (n_written, n_boxes)."""
-    targets = sorted(f for f in boxes_by_frame
-                     if f % stride == 0 and dt <= f < n_frames - dt)
+                cap, n_frames: int, stride: int, dt: int) -> tuple[int, int]:
+    """Emit every `stride`-th annotated frame of one video. -> (n_written, n_boxes).
+
+    ONE sequential pass with a ring buffer of the last 2*dt+1 frames, rather than seeking
+    to each tap. Both properties matter at this scale:
+
+      memory  -- the obvious implementation collects every frame the masks need into a
+                 dict first. On a 1920x1080 ARD-MAV video with ~250 targets that is 750
+                 frames, about 4.6 GB, and NPS is 4K. A ring buffer holds five.
+      speed   -- `cap.set(CAP_PROP_POS_FRAMES, i)` is not a cheap operation: it seeks to
+                 the preceding keyframe and re-decodes forward. Three of those per target,
+                 against one linear decode for the whole video.
+
+    Frames are read in order and a target is emitted when it reaches the middle of the
+    buffer, which is exactly the alignment `fd5_mask` documents.
+    """
+    targets = {f for f in boxes_by_frame if f % stride == 0 and dt <= f < n_frames - dt}
     if not targets:
         return 0, 0
 
-    cache = {i: read_frame(i) for i in sorted(_frames_needed(targets, dt))}
+    span = 2 * dt + 1
+    buf: list = []                      # holds frames [i-span+1 .. i], newest last
     written = n_box = 0
-    for f in targets:
-        taps = (cache.get(f - dt), cache.get(f), cache.get(f + dt))
-        if any(t is None for t in taps):
-            continue                       # a decode hole; skip rather than fabricate
+    i = -1
+    while True:
+        ok, frame = cap.read()
+        if not ok:
+            break
+        i += 1
+        buf.append(frame)
+        if len(buf) > span:
+            buf.pop(0)
+        if len(buf) < span:
+            continue
+        mid = i - dt                    # the frame now sitting at the buffer's centre
+        if mid not in targets:
+            continue
+        taps = (buf[0], buf[dt], buf[2 * dt])
         h, w = taps[1].shape[:2]
-        boxes = boxes_by_frame[f]
-        if _write_pair(root, split, f"{vid}_{f:06d}", taps[1],
+        boxes = boxes_by_frame[mid]
+        if _write_pair(root, split, f"{vid}_{mid:06d}", taps[1],
                        fd5_mask(*taps), boxes, w, h):
             written += 1
             n_box += len(boxes)
@@ -126,16 +151,9 @@ def _emit_video(root: Path, split: str, vid: str, boxes_by_frame: dict,
 
 
 def _video_reader(path: Path):
-    """Random-ish access over a video file. Sequential decode with a caller-sorted plan."""
+    """Sequential reader: the capture itself, plus its frame count."""
     cap = cv2.VideoCapture(str(path))
-    n = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-
-    def read(i):
-        cap.set(cv2.CAP_PROP_POS_FRAMES, i)
-        ok, frame = cap.read()
-        return frame if ok else None
-
-    return read, n, cap
+    return cap, int(cap.get(cv2.CAP_PROP_FRAME_COUNT)), cap
 
 
 def build_nps(root: Path, stride: int, dt: int = YOLOMG_MASK32_DT):
@@ -148,10 +166,10 @@ def build_nps(root: Path, stride: int, dt: int = YOLOMG_MASK32_DT):
             if vp is None:
                 print(f"  [{split}] {clip}: NO VIDEO", flush=True)
                 continue
-            read, n, cap = _video_reader(vp)
+            cap, n, _ = _video_reader(vp)
             try:
                 nf, nb = _emit_video(root, split, clip, parse_nps_dogfight(clip),
-                                     read, n, stride if split == "train" else stride * 3, dt)
+                                     cap, n, stride if split == "train" else stride * 3, dt)
             finally:
                 cap.release()
             tot_f += nf
@@ -189,10 +207,10 @@ def build_ardmav(root: Path, stride: int, dt: int = YOLOMG_MASK32_DT):
             if vp is None:
                 print(f"  [{split}] {vid}: NO VIDEO under {ARD_ROOT}", flush=True)
                 continue
-            read, n, cap = _video_reader(vp)
+            cap, n, _ = _video_reader(vp)
             try:
                 nf, nb = _emit_video(root, split, vid, parse_ardmav(vid),
-                                     read, n, stride if split == "train" else stride * 3, dt)
+                                     cap, n, stride if split == "train" else stride * 3, dt)
             finally:
                 cap.release()
             tot_f += nf
