@@ -1,6 +1,11 @@
 #!/bin/bash
 #SBATCH --partition main
-#SBATCH --time 1-00:00:00
+### 3 days, measured rather than guessed. At 1.11 s/iter (observed on a 3090 at 1280 px,
+### batch 8, dual-stream) NPS is 1,003 iters/epoch = 32 h for 100 epochs and ARD-MAV is
+### 2,194 = 69 h. The 24 h default I first wrote would have killed every ARD-MAV run at
+### roughly epoch 35, after a day of GPU time, and reported a FAILED job rather than a
+### short one. The partition allows 7 days.
+#SBATCH --time 3-00:00:00
 #SBATCH --job-name sl_mgtrain
 #SBATCH --output /home/cherryn/projects/SpeckLock/cluster_logs/mgtrain-%A_%a.out
 #SBATCH --gpus=rtx_3090:1
