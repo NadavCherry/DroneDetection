@@ -699,7 +699,7 @@ LOCAL_TRAIN_GT = REPO / "work/gt_user.json"
 LOCAL_TEST_GT = REPO / "realtime/work/gt_1006.json"
 
 
-def build_local_tiled(stride_train=1, stride_val=4, min_side=0.0, tile=640,
+def build_local_tiled(stride_train=1, stride_val=None, min_side=0.0, tile=640,
                       temporal=False, dt=TEMPORAL_DT):
     """07_05 as training tiles, single-frame or temporal, through the SAME extractors the
     benchmarks use.
@@ -723,7 +723,12 @@ def build_local_tiled(stride_train=1, stride_val=4, min_side=0.0, tile=640,
     # neighbours of train frames -- adjacent frames of one flight are near-duplicates and
     # a random split would let the model memorise the val set through its neighbours.
     cut = int(len(pos) * 0.85)
-    splits = {"train": pos[:cut][::stride_train], "val": pos[cut:][::stride_val]}
+    # val takes EVERY held-out frame, not every stride_val-th. 548 annotated frames means
+    # the holdout is ~83, and thinning that to 21 leaves best.pt chosen on a val set small
+    # enough that the choice is mostly noise. The competitor's builder uses the identical
+    # cut and the identical val set -- both arms select their checkpoint on the same
+    # frames, or the comparison is partly a comparison of two model-selection lotteries.
+    splits = {"train": pos[:cut][::stride_train], "val": pos[cut:]}
 
     stats = {}
     for split, frames in splits.items():

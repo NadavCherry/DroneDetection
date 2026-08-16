@@ -252,7 +252,8 @@ def build_local(root: Path, stride: int, dt: int = YOLOMG_MASK32_DT):
         raise RuntimeError(f"no annotated frames in {LOCAL_TRAIN_GT}")
     cut = int(len(pos) * 0.85)
     plan = {"train": (LOCAL_TRAIN_VIDEO, boxes_train, set(pos[:cut][::stride])),
-            "val": (LOCAL_TRAIN_VIDEO, boxes_train, set(pos[cut:][::max(1, stride * 3)])),
+            # Every held-out frame, matching build_local_tiled exactly -- see the note there.
+            "val": (LOCAL_TRAIN_VIDEO, boxes_train, set(pos[cut:])),
             "test": (LOCAL_TEST_VIDEO, parse_repo_gt(LOCAL_TEST_GT), None)}
 
     stats = {}
