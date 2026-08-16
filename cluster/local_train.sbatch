@@ -33,8 +33,11 @@ nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 
 if [ "$KIND" = ours ]; then
     source activate speck
-    PYTHONPATH=. python -u tools/train.py --config "$ARM" --seed "$SEED" \
-        --name "${ARM}-s${SEED}" --vram-gib 24
+    ### No --name: tools/train.py has no such flag, and passing one aborts before the first
+    ### batch with an argparse error -- which is how all six of these failed in one second.
+    ### The run directory is cfg.run_name(seed) = "<config>-s<seed>", already exactly what
+    ### cluster/local_eval.sbatch looks for.
+    PYTHONPATH=. python -u tools/train.py --config "$ARM" --seed "$SEED" --vram-gib 24
     rc=$?
 else
     ### The competitor's published recipe, unchanged: 100 epochs at 1280 from yolov5s.pt.

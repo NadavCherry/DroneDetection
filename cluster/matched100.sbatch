@@ -50,18 +50,23 @@ DS=ardmav;  [ "$I" -ge 6 ] && DS=nps
 J=$(( I % 6 ))
 if [ "$J" -lt 3 ]; then ARM=singleframe; SEED=$J; else ARM=temporal; SEED=$(( J - 3 )); fi
 CFG="${ARM}_${DS}"
-NAME="${CFG}-e100-s${SEED}"
 
-echo "JOB $SLURM_JOB_ID task $I = $CFG seed $SEED at 100 epochs on $(hostname)"
+echo "JOB $SLURM_JOB_ID task $I = $CFG seed $SEED at 100 epochs -> work/runs_e100 on $(hostname)"
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 
+### --out-root, NOT --name. tools/train.py has no --name flag, and its run directory is
+### out_root/<config>-s<seed> -- which for the same config and seed is the SAME directory
+### the 30-epoch runs already occupy. Without a separate root these would have overwritten
+### work/runs/temporal_ardmav-s0 and the finished ARD-MAV results with it. Separate roots
+### also keep the two recipes distinguishable on disk, which is the point: both are
+### reported, so both have to survive.
 PYTHONPATH=. python -u tools/train.py --config "$CFG" --seed "$SEED" \
-    --epochs 100 --name "$NAME" --vram-gib 24
+    --epochs 100 --out-root work/runs_e100 --vram-gib 24
 rc=$?
 
 echo "=== RESULT ==="
 echo "exit=$rc"
-W="$ROOT/work/runs/$NAME/weights/best.pt"
+W="$ROOT/work/runs_e100/${CFG}-s${SEED}/weights/best.pt"
 [ -f "$W" ] && ls -la "$W" || echo "*** NO WEIGHTS ***"
-[ $rc -eq 0 ] && echo "E100 OK ($NAME)" || echo "E100 FAILED ($NAME)"
+[ $rc -eq 0 ] && echo "E100 OK (${CFG}-s${SEED})" || echo "E100 FAILED (${CFG}-s${SEED})"
 exit $rc
