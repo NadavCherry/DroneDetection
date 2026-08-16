@@ -5,11 +5,14 @@
 #SBATCH --output /home/cherryn/projects/SpeckLock/cluster_logs/loctrain-%A_%a.out
 #SBATCH --gpus=rtx_3090:1
 #SBATCH --mem=24G
-#SBATCH --array=0-8
+#SBATCH --array=0-8%2
 #SBATCH --requeue
 
 ### The project's own task, 3 arms x 3 seeds: ours-temporal, ours-singleframe, YOLOMG.
 ### Train on 07_05 (465 frames), test on the held-out 10_06 flight.
+###
+### Throttled to 2 concurrent: the benchmark runs hold most of a small GPU quota and
+### must never queue behind this. See cluster/matched100.sbatch for the reasoning.
 ###
 ### 0-2 ours-singleframe   3-5 ours-temporal   6-8 competitor
 ### Derived by arithmetic, never indexed from a literal list: a typo in a bash array is

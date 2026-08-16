@@ -5,7 +5,7 @@
 #SBATCH --output /home/cherryn/projects/SpeckLock/cluster_logs/e100-%A_%a.out
 #SBATCH --gpus=1
 #SBATCH --mem=24G
-#SBATCH --array=0-11
+#SBATCH --array=0-11%3
 #SBATCH --requeue
 
 ### BUDGET-MATCHED runs: our arm at 100 epochs, the competitor's epoch count.
@@ -25,6 +25,15 @@
 ### Both are reported. ours@30 is the shipped, deployable configuration; ours@100 is the
 ### budget-matched scientific comparison. Collapsing them into one number would hide which
 ### question was answered.
+###
+### GPU BUDGET. This account is capped at a small number of concurrent GPUs (measured: 8
+### pending with QOSMaxGRESPerUser at 8 held; treat 7 as the working ceiling). The cap is
+### not the hazard -- SLURM enforces it. The hazard is ORDERING: the benchmark runs in
+### cluster/yolomg_train.sbatch carry --requeue and take up to 69 h, so a preempted one
+### re-enters the queue, and an unthrottled array of secondary jobs can take the freed slot
+### ahead of it. A 20-hour run losing its place to a job I submitted myself is the kind of
+### damage that is entirely avoidable. Hence the throttle below, and a dependency on the
+### benchmark runs when this is submitted.
 ###
 ### --gpus=1 rather than rtx_3090:1: the 3090s are saturated by the 69 h benchmark runs
 ### while 4090 and rtx_6000 nodes idle. For a 640 px detector the card changes speed, not
