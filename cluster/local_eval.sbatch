@@ -3,17 +3,22 @@
 #SBATCH --time 0-06:00:00
 #SBATCH --job-name sl_loceval
 #SBATCH --output /home/cherryn/projects/SpeckLock/cluster_logs/loceval-%j.out
-#SBATCH --gpus=1
+### GPU TYPE IS NOT OPTIONAL. An earlier version asked for --gpus=1 to exploit idle
+### capacity, and SLURM duly handed it a GTX 1080 Ti: the pheno nodes advertise BOTH
+### gpu:rtx_3090:1 and gpu:gtx_1080:1, so "any GPU" can mean a 2016 card. Our torch build
+### supports sm_75 and up; the 1080 Ti is sm_61, and the run died on the first forward.
+### The competitor's env (torch 2.4.1) tolerated the same node, so the failure looked like
+### a bug in our arm rather than in the request.
+###
+### rtx_4090 rather than rtx_3090: sm_89, fully supported, ~25 idle nodes, and it leaves
+### the 3090s to the 69 h benchmark runs instead of competing with them.
+#SBATCH --gpus=rtx_4090:1
 #SBATCH --mem=24G
 
 ### Score all three arms on the held-out 10_06 flight and produce the within-sequence
 ### statistics. One job, not an array: 250 frames per arm is minutes, and keeping every
 ### arm on ONE GPU removes card-to-card variation from a comparison this small.
 ###
-### --gpus=1 rather than rtx_3090:1 on purpose. The 3090s are saturated by the 69 h
-### benchmark runs while 4090 and rtx_6000 nodes sit idle, and for a 640 px detector the
-### card affects speed only, never the AP. Speed numbers come from cluster/bench.sbatch,
-### which does pin one card type.
 
 set -uo pipefail
 ROOT=/home/cherryn/projects/SpeckLock
