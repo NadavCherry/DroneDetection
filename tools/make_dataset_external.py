@@ -682,6 +682,82 @@ def build_ardmav_temporal_tiled(stride_train, stride_val, min_side, tile=640,
     return root
 
 
+
+# ------------------------------------------------------------------- the project's own task
+#: This repo's two hand-annotated videos. They are the actual problem SpeckLock was built
+#: for and neither public benchmark matches them: the drone is 3.7-15.3 px (median 8.0) and
+#: 07_05 carries EIGHT labelled birds at a median of 6.0 px, i.e. the distractors and the
+#: target overlap in size. ARD-MAV's median is 11.8 px and NPS's targets are 10-25 px, so a
+#: result here is not implied by either.
+LOCAL_TRAIN_VIDEO = REPO / "data/videos/07_05.mp4"
+LOCAL_TEST_VIDEO = REPO / "data/videos/10_06.mp4"
+LOCAL_TRAIN_GT = REPO / "work/gt_user.json"
+#: gt_1006.json, NOT gt_1006_v2.json. v2 has more annotated frames (337 vs 250) but every
+#: box in it is exactly 8.0 px -- a constant, i.e. fixed-size labels rather than measured
+#: extents. Scoring IoU against constant labels measures the labels, not the detector, which
+#: is the same defect `trueextent_local` exists to demonstrate. v1's boxes vary 4.3-11.1 px.
+LOCAL_TEST_GT = REPO / "realtime/work/gt_1006.json"
+
+
+def build_local_tiled(stride_train=1, stride_val=4, min_side=0.0, tile=640,
+                      temporal=False, dt=TEMPORAL_DT):
+    """07_05 as training tiles, single-frame or temporal, through the SAME extractors the
+    benchmarks use.
+
+    Deliberately not a new tiling implementation. `extract_yolo_tiled` and
+    `extract_yolo_tiled_temporal` are what produced the ARD-MAV and NPS arms, so a number
+    from this build is comparable to those; a bespoke local tiler would leave every
+    difference ambiguous between the data and the code.
+
+    07_05 is the only training video. 10_06 is never opened here -- it is the held-out
+    test flight, and a whole-video holdout is the only split that means anything when the
+    two videos are the entire corpus.
+    """
+    root = OUT_ROOT / ("local_yolo_temporal" if temporal else "local_yolo_tiled")
+    boxes = parse_repo_gt(LOCAL_TRAIN_GT)
+    pos = sorted(f for f, b in boxes.items() if b)
+    if not pos:
+        raise RuntimeError(f"no annotated frames in {LOCAL_TRAIN_GT}")
+
+    # A time-ordered holdout inside 07_05 for val, so val frames are not interleaved
+    # neighbours of train frames -- adjacent frames of one flight are near-duplicates and
+    # a random split would let the model memorise the val set through its neighbours.
+    cut = int(len(pos) * 0.85)
+    splits = {"train": pos[:cut][::stride_train], "val": pos[cut:][::stride_val]}
+
+    stats = {}
+    for split, frames in splits.items():
+        extract = extract_yolo_tiled_temporal if temporal else extract_yolo_tiled
+        kw = {"dt": dt} if temporal else {}
+        ni, nb = extract(LOCAL_TRAIN_VIDEO, boxes, set(frames),
+                         root / "images" / split, root / "labels" / split,
+                         "07_05", min_side, tile=tile, **kw)
+        stats[split] = (ni, nb)
+        print(f"  [{split}] 07_05: {ni} tiles, {nb} boxes from {len(frames)} frames")
+
+    write_data_yaml(root, build={"task": f"local-{'temporal' if temporal else 'tiled'}",
+                                 "min_side": float(min_side), "tile": tile,
+                                 "temporal": temporal, "dt": dt if temporal else None,
+                                 "train_video": "07_05", "test_video": "10_06",
+                                 "split": "time-ordered 85/15 within 07_05",
+                                 "annotations": "work/gt_user.json"})
+    print(f"\nLOCAL {'TEMPORAL' if temporal else 'TILED'} ({tile}px) -> {root}")
+    for s, (ni, nb) in stats.items():
+        print(f"  {s}: {ni} tiles / {nb} boxes")
+    return root
+
+
+def build_local_test_gt():
+    """Per-sequence GT for 10_06, in the format tools/evaluate.py scores against."""
+    out = OUT_ROOT / "gt" / "local"
+    boxes = parse_repo_gt(LOCAL_TEST_GT)
+    no, nb = write_gt_json(LOCAL_TEST_VIDEO, boxes, out / "10_06.json")
+    print(f"  local-test 10_06: {no} objs, {nb} boxes -> {out / '10_06.json'}")
+    print(f"  source: {LOCAL_TEST_GT.name} (varying extents 4.3-11.1 px), NOT the v2 file "
+          f"whose boxes are a constant 8.0 px")
+    return out
+
+
 def _feather_paste(dst, patch, cx, cy, haze=0.0):
     """Radial-feathered paste (from the ft5 recipe); haze blends toward local bg."""
     ph, pw = patch.shape[:2]
@@ -934,6 +1010,7 @@ if __name__ == "__main__":
                              "ardmav-temporal-tiled", "ardmav-gt", "nps-gt",
                              "combined-tiled", "combined-gt", "black-paste",
                              "nps-train-tiled", "nps-temporal-tiled", "nps-gt-dogfight",
+                             "local-tiled", "local-temporal", "local-gt",
                              "all"])
     ap.add_argument("--stride-train", type=int, default=4)
     ap.add_argument("--stride-val", type=int, default=10)
@@ -970,6 +1047,14 @@ if __name__ == "__main__":
         build_combined_test_gt()
     if a.task == "black-paste":
         build_black_paste(n_tiles=a.n_tiles, tile=a.tile, min_side=a.min_side)
+    if a.task == "local-tiled":
+        build_local_tiled(a.stride_train, a.stride_val, a.min_side, tile=a.tile,
+                          temporal=False)
+    if a.task == "local-temporal":
+        build_local_tiled(a.stride_train, a.stride_val, a.min_side, tile=a.tile,
+                          temporal=True, dt=a.dt)
+    if a.task == "local-gt":
+        build_local_test_gt()
     if a.task in ("ardmav-gt", "all"):
         build_ardmav_test_gt()
     if a.task in ("nps-gt", "all"):

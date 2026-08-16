@@ -19,6 +19,8 @@ from .base import (Augmentation, DEFAULT_AUG, ExperimentConfig, NO_PHOTOMETRIC_A
                    UAV_DETR_B4_640, VRAM_SAFETY_FRACTION, VramReference,
                    YOLOV8S_P2_ESTIMATE, YOLOV8S_P2_MEASURED, check_strides)
 from .birds import BIRDS_2CLASS
+from .local_video import (SINGLEFRAME_LOCAL_AB,
+                          TEMPORAL_LOCAL_AB)
 from .nps import SINGLEFRAME_NPS, TEMPORAL_NPS
 from .temporal import TEMPORAL_ABLATION_SINGLE, TEMPORAL_ABLATION_STACK
 
@@ -35,6 +37,8 @@ EXPERIMENTS: dict[str, ExperimentConfig] = {c.name: c for c in (
     TEMPORAL_ARDMAV,
     SINGLEFRAME_NPS,
     TEMPORAL_NPS,
+    SINGLEFRAME_LOCAL_AB,
+    TEMPORAL_LOCAL_AB,
 )}
 
 #: Named sets that must be run together, and the reason they must.
@@ -58,6 +62,11 @@ GROUPS: dict[str, tuple[str, ...]] = {
     "ardmav_temporal": ("singleframe_ardmav", "temporal_ardmav"),
     # The same one-variable A/B on a second corpus. One benchmark is an anecdote.
     "nps_temporal": ("singleframe_nps", "temporal_nps"),
+    # And on the task the project actually exists for: an 8 px drone among 6 px birds,
+    # train on 07_05, test on the held-out 10_06 flight. Neither public benchmark has
+    # distractors that overlap the target in size, so this is the only place the
+    # discrimination claim can be measured at all.
+    "local_temporal": ("singleframe_local_ab", "temporal_local_ab"),
 }
 
 
