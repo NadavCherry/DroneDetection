@@ -28,6 +28,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -164,6 +165,18 @@ def build_scorecard(dataset_key: str, model: str, gt_dir: Path, det_dir: Path, *
     )
 
 
+
+def _declared_split_size(split: str) -> int | None:
+    """The sequence count a split name claims, if it states one.
+
+    `official-test-15` asserts fifteen videos. That is a checkable claim, and checking it
+    is cheap insurance against a protocol and a catalogue drifting apart while both keep
+    printing confident labels. Names without a trailing count return None.
+    """
+    m = re.search(r"-(\d+)$", split.split("/")[0])
+    return int(m.group(1)) if m else None
+
+
 def main(argv=None) -> int:
     use_utf8_stdio()
     ap = argparse.ArgumentParser(description=__doc__,
@@ -200,7 +213,23 @@ def main(argv=None) -> int:
             raise SystemExit(f"{a.dataset} publishes no official test split — name the split "
                              "you are using with --split instead of implying a standard one")
         only = set(entry.official_test)
-        split = split or "official-test"
+        # Take the split's NAME from the protocol, not from a literal here. Both places
+        # were naming the same 15 ARD-MAV videos and spelling it differently -- this said
+        # "official-test", ARDMAV_GLAD says "official-test-15" -- and `Protocol.mismatches_with`
+        # compares split names, so every published row came back NOT COMPARABLE. The guard
+        # was right to refuse; there was simply nothing wrong except the label. One source
+        # of truth means they cannot disagree again.
+        proto = PROTOCOLS.get(a.protocol or entry.protocol_key)
+        split = split or (proto.split if proto else "official-test")
+
+        # And the name is a factual claim about which sequences were scored, so it is
+        # checked rather than trusted: a protocol naming N videos must have scored N.
+        want = _declared_split_size(split)
+        if want is not None and len(only) != want:
+            raise SystemExit(
+                f"split {split!r} names {want} sequences but the official test set for "
+                f"{a.dataset} has {len(only)}. Either the protocol or the catalogue is "
+                f"wrong, and a scorecard carrying that label would misdescribe itself.")
 
     conditions_map = {}
     if a.conditions:
