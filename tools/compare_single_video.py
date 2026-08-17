@@ -85,6 +85,10 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--targets", nargs="*")
     ap.add_argument("--out", type=Path)
+    ap.add_argument("--converged-floor", type=float, default=0.05,
+                    help="An arm scoring below this is treated as NOT CONVERGED rather "
+                         "than as a fair loss. Beating a model that failed to train is "
+                         "not a result, and publishing it as one is a retraction.")
     a = ap.parse_args()
 
     protocol = PROTOCOLS[a.protocol]
@@ -126,6 +130,7 @@ def main() -> int:
          "|---|---|---|---|---|---|"]
 
     from benchmarks.block_bootstrap import _ap
+    not_converged: list[str] = []
     base_ap = _ap(range(n_blocks), blocks[a.baseline])
     L.append(f"| **{a.baseline}** (baseline) | {base_ap:.3f} | — | — | — | — |")
 
@@ -133,10 +138,30 @@ def main() -> int:
         r = paired_block_bootstrap(blocks[name], blocks[a.baseline],
                                    block_frames=a.block_frames,
                                    n_resamples=a.n_resamples, seed=a.seed)
-        verdict = ("**better**" if r.observed > 0 else "**worse**") if r.significant \
-            else "no difference"
+        if r.statistic_a < a.converged_floor:
+            # Near-zero AP is what a model that never trained looks like, not what a
+            # method that lost looks like. Drawing that distinction here rather than
+            # leaving it to the reader is the difference between a result and a
+            # retraction: YOLOMG scored 0.005-0.010 on this corpus while its OWN
+            # validation mAP50 never exceeded 0.0025 over 100 epochs and three seeds.
+            verdict = "**DID NOT CONVERGE — not a fair comparison**"
+            not_converged.append(name)
+        elif r.significant:
+            verdict = "**better**" if r.observed > 0 else "**worse**"
+        else:
+            verdict = "no difference"
         L.append(f"| {name} | {r.statistic_a:.3f} | {r.observed:+.3f} | "
                  f"[{r.lo:+.3f}, {r.hi:+.3f}] | {r.p_value:.4f} | {verdict} |")
+
+    if not_converged:
+        L += ["",
+              f"> ⚠ **{', '.join(not_converged)} scored below {a.converged_floor:g} AP and is "
+              f"treated as NOT CONVERGED.** A near-zero AP is what a model that never "
+              f"trained looks like, not what a method that lost looks like. Do not quote a "
+              f"margin over it as a win: check its own training curve first, and if it also "
+              f"failed on its own validation set then this corpus says something about "
+              f"trainability, not about the method.",
+              ""]
 
     # False alarms on labelled distractors -- the question neither public benchmark can
     # answer, because neither labels its birds.
