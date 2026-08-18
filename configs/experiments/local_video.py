@@ -89,3 +89,48 @@ TEMPORAL_LOCAL_AB = ExperimentConfig(
           "the mechanism is supposed to matter is the honest place to look next.",
     **_LOCAL_AB,
 )
+
+
+# --------------------------------------------------------------- the reverse direction
+#: Train on 10_06, test on 07_05. Not a symmetric twin of the pair above -- the two videos
+#: are not interchangeable, and both asymmetries matter:
+#:
+#:   less training data   10_06 has 250 annotated frames against 07_05's 548, so this is
+#:                        the harder direction for both arms and a stiffer test of whether
+#:                        the temporal stack still helps when supervision is scarce.
+#:   the distractors      07_05 carries EIGHT labelled birds at a median 6.0 px against a
+#:                        drone at 8.0. They are ignore=True in the ground truth, so they
+#:                        never train anything -- they surface at evaluation as distractor
+#:                        hits. This is the ONLY configuration in the whole project where
+#:                        "does it fire on birds?" is answerable at all, because it is the
+#:                        only one that puts labelled birds in a test set.
+LOCAL_REV_TILED = "work/ext_datasets/local_rev_yolo_tiled/data.yaml"
+LOCAL_REV_TEMPORAL = "work/ext_datasets/local_rev_yolo_temporal/data.yaml"
+_BUILD_REV = ("PYTHONPATH=. python tools/make_dataset_external.py --task {task} "
+              "--tile 640 --stride-train 1 --min-side 0 --dt 6")
+
+_LOCAL_REV_AB = dict(_LOCAL_AB, datasets=("local:10_06",))
+
+SINGLEFRAME_LOCAL_REV = ExperimentConfig(
+    name="singleframe_local_rev",
+    data=LOCAL_REV_TILED,
+    temporal_stack=False,
+    build_command=_BUILD_REV.format(task="local-rev-tiled"),
+    tags=("local", "temporal-ab", "reverse"),
+    notes="Control arm, reverse direction: BGR of frame t, trained on 10_06.",
+    **_LOCAL_REV_AB,
+)
+
+TEMPORAL_LOCAL_REV = ExperimentConfig(
+    name="temporal_local_rev",
+    data=LOCAL_REV_TEMPORAL,
+    temporal_stack=True,
+    stack_dt=6,
+    build_command=_BUILD_REV.format(task="local-rev-temporal"),
+    tags=("local", "temporal-ab", "reverse", "headline"),
+    notes="Treatment arm, reverse direction. Two things are being asked at once: does the "
+          "temporal stack still pay on 250 training frames instead of 548, and does it "
+          "fire on birds. The forward direction answered neither -- it had more data and "
+          "a test video with no labelled birds in it.",
+    **_LOCAL_REV_AB,
+)

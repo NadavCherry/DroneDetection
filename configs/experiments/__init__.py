@@ -19,8 +19,8 @@ from .base import (Augmentation, DEFAULT_AUG, ExperimentConfig, NO_PHOTOMETRIC_A
                    UAV_DETR_B4_640, VRAM_SAFETY_FRACTION, VramReference,
                    YOLOV8S_P2_ESTIMATE, YOLOV8S_P2_MEASURED, check_strides)
 from .birds import BIRDS_2CLASS
-from .local_video import (SINGLEFRAME_LOCAL_AB,
-                          TEMPORAL_LOCAL_AB)
+from .local_video import (SINGLEFRAME_LOCAL_AB, SINGLEFRAME_LOCAL_REV,
+                          TEMPORAL_LOCAL_AB, TEMPORAL_LOCAL_REV)
 from .nps import SINGLEFRAME_NPS, TEMPORAL_NPS
 from .temporal import TEMPORAL_ABLATION_SINGLE, TEMPORAL_ABLATION_STACK
 
@@ -39,6 +39,8 @@ EXPERIMENTS: dict[str, ExperimentConfig] = {c.name: c for c in (
     TEMPORAL_NPS,
     SINGLEFRAME_LOCAL_AB,
     TEMPORAL_LOCAL_AB,
+    SINGLEFRAME_LOCAL_REV,
+    TEMPORAL_LOCAL_REV,
 )}
 
 #: Named sets that must be run together, and the reason they must.
@@ -67,6 +69,9 @@ GROUPS: dict[str, tuple[str, ...]] = {
     # distractors that overlap the target in size, so this is the only place the
     # discrimination claim can be measured at all.
     "local_temporal": ("singleframe_local_ab", "temporal_local_ab"),
+    # The other direction: less training data, and the only test set in the
+    # project that contains labelled birds.
+    "local_temporal_rev": ("singleframe_local_rev", "temporal_local_rev"),
 }
 
 

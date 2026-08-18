@@ -58,7 +58,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 from tools.make_dataset_external import (  # noqa: E402  (path set above)
     ARD_ROOT, ARD_TEST_IDS, ARD_VAL_IDS, LOCAL_TEST_GT, LOCAL_TEST_VIDEO,
-    LOCAL_TRAIN_GT, LOCAL_TRAIN_VIDEO, NPS_TEST, NPS_TRAIN, NPS_VAL, OUT_ROOT,
+    LOCAL_DIRECTIONS, LOCAL_GT, LOCAL_TRAIN_GT, LOCAL_TRAIN_VIDEO, LOCAL_VIDEOS,
+    NPS_TEST, NPS_TRAIN, NPS_VAL, OUT_ROOT,
     _ard_all, _nps_video, _utcnow, parse_ardmav, parse_nps_dogfight,
     parse_repo_gt)
 from tools.sota.motion_mask import YOLOMG_MASK32_DT, fd5_mask  # noqa: E402
@@ -238,7 +239,8 @@ def build_ardmav(root: Path, stride: int, dt: int = YOLOMG_MASK32_DT):
 
 
 
-def build_local(root: Path, stride: int, dt: int = YOLOMG_MASK32_DT):
+def build_local(root: Path, stride: int, dt: int = YOLOMG_MASK32_DT,
+                direction: str = "fwd"):
     """The project's own task for the competitor: train on 07_05, test on 10_06.
 
     Same videos, same annotations and the same time-ordered 85/15 val cut as our arm --
@@ -246,15 +248,17 @@ def build_local(root: Path, stride: int, dt: int = YOLOMG_MASK32_DT):
     detector's own input representation. 548 annotated frames is a small training set for
     both arms equally.
     """
-    boxes_train = parse_repo_gt(LOCAL_TRAIN_GT)
+    train_vid, test_vid = LOCAL_DIRECTIONS[direction]
+    boxes_train = parse_repo_gt(LOCAL_GT[train_vid])
     pos = sorted(f for f, b in boxes_train.items() if b)
     if not pos:
-        raise RuntimeError(f"no annotated frames in {LOCAL_TRAIN_GT}")
+        raise RuntimeError(f"no annotated frames in {LOCAL_GT[train_vid]}")
     cut = int(len(pos) * 0.85)
-    plan = {"train": (LOCAL_TRAIN_VIDEO, boxes_train, set(pos[:cut][::stride])),
+    tv = LOCAL_VIDEOS[train_vid]
+    plan = {"train": (tv, boxes_train, set(pos[:cut][::stride])),
             # Every held-out frame, matching build_local_tiled exactly -- see the note there.
-            "val": (LOCAL_TRAIN_VIDEO, boxes_train, set(pos[cut:])),
-            "test": (LOCAL_TEST_VIDEO, parse_repo_gt(LOCAL_TEST_GT), None)}
+            "val": (tv, boxes_train, set(pos[cut:])),
+            "test": (LOCAL_VIDEOS[test_vid], parse_repo_gt(LOCAL_GT[test_vid]), None)}
 
     stats = {}
     for split, (video, boxes, keep) in plan.items():
@@ -327,7 +331,8 @@ def write_yaml(root: Path, name: str):
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--dataset", required=True, choices=("nps", "ardmav", "local"))
+    ap.add_argument("--dataset", required=True,
+                    choices=("nps", "ardmav", "local", "local_rev"))
     ap.add_argument("--stride", type=int, default=4,
                     help="train stride; val/test use 3x this, matching our own builders")
     ap.add_argument("--dt", type=int, default=YOLOMG_MASK32_DT,
@@ -340,8 +345,12 @@ def main():
         for sub in ("images", MASK_DIR, "labels"):
             (root / sub / split).mkdir(parents=True, exist_ok=True)
 
-    builder = {"nps": build_nps, "ardmav": build_ardmav,
-               "local": build_local}[a.dataset]
+    if a.dataset.startswith("local"):
+        import functools
+        builder = functools.partial(
+            build_local, direction="rev" if a.dataset == "local_rev" else "fwd")
+    else:
+        builder = {"nps": build_nps, "ardmav": build_ardmav}[a.dataset]
     stats = builder(root, a.stride, a.dt)
     counts = write_lists(root)
     write_yaml(root, a.dataset)
@@ -356,8 +365,13 @@ def main():
         "splits": {k: list(v) for k, v in
                    ({"train": NPS_TRAIN, "val": NPS_VAL, "test": NPS_TEST}
                     if a.dataset == "nps" else
-                    {"train": ["07_05"], "val": ["07_05"], "test": ["10_06"]}
-                    if a.dataset == "local" else
+                    {"train": [LOCAL_DIRECTIONS[
+                         "rev" if a.dataset == "local_rev" else "fwd"][0]],
+                     "val": [LOCAL_DIRECTIONS[
+                         "rev" if a.dataset == "local_rev" else "fwd"][0]],
+                     "test": [LOCAL_DIRECTIONS[
+                         "rev" if a.dataset == "local_rev" else "fwd"][1]]}
+                    if a.dataset.startswith("local") else
                     {"train": [v for v in _ard_all() if v not in ARD_TEST_IDS
                                and v not in ARD_VAL_IDS],
                      "val": ARD_VAL_IDS, "test": ARD_TEST_IDS}).items()},

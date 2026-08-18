@@ -689,77 +689,125 @@ def build_ardmav_temporal_tiled(stride_train, stride_val, min_side, tile=640,
 #: 07_05 carries EIGHT labelled birds at a median of 6.0 px, i.e. the distractors and the
 #: target overlap in size. ARD-MAV's median is 11.8 px and NPS's targets are 10-25 px, so a
 #: result here is not implied by either.
-LOCAL_TRAIN_VIDEO = REPO / "data/videos/07_05.mp4"
-LOCAL_TEST_VIDEO = REPO / "data/videos/10_06.mp4"
-LOCAL_TRAIN_GT = REPO / "work/gt_user.json"
-#: gt_1006.json, NOT gt_1006_v2.json. v2 has more annotated frames (337 vs 250) but every
-#: box in it is exactly 8.0 px -- a constant, i.e. fixed-size labels rather than measured
-#: extents. Scoring IoU against constant labels measures the labels, not the detector, which
-#: is the same defect `trueextent_local` exists to demonstrate. v1's boxes vary 4.3-11.1 px.
-LOCAL_TEST_GT = REPO / "realtime/work/gt_1006.json"
+LOCAL_VIDEOS = {"07_05": REPO / "data/videos/07_05.mp4",
+                "10_06": REPO / "data/videos/10_06.mp4"}
+
+#: The hand-annotated ground truth, already in dronedet's gt.json schema. NOT re-derived:
+#: these files carry `ignore` flags on the distractors -- 07_05's eight birds and 10_06's
+#: two movers -- and those flags are the whole reason this corpus can answer the
+#: discrimination question that neither public benchmark can.
+#:
+#: gt_1006.json and not gt_1006_v2.json: v2 has more annotated frames (337 vs 250) and
+#: every box in it is exactly 8.0 px, i.e. fixed-size labels rather than measured extents.
+#: Scoring against constant labels measures the labels. v1 varies 4.3-11.1 px.
+LOCAL_GT = {"07_05": REPO / "work/gt_user.json",
+            "10_06": REPO / "realtime/work/gt_1006.json"}
+
+#: Both train/test directions. Two videos is the entire corpus, so a whole-video holdout is
+#: the only split that means anything -- and running it both ways doubles the evidence for
+#: the cost of a few minutes of GPU. They are not equivalent: 07_05 has 548 annotated
+#: frames and the birds, 10_06 has 250 and no birds, so "train on 07_05" is the
+#: more-data direction and "test on 07_05" is the only one that can measure false alarms
+#: on labelled distractors.
+LOCAL_DIRECTIONS = {"fwd": ("07_05", "10_06"), "rev": ("10_06", "07_05")}
+
+# Back-compat for callers written before the reverse direction existed.
+LOCAL_TRAIN_VIDEO = LOCAL_VIDEOS["07_05"]
+LOCAL_TEST_VIDEO = LOCAL_VIDEOS["10_06"]
+LOCAL_TRAIN_GT = LOCAL_GT["07_05"]
+LOCAL_TEST_GT = LOCAL_GT["10_06"]
 
 
 def build_local_tiled(stride_train=1, stride_val=None, min_side=0.0, tile=640,
-                      temporal=False, dt=TEMPORAL_DT):
-    """07_05 as training tiles, single-frame or temporal, through the SAME extractors the
-    benchmarks use.
+                      temporal=False, dt=TEMPORAL_DT, direction="fwd"):
+    """One local video as training tiles, through the SAME extractors the benchmarks use.
 
-    Deliberately not a new tiling implementation. `extract_yolo_tiled` and
-    `extract_yolo_tiled_temporal` are what produced the ARD-MAV and NPS arms, so a number
-    from this build is comparable to those; a bespoke local tiler would leave every
-    difference ambiguous between the data and the code.
+    Deliberately not a new tiling implementation: `extract_yolo_tiled` and
+    `extract_yolo_tiled_temporal` produced the ARD-MAV and NPS arms, so a number from this
+    build is comparable to those. A bespoke local tiler would leave every difference
+    ambiguous between the data and the code.
 
-    07_05 is the only training video. 10_06 is never opened here -- it is the held-out
-    test flight, and a whole-video holdout is the only split that means anything when the
-    two videos are the entire corpus.
+    Whichever video is not the training one is never opened here. Two videos are the whole
+    corpus, so a whole-video holdout is the only split that means anything.
     """
-    root = OUT_ROOT / ("local_yolo_temporal" if temporal else "local_yolo_tiled")
-    boxes = parse_repo_gt(LOCAL_TRAIN_GT)
+    train_vid, test_vid = LOCAL_DIRECTIONS[direction]
+    suffix = "" if direction == "fwd" else "_rev"
+    root = OUT_ROOT / f"local{suffix}_yolo_{'temporal' if temporal else 'tiled'}"
+
+    boxes = parse_repo_gt(LOCAL_GT[train_vid])
     pos = sorted(f for f, b in boxes.items() if b)
     if not pos:
-        raise RuntimeError(f"no annotated frames in {LOCAL_TRAIN_GT}")
+        raise RuntimeError(f"no annotated frames in {LOCAL_GT[train_vid]}")
 
-    # A time-ordered holdout inside 07_05 for val, so val frames are not interleaved
-    # neighbours of train frames -- adjacent frames of one flight are near-duplicates and
-    # a random split would let the model memorise the val set through its neighbours.
+    # A time-ordered holdout inside the training video: adjacent frames of one flight are
+    # near-duplicates, so a random split lets the model reach the val set through its
+    # neighbours. val takes EVERY held-out frame -- thinning it leaves best.pt chosen on a
+    # set small enough that the choice is mostly noise.
     cut = int(len(pos) * 0.85)
-    # val takes EVERY held-out frame, not every stride_val-th. 548 annotated frames means
-    # the holdout is ~83, and thinning that to 21 leaves best.pt chosen on a val set small
-    # enough that the choice is mostly noise. The competitor's builder uses the identical
-    # cut and the identical val set -- both arms select their checkpoint on the same
-    # frames, or the comparison is partly a comparison of two model-selection lotteries.
     splits = {"train": pos[:cut][::stride_train], "val": pos[cut:]}
 
+    print(f"LOCAL [{direction}] train={train_vid} test={test_vid} "
+          f"({'temporal' if temporal else 'single-frame'})")
     stats = {}
     for split, frames in splits.items():
         extract = extract_yolo_tiled_temporal if temporal else extract_yolo_tiled
         kw = {"dt": dt} if temporal else {}
-        ni, nb = extract(LOCAL_TRAIN_VIDEO, boxes, set(frames),
+        ni, nb = extract(LOCAL_VIDEOS[train_vid], boxes, set(frames),
                          root / "images" / split, root / "labels" / split,
-                         "07_05", min_side, tile=tile, **kw)
+                         train_vid, min_side, tile=tile, **kw)
         stats[split] = (ni, nb)
-        print(f"  [{split}] 07_05: {ni} tiles, {nb} boxes from {len(frames)} frames")
+        print(f"  [{split}] {train_vid}: {ni} tiles, {nb} boxes from {len(frames)} frames")
 
-    write_data_yaml(root, build={"task": f"local-{'temporal' if temporal else 'tiled'}",
+    write_data_yaml(root, build={"task": f"local-{direction}-"
+                                         f"{'temporal' if temporal else 'tiled'}",
                                  "min_side": float(min_side), "tile": tile,
                                  "temporal": temporal, "dt": dt if temporal else None,
-                                 "train_video": "07_05", "test_video": "10_06",
-                                 "split": "time-ordered 85/15 within 07_05",
-                                 "annotations": "work/gt_user.json"})
-    print(f"\nLOCAL {'TEMPORAL' if temporal else 'TILED'} ({tile}px) -> {root}")
+                                 "direction": direction,
+                                 "train_video": train_vid, "test_video": test_vid,
+                                 "split": f"time-ordered 85/15 within {train_vid}",
+                                 "annotations": str(LOCAL_GT[train_vid].name)})
+    print("")
+    print(f"-> {root}")
     for s, (ni, nb) in stats.items():
         print(f"  {s}: {ni} tiles / {nb} boxes")
     return root
 
 
-def build_local_test_gt():
-    """Per-sequence GT for 10_06, in the format tools/evaluate.py scores against."""
-    out = OUT_ROOT / "gt" / "local"
-    boxes = parse_repo_gt(LOCAL_TEST_GT)
-    no, nb = write_gt_json(LOCAL_TEST_VIDEO, boxes, out / "10_06.json")
-    print(f"  local-test 10_06: {no} objs, {nb} boxes -> {out / '10_06.json'}")
-    print(f"  source: {LOCAL_TEST_GT.name} (varying extents 4.3-11.1 px), NOT the v2 file "
-          f"whose boxes are a constant 8.0 px")
+def build_local_test_gt(direction="fwd"):
+    """Per-sequence GT for the held-out video, WITH its distractors intact.
+
+    This copies the hand-annotated gt.json rather than re-deriving it, and the difference
+    is not cosmetic. The previous version round-tripped through `parse_repo_gt`, which
+    drops every `ignore=True` object by design -- so the written GT contained one object,
+    `drone_0`, and the eight labelled birds in 07_05 and the two movers in 10_06 were gone.
+
+    That made the false-alarm table structurally incapable of reporting anything. It read
+    "no detection landed on a labelled distractor", which looks like a clean result and was
+    actually a measurement that could not happen: there were no distractors in the file to
+    land on. Discriminating a drone from a 6 px bird is the one question this corpus can
+    answer that neither public benchmark can, and it was silently switched off.
+
+    The source files are already in dronedet's gt.json schema, so they are copied verbatim
+    apart from the `video` field being repointed at this checkout.
+    """
+    _, test_vid = LOCAL_DIRECTIONS[direction]
+    suffix = "" if direction == "fwd" else "_rev"
+    out = OUT_ROOT / "gt" / f"local{suffix}"
+    out.mkdir(parents=True, exist_ok=True)
+
+    src = json.loads(LOCAL_GT[test_vid].read_text(encoding="utf-8"))
+    src["video"] = str(LOCAL_VIDEOS[test_vid].resolve())
+    dst = out / f"{test_vid}.json"
+    dst.write_text(json.dumps(src), encoding="utf-8")
+
+    targets = [k for k, v in src["objects"].items() if not v.get("ignore")]
+    distractors = [k for k, v in src["objects"].items() if v.get("ignore")]
+    n_t = sum(len(src["objects"][k]["frames"]) for k in targets)
+    n_d = sum(len(src["objects"][k]["frames"]) for k in distractors)
+    print(f"  local[{direction}] test GT {test_vid} -> {dst}")
+    print(f"    targets    : {targets} ({n_t} boxes)")
+    print(f"    distractors: {distractors} ({n_d} boxes, ignore=True -- these are what "
+          f"make a false-alarm table possible)")
     return out
 
 
@@ -1016,6 +1064,8 @@ if __name__ == "__main__":
                              "combined-tiled", "combined-gt", "black-paste",
                              "nps-train-tiled", "nps-temporal-tiled", "nps-gt-dogfight",
                              "local-tiled", "local-temporal", "local-gt",
+                             "local-rev-tiled", "local-rev-temporal",
+                             "local-rev-gt",
                              "all"])
     ap.add_argument("--stride-train", type=int, default=4)
     ap.add_argument("--stride-val", type=int, default=10)
@@ -1052,14 +1102,16 @@ if __name__ == "__main__":
         build_combined_test_gt()
     if a.task == "black-paste":
         build_black_paste(n_tiles=a.n_tiles, tile=a.tile, min_side=a.min_side)
-    if a.task == "local-tiled":
+    if a.task in ("local-tiled", "local-rev-tiled"):
         build_local_tiled(a.stride_train, a.stride_val, a.min_side, tile=a.tile,
-                          temporal=False)
-    if a.task == "local-temporal":
+                          temporal=False,
+                          direction="rev" if "rev" in a.task else "fwd")
+    if a.task in ("local-temporal", "local-rev-temporal"):
         build_local_tiled(a.stride_train, a.stride_val, a.min_side, tile=a.tile,
-                          temporal=True, dt=a.dt)
-    if a.task == "local-gt":
-        build_local_test_gt()
+                          temporal=True, dt=a.dt,
+                          direction="rev" if "rev" in a.task else "fwd")
+    if a.task in ("local-gt", "local-rev-gt"):
+        build_local_test_gt(direction="rev" if "rev" in a.task else "fwd")
     if a.task in ("ardmav-gt", "all"):
         build_ardmav_test_gt()
     if a.task in ("nps-gt", "all"):
