@@ -70,6 +70,20 @@ else
 fi
 rc=$?
 
+### yolomg_ardmav_seed1 reached 100/100 epochs, wrote best.pt, then died in ultralytics'
+### post-training conv/bn fuse with CUBLAS_STATUS_ALLOC_FAILED -- an allocation failure
+### AFTER the model was finished. The job exited 1 and SLURM cancelled the whole evaluation
+### chain behind it over a model that was complete and correct on disk. Treat "all epochs
+### done and best.pt present" as success, and say so loudly rather than silently.
+if [ $rc -ne 0 ] && [ -f "$ROOT/work/sota_runs/$NAME/weights/best.pt" ]; then
+    DONE=$(tail -n +2 "$ROOT/work/sota_runs/$NAME/results.csv" 2>/dev/null | wc -l)
+    if [ "$DONE" -ge 100 ]; then
+        echo "NOTE: exit was $rc but $DONE/100 epochs completed and best.pt exists."
+        echo "      Treating as success: the failure is after training, not in it."
+        rc=0
+    fi
+fi
+
 echo "=== RESULT ==="
 echo "exit=$rc"
 W="$ROOT/work/sota_runs/$NAME/weights/best.pt"

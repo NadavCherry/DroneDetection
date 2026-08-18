@@ -219,7 +219,11 @@ def main(argv=None) -> int:
         # compares split names, so every published row came back NOT COMPARABLE. The guard
         # was right to refuse; there was simply nothing wrong except the label. One source
         # of truth means they cannot disagree again.
-        proto = PROTOCOLS.get(a.protocol or entry.protocol_key)
+        # `Dataset` has no protocol_key -- it holds `official_protocol`, a Protocol object.
+        # Reaching for a field that does not exist raised AttributeError on every ARD-MAV
+        # evaluation and left NPS untouched, because only the --official-split branch runs
+        # this. Six e100 scorecards died here after 40-90 minutes of inference each.
+        proto = PROTOCOLS.get(a.protocol) if a.protocol else entry.official_protocol
         split = split or (proto.split if proto else "official-test")
 
         # And the name is a factual claim about which sequences were scored, so it is

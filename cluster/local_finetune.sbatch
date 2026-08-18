@@ -24,6 +24,9 @@
 ### footage, trained by us, 8,019 frames -- and fine-tune on 07_05. Symmetric: each method
 ### gets its own prior, neither gets the other's.
 ###
+### tools/train.py takes --out-root and derives the run name from the config; it has no
+### --name. Passing one killed all six of our arms in one second with an argparse error.
+###
 ### What is NOT changed: their hyperparameters, their image size, their epoch count.
 ### Re-weighting one arm's objectness loss to rescue it would be tuning the competitor,
 ### and tuning only one side is how a comparison stops meaning anything.
@@ -41,15 +44,31 @@ fi
 echo "JOB $SLURM_JOB_ID task $I = $ARM seed $SEED, initialised from ${SRC}-s${SEED}"
 nvidia-smi --query-gpu=name --format=csv,noheader
 
+
+### A GPU was allocated but torch could not see it on two of three runs last time
+### ("Invalid CUDA '--device 0'"), which wasted the allocation and failed the array. Check
+### once, up front, in whichever env is about to train.
+check_gpu() {
+    python - <<'PY' || { echo "*** allocated GPU is not usable by this env; failing fast"; exit 1; }
+import sys, torch
+if not torch.cuda.is_available() or torch.cuda.device_count() < 1:
+    print("torch.cuda unavailable:", torch.cuda.is_available(),
+          torch.cuda.device_count(), file=sys.stderr); sys.exit(1)
+print("  gpu ok:", torch.cuda.get_device_name(0))
+PY
+}
+
 if [ "$KIND" = ours ]; then
     source activate speck
+    check_gpu
     INIT="$ROOT/work/runs/${SRC}-s${SEED}/weights/best.pt"
     [ -f "$INIT" ] || { echo "*** no init weights at $INIT"; exit 1; }
     PYTHONPATH=. python -u tools/train.py --config "$ARM" --seed "$SEED" \
-        --weights "$INIT" --name "${ARM}-ft-s${SEED}" --out-root work/runs_ft --vram-gib 24
+        --weights "$INIT" --out-root work/runs_ft --vram-gib 24
     rc=$?
 else
     source activate tph
+    check_gpu
     cd "$ROOT/third_party/YOLOMG"
     python "$ROOT/cluster/patch_yolomg_seed.py" || { echo "seed patch failed"; exit 1; }
     INIT="$ROOT/work/sota_runs/yolomg_nps_seed${SEED}/weights/best.pt"
