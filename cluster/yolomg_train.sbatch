@@ -59,7 +59,16 @@ import torch;torch.hub.download_url_to_file('https://github.com/ultralytics/yolo
 ### began again at epoch 0. YOLOv5 keeps what it needs in last.pt and its opt.yaml, so
 ### --resume continues in place; a fresh run happens only when there is nothing to continue.
 LAST="$ROOT/work/sota_runs/$NAME/weights/last.pt"
-if [ -f "$LAST" ]; then
+BEST="$ROOT/work/sota_runs/$NAME/weights/best.pt"
+RESULTS="$ROOT/work/sota_runs/$NAME/results.csv"
+### --resume on a finished run is an AssertionError in YOLOv5 ("training to 100
+### epochs is finished, nothing to resume"), not a no-op -- so a requeued task
+### whose earlier attempt completed FAILS, and takes the afterok chain with it.
+DONE=0; [ -f "$RESULTS" ] && DONE=$(tail -n +2 "$RESULTS" 2>/dev/null | wc -l)
+if [ "$DONE" -ge 100 ] && [ -f "$BEST" ]; then
+    echo "already complete: $DONE/100 epochs, best.pt present -- nothing to do"
+    true
+elif [ -f "$LAST" ]; then
     echo "RESUMING from $LAST (modified $(stat -c %y "$LAST"))"
     python -u train.py --resume "$LAST"
 else
@@ -77,7 +86,7 @@ rc=$?
 ### done and best.pt present" as success, and say so loudly rather than silently.
 if [ $rc -ne 0 ] && [ -f "$ROOT/work/sota_runs/$NAME/weights/best.pt" ]; then
     DONE=$(tail -n +2 "$ROOT/work/sota_runs/$NAME/results.csv" 2>/dev/null | wc -l)
-    if [ "$DONE" -ge 100 ]; then
+if [ "$DONE" -ge 100 ]; then
         echo "NOTE: exit was $rc but $DONE/100 epochs completed and best.pt exists."
         echo "      Treating as success: the failure is after training, not in it."
         rc=0

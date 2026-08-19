@@ -51,9 +51,18 @@ else
     R="$ROOT/work/ext_datasets/yolomg_local_rev"
     NAME="yolomg_local_rev_seed${SEED}"
     LAST="$ROOT/work/sota_runs/$NAME/weights/last.pt"
+    BEST="$ROOT/work/sota_runs/$NAME/weights/best.pt"
+    RESULTS="$ROOT/work/sota_runs/$NAME/results.csv"
     [ -f yolov5s.pt ] || python -c "
 import torch;torch.hub.download_url_to_file('https://github.com/ultralytics/yolov5/releases/download/v6.1/yolov5s.pt','yolov5s.pt')"
-    if [ -f "$LAST" ]; then
+    ### --resume on a finished run is an AssertionError in YOLOv5 ("training to 100
+    ### epochs is finished, nothing to resume"), not a no-op -- so a requeued task
+    ### whose earlier attempt completed FAILS, and takes the afterok chain with it.
+    DONE=0; [ -f "$RESULTS" ] && DONE=$(tail -n +2 "$RESULTS" 2>/dev/null | wc -l)
+    if [ "$DONE" -ge 100 ] && [ -f "$BEST" ]; then
+        echo "already complete: $DONE/100 epochs, best.pt present -- nothing to do"
+        true
+    elif [ -f "$LAST" ]; then
         echo "RESUMING from $LAST"; python -u train.py --resume "$LAST"
     else
         python -u train.py --data "$R/local_rev.yaml" --cfg models/NPS_uav_s.yaml \
