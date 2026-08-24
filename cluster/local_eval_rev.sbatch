@@ -44,7 +44,11 @@ source activate speck
 for S in 0 1 2; do
   for ARM in singleframe_local_rev temporal_local_rev; do
     MODE=rgb; [ "$ARM" = temporal_local_rev ] && MODE=temporal
-    W="$ROOT/work/runs_rev/${ARM}-s${S}/weights/best.pt"
+    ### work/runs, not work/runs_rev: the reverse arms were trained without --out-root, so
+    ### they landed in the default. The sed that derived this file tried to rewrite an
+    ### --out-root flag the source never had, matched nothing, and failed silently --
+    ### which is the risk sed-derived scripts carry and tests do not cover.
+    W="$ROOT/work/runs/${ARM}-s${S}/weights/best.pt"
     [ -f "$W" ] || { echo "*** missing $W"; rc=1; continue; }
     echo "=== ours: $ARM seed $S ($MODE) ==="
     PYTHONPATH=. python -u tools/infer_tiled.py --weights "$W" --mode "$MODE" \
