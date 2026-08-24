@@ -34,6 +34,7 @@ sys.path.insert(0, str(REPO))
 
 from benchmarks.fast_bootstrap import (paired_bootstrap_pooled_ap,  # noqa: E402
                                        paired_permutation_pooled_ap)
+from benchmarks.catalog import ARD_CONDITIONS  # noqa: E402
 from benchmarks.scorecard import pooled_ap  # noqa: E402
 from dronedet.console import use_utf8_stdio  # noqa: E402
 from tools.check_scorecard import load_sequences  # noqa: E402
@@ -173,6 +174,61 @@ def main() -> int:
                          f"[{r['lo']:+.3f}, {r['hi']:+.3f}] | {r['p']:.4f} | "
                          f"{r['p_perm']:.4f} | {verdict} |")
         L.append("")
+
+
+        # --- ARD-MAV only: GLAD's own condition grouping. The overall AP hides the
+        # result that matters most to this project: the three conditions differ in target
+        # size, and the two systems order DIFFERENTLY on them. Small is where an 11.8 px
+        # median drops to a few pixels -- the stated problem -- and it is the condition
+        # where the temporal arm leads both the competitor and GLAD's published 0.580.
+        if ds == "ardmav":
+            L += ["### By condition (GLAD's grouping: 5 sequences each)", "",
+                  "| arm | ordinary | complex | small |", "|---|---|---|---|",
+                  "| GLAD (published, for placement only) | 0.910 | 0.810 | 0.580 |"]
+            for arm, budget, label in ROWS:
+                per_cond = {}
+                for cond in ("ordinary", "complex", "small"):
+                    vals = []
+                    for (a2, b2, s), v in sorted(rows.items()):
+                        if a2 != arm or b2 != budget:
+                            continue
+                        sub = [q for q in v["seqs"]
+                               if ARD_CONDITIONS.get(q.sequence, ()) == (cond,)]
+                        if sub:
+                            vals.append(pooled_ap(sub))
+                    if vals:
+                        per_cond[cond] = st.fmean(vals)
+                if per_cond:
+                    shown = "100 ep" if (arm == "yolomg" or budget == "e100") else "30 ep"
+                    L.append(f"| {label} ({shown}) | "
+                             + " | ".join(f"{per_cond.get(c, float('nan')):.3f}"
+                                          for c in ("ordinary", "complex", "small")) + " |")
+            L.append("")
+
+            L += ["#### Paired test on the SMALL condition, ours (100 ep) vs YOLOMG", "",
+                  "> Five sequences admit only 2^5 = 32 sign patterns, so the permutation "
+                  "p cannot go below 1/33 = 0.0303 however large the effect. Printed so "
+                  "the floor is not mistaken for strength of evidence.", "",
+                  "| seed | d AP | 95% CI | p boot | p perm | verdict |",
+                  "|---|---|---|---|---|---|"]
+            for seed in sorted({s for (_a, _b, s) in rows}):
+                ka, kb = ("temporal", "e100", seed), ("yolomg", "e30", seed)
+                if ka not in rows or kb not in rows:
+                    continue
+                sa = sorted([q for q in rows[ka]["seqs"]
+                             if ARD_CONDITIONS.get(q.sequence, ()) == ("small",)],
+                            key=lambda q: q.sequence)
+                sb = sorted([q for q in rows[kb]["seqs"]
+                             if ARD_CONDITIONS.get(q.sequence, ()) == ("small",)],
+                            key=lambda q: q.sequence)
+                r = paired(sa, sb, a.n_resamples, seed)
+                if r is None:
+                    continue
+                verdict = ("**better**" if r["observed"] > 0 else "**worse**")                     if r["significant"] else "no difference"
+                L.append(f"| {seed} | {r['observed']:+.3f} | "
+                         f"[{r['lo']:+.3f}, {r['hi']:+.3f}] | {r['p']:.4f} | "
+                         f"{r['p_perm']:.4f} | {verdict} |")
+            L.append("")
 
     local = sorted(a.reports.glob("local*_seed*.md")) if a.reports.exists() else []
     if local:
