@@ -76,9 +76,11 @@ def bench_ours(weights: str, imgsz: int, frame_hw: tuple[int, int], overlap: int
       * the tile count is DERIVED from `tile_origins` at the real frame size, not passed
         in. It was passed as 6; a 1920x1080 frame is 8 tiles, so our ms/frame was understated
         by about a quarter.
-      * `conf` and `max_det` match the evaluated runs (0.001 / 30 per tile). NMS cost is
-        dominated by candidate count, and benchmarking at ultralytics' default 0.25 would
-        measure a configuration that produced no published AP.
+      * `conf` is a parameter and the job runs BOTH floors, labelled: 0.001 is the
+        configuration the AP tables were produced at (NMS cost is dominated by candidate
+        count, so it is the slowest honest number) and 0.25 is a realistic deployment
+        floor. Reporting only one would either understate deployable speed or measure a
+        configuration that produced no published AP.
     """
     import torch
     from ultralytics import YOLO
@@ -92,17 +94,30 @@ def bench_ours(weights: str, imgsz: int, frame_hw: tuple[int, int], overlap: int
     model = YOLO(weights)
     origins = tile_origins(w, h, imgsz, overlap)
     rng = np.random.default_rng(0)
-    frames = [rng.integers(0, 255, (h, w, 3), dtype=np.uint8) for _ in range(13)]
+    frames = [rng.integers(0, 255, (h, w, 3), dtype=np.uint8) for _ in range(64)]
+
+    # STEADY-STATE, not cold-start. The first version of this loop built a fresh
+    # Stabilizer and re-stabilised all 13 taps inside every timed iteration, charging us
+    # thirteen stabilisations per frame when a video pipeline pays for ONE -- the buffer
+    # slides, the twelve older taps were stabilised on earlier frames. Measured cost of
+    # that mistake: 1219 of 1609 ms/frame, reporting 0.6 fps for a system whose own
+    # detection logs record 8-13 fps end to end. The competitor's mask, by contrast, has
+    # no reusable state (both its compensations are relative to the CURRENT frame), so
+    # its per-frame cost really is the whole mask and its loop was already honest.
+    stab = Stabilizer("translation")
+    buf: deque = deque(maxlen=13)
+    for f in frames[:13]:                    # fill the pipeline OUTSIDE the timed region
+        m = stab.update(f)
+        buf.append((cv2.cvtColor(f, cv2.COLOR_BGR2GRAY),
+                    float(m[0, 2]), float(m[1, 2])))
 
     pre, fwd, tot = [], [], []
     for i in range(warmup + n):
+        f = frames[(13 + i) % len(frames)]
         t0 = time.perf_counter()
-        stab = Stabilizer("translation")
-        buf: deque = deque(maxlen=13)
-        for f in frames:                     # the real front end: stabilise every tap
-            m = stab.update(f)
-            buf.append((cv2.cvtColor(f, cv2.COLOR_BGR2GRAY),
-                        float(m[0, 2]), float(m[1, 2])))
+        m = stab.update(f)                   # the marginal work: ONE new frame
+        buf.append((cv2.cvtColor(f, cv2.COLOR_BGR2GRAY),
+                    float(m[0, 2]), float(m[1, 2])))
         img = np.dstack(_stack_aligned_to_now(buf, 6))
         crops = [img[y:y + imgsz, x:x + imgsz] for x, y in origins]
         _sync(torch)
@@ -120,12 +135,13 @@ def bench_ours(weights: str, imgsz: int, frame_hw: tuple[int, int], overlap: int
            "frame_hw": list(frame_hw), "tiles_per_frame": len(origins),
            "overlap": overlap, "conf": conf, "max_det_per_tile": max_det,
            "half": half, "engine": Path(weights).suffix, **_summarise(tot)}
-    out["preprocess"] = _summarise(pre)      # stabilise 13 taps + build the stack + tile
+    out["preprocess"] = _summarise(pre)      # stabilise ONE frame + slide the stack + tile
     out["forward_only"] = _summarise(fwd)
     return out
 
 
-def bench_yolomg(weights: str, imgsz: int, frame_hw: tuple[int, int], half: bool,
+def bench_yolomg(weights: str, imgsz: int, frame_hw: tuple[int, int],
+                 conf: float, half: bool,
                  n: int, warmup: int):
     """Competitor path: mask32 construction (CPU) + one dual-stream forward."""
     import torch
@@ -163,7 +179,7 @@ def bench_yolomg(weights: str, imgsz: int, frame_hw: tuple[int, int], half: bool
             # NMS inside the timed region, at the thresholds infer_yolomg actually uses.
             # Ours goes through ultralytics' predict path, which includes its NMS; timing
             # only the raw forward here would re-introduce the asymmetry from the other side.
-            non_max_suppression(pred, 0.001, 0.6, max_det=300)
+            non_max_suppression(pred, conf, 0.6, max_det=300)
         _sync(torch)
         t2 = time.perf_counter()
         if i >= warmup:
@@ -171,7 +187,8 @@ def bench_yolomg(weights: str, imgsz: int, frame_hw: tuple[int, int], half: bool
             fwd.append((t2 - t1) * 1000.0)
             tot.append((t2 - t0) * 1000.0)
 
-    out = {"arm": "yolomg", "weights": weights, "imgsz": imgsz, "frame_hw": list(frame_hw),
+    out = {"arm": "yolomg", "weights": weights, "imgsz": imgsz,
+           "conf": conf, "frame_hw": list(frame_hw),
            "half": half, **_summarise(tot)}
     out["preprocess"] = _summarise(pre)     # mask32: 2x KLT + RANSAC, on the CPU
     out["forward_only"] = _summarise(fwd)
@@ -205,7 +222,8 @@ def main():
         r = bench_ours(a.weights, a.imgsz, tuple(a.frame_hw), a.overlap, a.conf,
                        a.max_det, a.half, a.n, a.warmup)
     else:
-        r = bench_yolomg(a.weights, a.imgsz, tuple(a.frame_hw), a.half, a.n, a.warmup)
+        r = bench_yolomg(a.weights, a.imgsz, tuple(a.frame_hw), a.conf,
+                         a.half, a.n, a.warmup)
 
     try:
         import torch
