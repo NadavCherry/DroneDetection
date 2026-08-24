@@ -60,6 +60,12 @@ PY
 
 if [ "$KIND" = ours ]; then
     source activate speck
+### ultralytics may pip-install 'missing' packages MID-PROCESS and carry on with
+### stale modules -- its TRT export did exactly that, upgraded triton for 729 s,
+### segfaulted itself, and broke a sibling job that was importing torch from the
+### same env at that moment (undefined symbol: ncclCommResume). One shared env,
+### mutated under a running reader. Never again:
+export YOLO_AUTOINSTALL=false
     check_gpu
     INIT="$ROOT/work/runs/${SRC}-s${SEED}/weights/best.pt"
     [ -f "$INIT" ] || { echo "*** no init weights at $INIT"; exit 1; }

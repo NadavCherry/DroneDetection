@@ -35,6 +35,12 @@ nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 
 if [ "$KIND" = ours ]; then
     source activate speck
+### ultralytics may pip-install 'missing' packages MID-PROCESS and carry on with
+### stale modules -- its TRT export did exactly that, upgraded triton for 729 s,
+### segfaulted itself, and broke a sibling job that was importing torch from the
+### same env at that moment (undefined symbol: ncclCommResume). One shared env,
+### mutated under a running reader. Never again:
+export YOLO_AUTOINSTALL=false
     ### No --name: tools/train.py has no such flag, and passing one aborts before the first
     ### batch with an argparse error -- which is how all six of these failed in one second.
     ### The run directory is cfg.run_name(seed) = "<config>-s<seed>", already exactly what

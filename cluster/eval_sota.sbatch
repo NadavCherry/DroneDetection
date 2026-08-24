@@ -55,6 +55,12 @@ echo "infer exit=$rc"
 
 conda deactivate
 source activate speck
+### ultralytics may pip-install 'missing' packages MID-PROCESS and carry on with
+### stale modules -- its TRT export did exactly that, upgraded triton for 729 s,
+### segfaulted itself, and broke a sibling job that was importing torch from the
+### same env at that moment (undefined symbol: ncclCommResume). One shared env,
+### mutated under a running reader. Never again:
+export YOLO_AUTOINSTALL=false
 PYTHONPATH=. python -u tools/evaluate.py --dataset "$DS" --model "$RUN" $EXTRA \
     --gt "$GT" --dets "$DET" --seed "$SEED" --weights "$W" \
     --out "$ROOT/work/scorecards/${RUN}.json"

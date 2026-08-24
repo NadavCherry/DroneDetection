@@ -13,6 +13,12 @@ set -uo pipefail
 cd /home/cherryn/projects/SpeckLock
 module load anaconda
 source activate speck
+### ultralytics may pip-install 'missing' packages MID-PROCESS and carry on with
+### stale modules -- its TRT export did exactly that, upgraded triton for 729 s,
+### segfaulted itself, and broke a sibling job that was importing torch from the
+### same env at that moment (undefined symbol: ncclCommResume). One shared env,
+### mutated under a running reader. Never again:
+export YOLO_AUTOINSTALL=false
 PYTHONPATH=. python -u tools/make_summary.py --out work/reports/SUMMARY.md
 rc=$?
 echo "=== RESULT ==="; echo "exit=$rc"

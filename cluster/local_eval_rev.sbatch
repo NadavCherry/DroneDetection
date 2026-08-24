@@ -41,6 +41,12 @@ nvidia-smi --query-gpu=name --format=csv,noheader
 
 rc=0
 source activate speck
+### ultralytics may pip-install 'missing' packages MID-PROCESS and carry on with
+### stale modules -- its TRT export did exactly that, upgraded triton for 729 s,
+### segfaulted itself, and broke a sibling job that was importing torch from the
+### same env at that moment (undefined symbol: ncclCommResume). One shared env,
+### mutated under a running reader. Never again:
+export YOLO_AUTOINSTALL=false
 for S in 0 1 2; do
   for ARM in singleframe_local_rev temporal_local_rev; do
     MODE=rgb; [ "$ARM" = temporal_local_rev ] && MODE=temporal

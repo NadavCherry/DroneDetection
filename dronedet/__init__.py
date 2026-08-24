@@ -14,4 +14,7 @@ Modules:
     viz        -- overlays and video writing
 """
 
-__version__ = "0.1.0"
+# 2.0.0: the SOTA campaign. Every benchmark number in the README now comes from this
+# repository's own runs -- ours AND the competitor's -- under one evaluator, with paired
+# statistics. The 0.x claims this replaces were retired as disputed in the 2026-08 audit.
+__version__ = "2.0.0"

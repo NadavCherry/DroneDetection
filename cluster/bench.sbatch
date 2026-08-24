@@ -28,6 +28,12 @@ OURS="$ROOT/work/runs/temporal_ardmav-s0/weights/best.pt"
 MG="$ROOT/work/sota_runs/yolomg_ardmav_seed0/weights/best.pt"
 
 source activate speck
+### ultralytics may pip-install 'missing' packages MID-PROCESS and carry on with
+### stale modules -- its TRT export did exactly that, upgraded triton for 729 s,
+### segfaulted itself, and broke a sibling job that was importing torch from the
+### same env at that moment (undefined symbol: ncclCommResume). One shared env,
+### mutated under a running reader. Never again:
+export YOLO_AUTOINSTALL=false
 for CONF in 0.001 0.25; do
   TAG=$(echo "$CONF" | tr -d .)
   echo "=== ours, PyTorch fp16, conf $CONF ==="

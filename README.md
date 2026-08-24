@@ -41,14 +41,14 @@ correction rather than leaving you to find it.
 | Detection, **development** test video | **AP / F1 = 1.000**, zero false positives | 1 video · 337 boxes · 1 flight | 🟢 real video, causal. ⚠️ **not "unseen"**: no dataset builder reads `10_06`, so the *weights* are clean — but six track-classifier constants were hand-set against it. That is a development set |
 | The one change that mattered | mAP50 **0.06 → 0.83** | same 2 videos | 🟢 real video, identical recipe |
 | Speed | **4 fps** (PC-MAX) · **74 fps** (EDGE-RT, TensorRT FP16) | — | 🟢 RTX 5070. ⚠️ no `.engine` ships — they are architecture-specific, and without one the runner loads the `.pt`: **52.6 fps** measured on an RTX 4080 Laptop |
-| Generalist model, one for all datasets | ARD-MAV AP **0.994** · NPS AP 0.801 | — | ⚠️ **DISPUTED — do not quote.** 0.994 is **one clip** (`phantom16`), whose 39.1 px median target is the 3rd-largest of 60 against a dataset median of 11.2 px. Rounds 5–7 also trained through a [split leak](docs/research/internal-audit-2026-08.md). Being recomputed on the official 15-video split |
-| Versus published SOTA | specialist-class on **every** set, **one** set of weights — [no published method does both](#one-model-against-the-specialist-state-of-the-art) | — | ⚠️ rests on the disputed ARD-MAV row above |
+| ARD-MAV, official 15-video split | temporal AP **0.810** (3 seeds, 100 ep) · small-MAV condition **0.689** vs GLAD's published 0.580 | 15 videos · 28,160 boxes · 3 seeds | 🟢 real video, official split — the recomputation the old disputed 0.994 row promised. [Round 8](docs/reports/round8-sota-campaign.md) |
+| Versus SOTA (**YOLOMG**, arXiv:2503.07115), *trained by us*, same evaluator | they lead overall on ARD-MAV (0.834 vs 0.810) and NPS (0.527 vs 0.509); **we lead where targets are smallest** — ARD-MAV small-MAV +0.074, our own 8 px task **0.914 vs 0.743**, with **0** distractor false alarms to their 5–13 | 2 benchmarks + 1 task × 3 seeds | 🟢 paired, seed-matched bootstrap + permutation; the competitor got 2× our gradient steps. [Round 8](docs/reports/round8-sota-campaign.md) |
 | City defence, **perfect sensor** | **24 / 24** intercepted, **0** buildings hit | 24 bearings | 🟡 Isaac Sim, `detector: "oracle"` — the simulator's own box, zero latency |
 | City defence, **our own seeker** | **0 / 3**, all three buildings struck | 3 engagements | 🟡 Isaac Sim, `detector: "yolo"`, detection rate **4.4 %**. The honest counterpart to the row above |
 | One-camera pursuit, **real detector** | **54 / 62** — 87.1 %, Wilson CI [76.6, 93.3] | 62 engagements | 🟡 Isaac Sim, `detector: "fusion"`, trained weights. **This is the closed-loop number to quote** |
 | How close | mean closest approach **0.080 m** (airframe span 0.47 m) | 24 engagements | 🟡 Isaac Sim, oracle sensor |
 | Seeing 3 pixels | reliable to **140 m**, target ~3 px | — | 🟡 Isaac Sim, live town |
-| Tests | **836** unit tests, ~35 s | — | `python -m pytest` |
+| Tests | **939** unit tests, ~40 s | — | `python -m pytest` |
 
 <p align="center">
   <img src="docs/media/chart_cpa.png" width="900" alt="Closest approach for all 24 city engagements against arrival bearing"/>

@@ -22,6 +22,12 @@ ROOT=/home/cherryn/projects/SpeckLock
 cd "$ROOT"
 module load anaconda
 source activate speck
+### ultralytics may pip-install 'missing' packages MID-PROCESS and carry on with
+### stale modules -- its TRT export did exactly that, upgraded triton for 729 s,
+### segfaulted itself, and broke a sibling job that was importing torch from the
+### same env at that moment (undefined symbol: ncclCommResume). One shared env,
+### mutated under a running reader. Never again:
+export YOLO_AUTOINSTALL=false
 nvidia-smi --query-gpu=name,driver_version --format=csv,noheader
 
 echo "=== force-reinstall torch + full nvidia dependency chain ==="
