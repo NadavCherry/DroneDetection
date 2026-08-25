@@ -20,11 +20,13 @@ from the scorecards in `work/scorecards/` via `tools/make_summary.py`.
 
 | task | ours (temporal) | YOLOMG | verdict |
 |---|---|---|---|
-| ARD-MAV, overall | 0.810 | **0.834** | they lead |
-| ARD-MAV, **small-MAV condition** | **0.689** | 0.615 | **we lead** (and GLAD's published 0.580) |
-| NPS-Drones | 0.509 | **0.527** | they lead |
-| **this project's task** (8 px drone, held-out flight) | **0.840** (0.773–0.914) | 0.604 (0.422–0.743) | **we lead, all 3 seeds** |
+| ARD-MAV, overall | 0.809 | **0.834** | they lead |
+| ARD-MAV, **small-MAV condition** | **0.689** | 0.615† | **we lead** (and GLAD's published 0.580) |
+| NPS-Drones | 0.487 | **0.527** | they lead |
+| **this project's task** (8 px drone, held-out flight; both arms fine-tuned from NPS weights) | **0.840** (0.773–0.914) | 0.604 (0.422–0.743) | **we lead, all 3 seeds** |
 | false alarms on labelled distractors | **0** (every seed, both arms of ours) | 2–13 per seed | **we lead** |
+
+† *2-seed mean (0.626, 0.604): seed 1's by-condition breakdown was still being scored at writing. Ours is a 3-seed mean. For the verdict to flip, the missing seed would need a small-MAV AP above 0.837 — higher than any arm's overall AP on this dataset.*
 
 We are **not** better than the state of the art everywhere, and this repository does not
 claim to be. The pattern across every corpus is consistent and is the actual finding:
@@ -32,7 +34,7 @@ claim to be. The pattern across every corpus is consistent and is the actual fin
 > **The advantage tracks target size.** On NPS (targets 10–25 px) the competitor leads.
 > On ARD-MAV overall (median 11.8 px) it leads; on ARD-MAV's small-MAV subset it trails
 > us. On this project's own task (median 8.0 px, distractor birds at 6.0 px) we lead by
-> +0.24 AP on average — every seed, never below +0.13 — with zero distractor false alarms. The smaller the target, the more the
+> +0.24 AP on average — every seed, never below +0.12 — with zero distractor false alarms. The smaller the target, the more the
 > temporal stack is worth — which is the design thesis, now with its supporting and its
 > *limiting* evidence in one table.
 
@@ -76,7 +78,7 @@ nearest measured stressor: ours 0.819 vs GLAD's published 0.810.
 Wind appears implicitly as camera shake and ego-motion — both corpora are hand-held or
 airborne cameras — and the ego-stabilised stack is specifically the mechanism that
 absorbs it: the single-frame control differs from the temporal arm *only* in that
-mechanism, and trails it by +0.37 AP (mean over seeds) on the hardest task.
+mechanism, and trails it by +0.37 AP on the hardest task (the from-scratch A/B of §6; the gap widens to +0.69 when both arms are fine-tuned).
 
 ### 2. "Usually they build a tracker that also calculates speed and acceleration, and it discriminates."
 
@@ -84,7 +86,7 @@ The shipped system is exactly that shape: detection feeds a track layer
 (`MATCH_DIST = 8 px`, confirmation at `N_CONF = 8` detections, `CONF_FRAC = 0.70`), and
 interception uses the track, not raw detections. What this campaign adds is the layer
 *underneath*: at 8 px, appearance alone does not yield reliable detections to track —
-the single-frame control collapses to 0.24 AP on the held-out flight. Motion enters
+the from-scratch single-frame control averages 0.24 AP on the held-out flight (0.15 fine-tuned). Motion enters
 **twice**: in the detector's input representation (the 13-frame stabilised stack), and
 again at track level. The campaign quantified the first; track-level velocity metrics
 are recorded per detection JSON but were not the unit of this comparison.
@@ -92,7 +94,7 @@ are recorded per detection JSON but were not the unit of this comparison.
 ### 3. "Wonder if it would work if the footage is taken from a dynamic platform such as another drone."
 
 That is what **NPS-Drones is**: air-to-air video shot *from a drone*, and ARD-MAV is
-likewise a moving MAV camera. Both were run end to end. Ours reaches 0.509 on NPS from a
+likewise a moving MAV camera. Both were run end to end. Ours reaches 0.487 on NPS from a
 dynamic platform (competitor 0.527); on ARD-MAV's small subset from a moving camera we
 lead. So: yes, measured, with the caveat that on the larger-target NPS regime the
 competitor's appearance-plus-mask design is currently ahead of us.
@@ -104,7 +106,7 @@ objects and the comparison tool **refuses to subtract two APs whose protocols di
 significance is a seed-matched paired bootstrap **and** permutation test over sequences,
 reported only when both agree; the competitor was trained under **its own** published
 recipe with twice our budget, and a budget-matched arm (ours at 100 epochs) was run so
-the difference cannot be blamed on training time; 939 automated tests pin every parser
+the difference cannot be blamed on training time; 941 automated tests (939 passing, 2 environment-gated skips) pin every parser
 convention, alignment rule and guard; and sixteen-plus pipeline bugs found during the
 campaign are documented in the git history with their failure modes — including the ones
 that flattered us, which were fixed with the same urgency as the ones that did not.
@@ -138,12 +140,25 @@ pixels below where NPS operates.
 
 ## Speed
 
-Both arms measured in one process on one RTX 3090, steady-state (the stabilisation
-buffer slides; each frame is charged its marginal cost), at two labelled floors — the
-conf 0.001 the AP tables were produced at, and a deployment floor of 0.25. TensorRT
-export included. *(Numbers inserted from `work/bench/` when the re-run completes; the
-first bench charged our arm 13 stabilisations per frame instead of one and was discarded
-— its 0.6 fps contradicted the pipeline's own logged 8–13 fps end-to-end.)*
+Both arms in one process on one RTX 3090, fp16, steady-state — the stabilisation buffer
+slides, so each frame is charged its **marginal** cost, which is what a video pipeline
+pays. (A first bench charged us 13 stabilisations per frame and read 0.6 fps; it was
+discarded because it contradicted the pipeline's own logged 8–13 fps, and the error is
+documented in `tools/sota/bench_both.py`.) Two labelled floors, because they answer
+different questions:
+
+| configuration | ours (8×640 px tiles) | YOLOMG (1280 px dual-stream) |
+|---|---|---|
+| conf 0.25 — as deployed | **146 ms → 6.8 fps** | 312 ms → 3.2 fps |
+| conf 0.001 — as the AP tables were scored | 478 ms → 2.1 fps | 315 ms → 3.2 fps |
+| of which: front end | 120 ms (stabilise + stack + tile) | **226 ms** (mask32: 2× KLT + RANSAC, CPU) |
+
+Deployed, ours is **2.1× faster** despite running eight tiles per frame; at the
+evaluation floor our NMS over eight tiles' candidates dominates and the competitor is
+faster. The competitor's floor barely matters to it because its cost is its CPU mask.
+TensorRT: *(rows inserted from the fresh-process export; the first export segfaulted
+after ultralytics' auto-updater swapped a dependency mid-process — that updater is now
+disabled in every job.)*
 
 ## What was not done, so nobody discovers it later
 
@@ -153,7 +168,7 @@ first bench charged our arm 13 stabilisations per frame instead of one and was d
   benchmarks, stated plainly.
 - **Night/rain conditions** — no obtainable corpus contains them (§1b).
 - **Our NPS number vs the published 0.95.** Both arms score far below the published
-  NPS figures under our evaluator (we 0.51, the SOTA *itself* 0.53 vs its own published
+  NPS figures under our evaluator (we 0.49, the SOTA *itself* 0.53 vs its own published
   0.95), so the published-scale gap is a protocol difference, not a model difference —
   and per this repo's own rules those numbers are not comparable and are never
   subtracted.
