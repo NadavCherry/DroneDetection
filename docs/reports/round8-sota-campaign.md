@@ -21,19 +21,18 @@ from the scorecards in `work/scorecards/` via `tools/make_summary.py`.
 | task | ours (temporal) | YOLOMG | verdict |
 |---|---|---|---|
 | ARD-MAV, overall | 0.809 | **0.834** | they lead |
-| ARD-MAV, **small-MAV condition** | **0.689** | 0.615† | **we lead** (and GLAD's published 0.580) |
+| ARD-MAV, **small-MAV condition** | **0.689** | 0.619 | point estimate favours us on **every seed** (+0.06–+0.08), but **not significant at n=5** — the permutation floor is 0.03 and p ≈ 0.3. GLAD's published: 0.580 |
 | NPS-Drones | 0.487 | **0.527** | they lead |
 | **this project's task** (8 px drone, held-out flight; both arms fine-tuned from NPS weights) | **0.840** (0.773–0.914) | 0.604 (0.422–0.743) | **we lead, all 3 seeds** |
-| false alarms on labelled distractors | **0** (every seed, both arms of ours) | 2–13 per seed | **we lead** |
-
-† *2-seed mean (0.626, 0.604): seed 1's by-condition breakdown was still being scored at writing. Ours is a 3-seed mean. For the verdict to flip, the missing seed would need a small-MAV AP above 0.837 — higher than any arm's overall AP on this dataset.*
+| false alarms on 10_06's labelled distractors | **0**, every seed | 2–13 per seed | **we lead** |
+| bird hits per detected drone (07_05, deployed floor) | **~0.21** | not measurable‡ | see §1a |
 
 We are **not** better than the state of the art everywhere, and this repository does not
 claim to be. The pattern across every corpus is consistent and is the actual finding:
 
 > **The advantage tracks target size.** On NPS (targets 10–25 px) the competitor leads.
-> On ARD-MAV overall (median 11.8 px) it leads; on ARD-MAV's small-MAV subset it trails
-> us. On this project's own task (median 8.0 px, distractor birds at 6.0 px) we lead by
+> On ARD-MAV overall (median 11.8 px) it leads; on ARD-MAV's small-MAV subset the point
+> estimate favours us on every seed (five sequences cannot make that significant). On this project's own task (median 8.0 px, distractor birds at 6.0 px) we lead by
 > +0.24 AP on average — every seed, never below +0.12 — with zero distractor false alarms. The smaller the target, the more the
 > temporal stack is worth — which is the design thesis, now with its supporting and its
 > *limiting* evidence in one table.
@@ -49,13 +48,36 @@ at a median of 6.0 px against a drone at 8.0 px** — distractors *smaller than 
 target*, which neither public benchmark reproduces. They are `ignore=True` in the ground
 truth, so they train nothing and surface at evaluation as **distractor hits**:
 
-Two distractor populations exist, and they are measured by different directions of the
-two-video task — the table below says which is which rather than blurring them:
+Two distractor populations exist, and they behave differently enough that reporting one
+as if it were both would mislead in whichever direction was picked:
 
-| test set | distractors in it | ours (temporal) | ours (single-frame) | YOLOMG |
-|---|---|---|---|---|
-| 10_06 (forward direction) | 2 moving non-drone objects | **0** hits, all seeds | 0 | 2 / 5 / 13 by seed |
-| 07_05 (reverse direction) | **8 birds**, median 6.0 px + 1 near object | REVERSE-PENDING | REVERSE-PENDING | REVERSE-PENDING |
+**10_06's two moving objects** (forward direction, both arms fine-tuned): our arms placed
+**zero** detections on them at any confidence, every seed; YOLOMG placed 2, 5 and 13.
+
+**07_05's eight birds** (reverse direction — the only test set containing birds — at the
+deployed floor, conf ≥ 0.25, 571 frames, 3 seeds):
+
+| arm | drone true positives | bird hits | bird hits per detected drone |
+|---|---|---|---|
+| **ours, temporal** | **406 / 381 / 421** | 73 / 96 / 86 | **0.18 / 0.25 / 0.20** |
+| ours, single-frame | 184 / 28 / 178 | 87 / 8 / 67 | 0.47 / 0.29 / 0.38 |
+| YOLOMG (from scratch)‡ | 0 / 2 / 0 | 0 | not measurable |
+
+At the deployed floor the temporal arm finds **3.1× the drones** of its own control
+(1,208 vs 390 true positives pooled over seeds; 2.2× against the control's best seed) at
+roughly **half the bird hits per drone found**. Birds are not invisible to it — they
+move, and a motion-sensitive detector sees them — but its per-detection selectivity is
+better, and the two failure modes mirror the inputs: the single-frame arm's stray mass
+sits on the *static* near object (759–991 low-confidence hits at the evaluation floor,
+all gone by 0.25), the temporal arm's on the *moving* birds. At the 0.001 evaluation
+floor every arm hits birds by the hundreds; the unthresholded tables are in
+`work/reports/local_rev_07_05_seed*.md`. Single detections are also not what the shipped
+system acts on: a track needs 8 confirmed detections at 70 % confidence to exist.
+
+‡ *YOLOMG trained from scratch on this direction's 250 frames and did not converge
+(AP 0.000–0.007; its own validation mAP ≈ 0) — the same small-data collapse the forward
+direction showed before fine-tuning. Its zero bird hits are an artefact of detecting
+almost nothing, and count neither for it nor against it.*
 
 The birds live in 07_05, so only the reverse direction (train on 10_06, test on 07_05)
 can put them in a test set — which is why it was run. The shipped
@@ -156,9 +178,11 @@ different questions:
 Deployed, ours is **2.1× faster** despite running eight tiles per frame; at the
 evaluation floor our NMS over eight tiles' candidates dominates and the competitor is
 faster. The competitor's floor barely matters to it because its cost is its CPU mask.
-TensorRT: *(rows inserted from the fresh-process export; the first export segfaulted
-after ultralytics' auto-updater swapped a dependency mid-process — that updater is now
-disabled in every job.)*
+TensorRT FP16 (batch-8 engine, same card): **139 ms → 7.2 fps** deployed, 468 ms at the
+evaluation floor. The engine cuts network+NMS from 26 ms to ~19 ms; the 120 ms CPU front
+end now dominates, so the next speed lever is stabilisation, not the network. *(The
+first export segfaulted after ultralytics' auto-updater swapped a dependency mid-process;
+that updater is now disabled in every job and the re-run exported cleanly.)*
 
 ## What was not done, so nobody discovers it later
 
