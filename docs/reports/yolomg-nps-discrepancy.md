@@ -251,6 +251,50 @@ and it is a mechanism no protocol sweep would have found.
 
 ---
 
+### 7c. The decision rule, fixed before the data arrives
+
+The YOLOMG leak arms are still training. This section is written **now**, at epoch ~24 of
+100, so that the verdict is not chosen after seeing where the curve lands. What follows is
+the rule; the next revision of this document reports the outcome against it and nothing
+else.
+
+**The comparison.** Best validation mAP@0.5, their own trainer, their own metric:
+
+| arm | pool | seeds | best val mAP@0.5 |
+|---|---|---|---|
+| video-disjoint | train 1-36, val 37-40 | 0, 1, 2 | 0.790 / 0.788 / 0.809 |
+| leak, controlled | random 85/15 over clips 1-40 | 0 | *pending* |
+| leak, faithful | random 85/15 over clips 1-50 | 0 | *pending* |
+
+The disjoint band is **0.788-0.809**, a spread of 0.021 across three seeds. The leak arms
+are one seed each and are two different pools, not two seeds, so they are two independent
+data points rather than a sample with a variance.
+
+**The rule.**
+
+* If both leak arms land **inside 0.788-0.809**, per-frame leakage contributes
+  approximately nothing, and we say so. The gap stays unexplained by leakage.
+* If either lands **above 0.83** — more than one disjoint spread clear of the band — the
+  leak is a real contributor and we quantify it as `leak_best - 0.796` (the disjoint mean).
+* **Between 0.809 and 0.83** is the honest inconclusive zone: one seed cannot separate a
+  0.02 effect from seed noise, and we report it as such rather than rounding it into a
+  conclusion in either direction.
+* Reaching **~0.95** would mean the leak explains the published number outright.
+
+**Two things that would invalidate the comparison**, to be checked before reading it:
+
+* an arm that stops short of 100 epochs — the disjoint numbers are 100-epoch bests, and
+  our own `ours_leak_ctl` arm already ran 30 epochs instead of 100 because the sbatch
+  omitted `--epochs`. Check `results.csv` line counts first.
+* a best epoch at or near the final epoch, which would mean the run had not converged and
+  the ceiling is unmeasured rather than measured.
+
+**The early read, recorded so it cannot be quietly forgotten.** At matched epoch 20 the
+leak arms sit *inside* the disjoint band: 0.6950 (ctl) and 0.6799 (all) against disjoint
+0.6934 / 0.5834 / 0.7166. That points at the first outcome. It is not the verdict —
+memorisation can appear late in training, which is exactly why the arms are being run to
+100 epochs instead of being called here.
+
 ## Running total
 
 | reason | measured impact | status |
