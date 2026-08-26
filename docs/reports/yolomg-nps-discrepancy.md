@@ -289,6 +289,26 @@ data points rather than a sample with a variance.
 * a best epoch at or near the final epoch, which would mean the run had not converged and
   the ceiling is unmeasured rather than measured.
 
+**Report BOTH the best and the final epoch.** The thresholds above are unchanged, but a
+single number is not enough to read them against. `best` is selected by maximising the very
+metric being reported, so it is optimistic by construction — the disjoint figures (0.790 /
+0.788 / 0.809) carry the same bias, which is why the comparison is best-against-best. `final`
+says where the run actually settled. If the two disagree by more than the epoch-to-epoch
+oscillation, the run had not converged and the ceiling is unmeasured rather than measured.
+
+**A near-miss is still a miss.** The controlled arm has plateaued around 0.826 — roughly
++0.03 over the disjoint mean of 0.796 — and that figure is interesting on its own, because it
+lands on top of the +0.034 measured independently for OUR method in section 7a. Two different
+architectures, two different resolutions, two different tiling schemes, the same answer: a
+per-frame partition on this data is worth about three points of AP.
+
+That concordance is worth stating and it is not a licence to promote the result. **If the
+controlled arm finishes below 0.83 it is reported as inconclusive**, exactly as written above,
+however suggestive the agreement looks. The threshold was fixed before the data existed
+precisely so that a result this close could not be argued across the line after the fact. What
+may be said either way is the measured magnitude, +0.03, and that it is nowhere near the ~0.15
+the gap still lacks.
+
 **The early read, recorded so it cannot be quietly forgotten.** At matched epoch 20 the
 leak arms sit *inside* the disjoint band: 0.6950 (ctl) and 0.6799 (all) against disjoint
 0.6934 / 0.5834 / 0.7166. That points at the first outcome. It is not the verdict —
