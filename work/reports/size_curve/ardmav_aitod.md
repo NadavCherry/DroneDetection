@@ -24,3 +24,24 @@ Bins on sqrt(area) in pixels (aitod). Evaluator: rule=iou, IoU=0.5, conf>=0.001,
 
 **Crossover between `very-tiny` and `tiny`.** ours leads on the smaller side (+0.083) and trails on the larger (-0.012).
 
+## Is the difference real? Paired, seed-matched, over sequences
+
+Paired bootstrap **and** permutation over the 15 shared sequences; a bin is called significant only when both agree, matching `tools/make_summary.py`. Seeds are matched pairwise.
+
+| bin | seed | d AP | 95% CI | p perm | verdict |
+|---|---|---|---|---|---|
+| very-tiny | 0 | +0.065 | [-0.121, +0.241] | 0.5315 | no difference |
+| very-tiny | 1 | +0.104 | [-0.062, +0.271] | 0.2837 | no difference |
+| very-tiny | 2 | +0.079 | [-0.079, +0.242] | 0.4346 | no difference |
+| tiny | 0 | -0.028 | [-0.089, +0.047] | 0.4545 | no difference |
+| tiny | 1 | +0.000 | [-0.059, +0.064] | 0.9970 | no difference |
+| tiny | 2 | -0.008 | [-0.050, +0.045] | 0.8352 | no difference |
+| small | 0 | -0.125 | [-0.228, -0.059] | 0.0010 | **significant** |
+| small | 1 | -0.070 | [-0.168, -0.017] | 0.0140 | **significant** |
+| small | 2 | -0.108 | [-0.234, -0.038] | 0.0020 | **significant** |
+| medium | 0 | -0.467 | [-0.674, -0.256] | 0.0010 | **significant** |
+| medium | 1 | -0.371 | [-0.627, -0.189] | 0.0020 | **significant** |
+| medium | 2 | -0.420 | [-0.644, -0.220] | 0.0020 | **significant** |
+
+**No bin where ours wins significantly on every seed.**
+
