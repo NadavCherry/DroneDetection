@@ -26,3 +26,27 @@ Bins on sqrt(area) in pixels (mission). Evaluator: rule=iou, IoU=0.5, conf>=0.00
 
 **Crossover between `8-10 px` and `10-16 px`.** ours leads on the smaller side (+0.095) and trails on the larger (-0.056).
 
+## Is the difference real? Paired, seed-matched, over sequences
+
+Paired bootstrap **and** permutation over the 15 shared sequences; a bin is called significant only when both agree, matching `tools/make_summary.py`. Seeds are matched pairwise.
+
+| bin | seed | d AP | 95% CI | p perm | verdict |
+|---|---|---|---|---|---|
+| <8 px | 0 | +0.065 | [-0.121, +0.241] | 0.5315 | no difference |
+| <8 px | 1 | +0.104 | [-0.062, +0.271] | 0.2837 | no difference |
+| <8 px | 2 | +0.079 | [-0.079, +0.242] | 0.4346 | no difference |
+| 8-10 px | 0 | +0.076 | [-0.055, +0.154] | 0.4176 | no difference |
+| 8-10 px | 1 | +0.114 | [-0.015, +0.199] | 0.3616 | no difference |
+| 8-10 px | 2 | +0.095 | [-0.035, +0.182] | 0.5674 | no difference |
+| 10-16 px | 0 | -0.081 | [-0.143, -0.023] | 0.0140 | **significant** |
+| 10-16 px | 1 | -0.041 | [-0.092, +0.017] | 0.1499 | no difference |
+| 10-16 px | 2 | -0.045 | [-0.090, -0.017] | 0.0839 | no difference |
+| 16-25 px | 0 | -0.185 | [-0.322, -0.099] | 0.0010 | **significant** |
+| 16-25 px | 1 | -0.121 | [-0.258, -0.057] | 0.0010 | **significant** |
+| 16-25 px | 2 | -0.171 | [-0.312, -0.088] | 0.0010 | **significant** |
+| >25 px | 0 | -0.206 | [-0.422, -0.081] | 0.0010 | **significant** |
+| >25 px | 1 | -0.126 | [-0.347, -0.012] | 0.0320 | **significant** |
+| >25 px | 2 | -0.169 | [-0.439, -0.044] | 0.0020 | **significant** |
+
+**No bin where ours wins significantly on every seed.**
+
