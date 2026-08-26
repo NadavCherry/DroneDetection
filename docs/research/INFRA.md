@@ -93,12 +93,18 @@ Verify the card is actually visible:
 .venv/bin/python -m pytest -q
 ```
 
-**Expect `807 passed` in roughly 30 s** — measured 2026-08-12 at commit `3aac721`, of which
-`pursuit/tests` contributes 540 and `dronedet/tests` 267. Treat it as a **floor, not an equality**: the
-branch is under active construction and the count only grows. CI enforces floors of 600 total / 540
-pursuit / 50 dronedet, so a *smaller* number means something collapsed — usually a `testpaths` entry
-pointing at a directory that is not in the index, a mistake that once kept the build green for weeks
-while collecting nothing.
+**Expect `943 collected` in roughly 40 s** — measured 2026-08-26, of which `pursuit/tests`
+contributes 540 and `dronedet/tests` 403. Treat it as a **floor, not an equality**: the branch is
+under active construction and the count only grows. CI enforces floors of 900 total / 540 pursuit /
+380 dronedet, so a *smaller* number means something collapsed — usually a `testpaths` entry pointing
+at a directory that is not in the index, a mistake that once kept the build green for weeks while
+collecting nothing.
+
+This line said `807 passed ... dronedet contributes 267` for long enough that neither half was
+true: the real dronedet count had grown to 403 while the CI floor sat at 50, so nothing could
+have caught the drift. When you change the count, change all four sites —
+`README.md` (twice), this file (twice) and `.github/workflows/tests.yml` — and raise the floors,
+which is the only part of it a machine will check.
 
 Two constraints the suite is protecting, and which you will break if you are not careful:
 
@@ -740,7 +746,7 @@ positives — a chaser translating at 14 m/s has no static background to cancel)
 ```bash
 .venv/bin/python -m pip install torch==2.11.0 torchvision==0.26.0 --index-url https://download.pytorch.org/whl/cu128
 .venv/bin/python -m pip install -e ".[train,test]"
-.venv/bin/python -m pytest -q                                   # expect at least 807 passed
+.venv/bin/python -m pytest -q                                   # expect 943 collected
 .venv/bin/python tools/fetch_data.py --priority 2               # exit 2 = a human must act
 .venv/bin/python tools/dataset_stats.py --dataset ardmav --per-video
 .venv/bin/python tools/prepare_data.py ardmav --out work/prepared/ardmav --tile 640 --stride 4

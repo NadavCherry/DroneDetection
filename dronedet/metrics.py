@@ -112,6 +112,11 @@ class Record:
     obj: str | None = None  # GT object name for tp/distractor
     error: float = float("nan")   # centre error px (tp only)
     bin: str = ""           # size bin of the matched GT (tp only)
+    #: sqrt(area) of the matched GT box, in pixels; NaN for a false positive, which has
+    #: no size. Kept alongside ``bin`` so a caller can re-bin at edges other than the
+    #: AI-TOD ones without re-running the match -- the accuracy-vs-target-size curve
+    #: needs finer resolution around 8-25 px than the four standard bins provide.
+    gt_size: float = float("nan")
 
 
 @dataclass
@@ -125,6 +130,10 @@ class Evaluation:
     distractor_instances: int = 0   # how many distractor boxes were on offer
     distractor_instances_by_object: dict[str, int] = field(default_factory=dict)
     frames: list[int] = field(default_factory=list)
+    #: sqrt(area) in px of every TARGET GT instance, in encounter order. ``gt_per_bin`` is
+    #: this list histogrammed at the AI-TOD edges; keeping the raw values lets a caller
+    #: re-bin at any edges and still get an exact denominator, which a histogram cannot.
+    gt_sizes: list[float] = field(default_factory=list)
 
 
 def _match_frame(dets, gts, rule, tau, iou_thr):
@@ -193,6 +202,7 @@ def evaluate(gt, dets, *, rule: str = "centre", tau: float = 12.0,
     per_obj: dict[str, int] = {}
     per_frame: dict[int, int] = {}
     distract_per_obj: dict[str, int] = {}
+    gt_sizes: list[float] = []
 
     for f in frames:
         gts = {}
@@ -209,6 +219,7 @@ def evaluate(gt, dets, *, rule: str = "centre", tau: float = 12.0,
                 b = size_bin(box[2], box[3])
                 per_bin[b] = per_bin.get(b, 0) + 1
                 per_obj[name] = per_obj.get(name, 0) + 1
+                gt_sizes.append(math.sqrt(max(box[2] * box[3], 0.0)))
             else:
                 n_distract += 1
                 distract_per_obj[name] = distract_per_obj.get(name, 0) + 1
@@ -218,15 +229,17 @@ def evaluate(gt, dets, *, rule: str = "centre", tau: float = 12.0,
             if name:
                 gx0, gy0, gx1, gy1 = gts[name][:4]
                 gt_bin = size_bin(gx1 - gx0, gy1 - gy0)
+                gt_sz = math.sqrt(max((gx1 - gx0) * (gy1 - gy0), 0.0))
             else:
-                gt_bin = ""
+                gt_bin, gt_sz = "", float("nan")
             records.append(Record(frame=f, score=frame_dets[i][4], outcome=outcome,
-                                  obj=name, error=err, bin=gt_bin))
+                                  obj=name, error=err, bin=gt_bin, gt_size=gt_sz))
 
     return Evaluation(records=records, n_gt=n_gt, n_frames=len(frames),
                       gt_per_bin=per_bin, gt_per_obj=per_obj, gt_per_frame=per_frame,
                       distractor_instances=n_distract,
-                      distractor_instances_by_object=distract_per_obj, frames=frames)
+                      distractor_instances_by_object=distract_per_obj, frames=frames,
+                      gt_sizes=gt_sizes)
 
 
 def average_precision(records: list[Record], n_gt: int) -> float:
@@ -316,6 +329,49 @@ def ap_by_size(ev: Evaluation) -> dict[str, float]:
             continue
         subset = [r for r in ev.records if r.outcome == "tp" and r.bin == name] + fps
         out[name] = average_precision(subset, n)
+    return out
+
+
+#: Finer edges than AI-TOD's four bins, chosen for the accuracy-vs-target-size curve.
+#: AI-TOD lumps 8-16 px into one "tiny" bin, but that interval is exactly where a
+#: single-frame detector stops working and the interesting part of the curve lives, so
+#: reporting it as one number hides the transition the curve exists to show.
+MISSION_BINS: tuple[tuple[str, float, float], ...] = (
+    ("<8 px", 0.0, 8.0),
+    ("8-10 px", 8.0, 10.0),
+    ("10-16 px", 10.0, 16.0),
+    ("16-25 px", 16.0, 25.0),
+    (">25 px", 25.0, float("inf")),
+)
+
+
+def ap_by_bins(ev: Evaluation, bins=SIZE_BINS) -> dict[str, tuple[float, int]]:
+    """AP restricted to each of ``bins``, as ``{name: (ap, n_gt_in_bin)}``.
+
+    Generalises `ap_by_size` to arbitrary edges, and returns the per-bin GT count with
+    the AP because a bin's AP is uninterpretable without its denominator -- an AP of
+    0.31 over 12 instances is noise, and reporting it beside an AP over 3,000 without
+    saying so invites exactly the wrong conclusion.
+
+    Two conventions worth stating, both inherited from `ap_by_size`:
+
+    * A false positive has no size, so it is charged to EVERY bin. Otherwise a method
+      could look strong on very-tiny targets by flooding the frame with large spurious
+      boxes that no small-target bin ever pays for.
+    * A true positive on an out-of-bin target is dropped rather than counted as a false
+      positive -- it is neither a success nor a failure at this size. Counting it as a
+      false positive (the naive way to subset) would depress every bin's AP by an amount
+      that depends on how the OTHER bins are populated.
+    """
+    out: dict[str, tuple[float, int]] = {}
+    fps = [r for r in ev.records if r.outcome == "fp"]
+    for name, lo, hi in bins:
+        n = sum(1 for s in ev.gt_sizes if lo <= s < hi)
+        if n == 0:
+            continue
+        subset = [r for r in ev.records
+                  if r.outcome == "tp" and lo <= r.gt_size < hi] + fps
+        out[name] = (average_precision(subset, n), n)
     return out
 
 

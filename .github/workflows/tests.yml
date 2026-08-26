@@ -28,13 +28,13 @@ on:
   workflow_dispatch:
 
 env:
-  # Measured 2026-08-12: 797 collected = 540 pursuit + 257 dronedet, all passing.
+  # Measured 2026-08-26: 943 collected = 540 pursuit + 403 dronedet, all passing.
   # pursuit/tests is stable, so its floor sits at the exact count; dronedet/tests is
   # still being written, so its floor sits well below and should be ratcheted up
   # once the benchmark work has settled.
-  MIN_TOTAL: 600
+  MIN_TOTAL: 900
   MIN_PURSUIT: 540
-  MIN_DRONEDET: 50
+  MIN_DRONEDET: 380
 
 jobs:
   pytest:

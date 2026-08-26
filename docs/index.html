@@ -4,9 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SpeckLock — see the drone, then hit it</title>
-<meta name="description" content="Finding a drone that is 3-14 pixels wide in 720p video from a moving camera, then flying into it with nothing but that camera. AP/F1 1.000 on unseen real video; 24/24 intercepted in closed-loop simulation.">
+<!-- These two strings are the social card: they are what a shared link renders, and for
+     most readers they are the ONLY thing read. They previously claimed "AP/F1 1.000 on
+     unseen real video; 24/24 intercepted" — both of which this project's own README
+     retracts. 10_06 is a development set (six track-classifier constants were hand-set
+     against it), and the 24/24 run used detector "oracle", the simulator's own box with
+     zero latency. The honest closed-loop number, with a seeker that has to find the
+     target itself, is 54/62. Keep these in step with the README results table. -->
+<meta name="description" content="Finding a drone that is 3-14 pixels wide in 720p video from a moving camera, then flying into it with nothing but that camera. AP 0.809 on ARD-MAV's official 15-video split; 54 of 62 closed-loop intercepts in simulation with a real detector.">
 <meta property="og:title" content="SpeckLock — see the drone, then hit it">
-<meta property="og:description" content="A drone 4 pixels wide is invisible in any single frame. Stack three moments as colour channels and it is not. Then proportional navigation does the rest — 24/24 intercepted, 0 buildings hit.">
+<meta property="og:description" content="A drone 4 pixels wide is invisible in any single frame. Stack three moments as colour channels and it is not. Then proportional navigation does the rest — 54 of 62 intercepts in simulation, flown on the seeker's own detections.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://nadavcherry.github.io/SpeckLock/">
 <meta property="og:image" content="https://nadavcherry.github.io/SpeckLock/media/social_card.png">
@@ -243,9 +250,13 @@ footer .fl{display:flex;flex-wrap:wrap;gap:20px;margin-top:14px}
       <div class="prov"><i style="background:var(--real)"></i>real video</div>
     </div>
     <div class="stat">
-      <div class="v">24 / 24</div><div class="k">intruders intercepted</div>
-      <div class="n">0 buildings hit, across 24 arrival bearings — one every 15&deg; of the compass.</div>
-      <div class="prov"><i style="background:var(--sim)"></i>Isaac Sim</div>
+      <div class="v">24 / 24</div><div class="k">intruders intercepted <b>with a perfect sensor</b></div>
+      <div class="n">0 buildings hit, across 24 arrival bearings — one every 15&deg; of the compass.
+        This run was flown on <code>detector: oracle</code>, the simulator's own bounding box with
+        zero latency: it measures the <em>guidance</em>, not the seeker. Flying the same mission on
+        the seeker's own detections gives <b>0 / 3</b>. The closed-loop number with a real detector
+        is <b>54 / 62</b>.</div>
+      <div class="prov"><i style="background:var(--sim)"></i>Isaac Sim · oracle sensor</div>
     </div>
     <div class="stat">
       <div class="v">0.080 m</div><div class="k">mean closest approach</div>
@@ -419,10 +430,19 @@ footer .fl{display:flex;flex-wrap:wrap;gap:20px;margin-top:14px}
   <div class="tw"><table>
     <thead><tr><th>the one fusion model</th><th class="n">ARD-MAV</th><th class="n">NPS</th><th class="n">black drone (10_06)</th></tr></thead>
     <tbody>
-      <tr><td>per-frame detection AP</td><td class="n"><b>0.994</b></td><td class="n"><b>0.801</b></td><td class="n">0.69</td></tr>
+      <tr><td>per-frame detection AP</td><td class="n"><b>0.809</b></td><td class="n"><b>0.801</b></td><td class="n">0.69</td></tr>
       <tr><td>tracked coverage</td><td class="n">0.971</td><td class="n"><b>0.990</b></td><td class="n">0.875</td></tr>
     </tbody>
   </table></div>
+  <!-- The ARD-MAV cell read 0.994 until this project's own audit voided it. Keep it at the
+       official-split figure; do not restore the old number without restoring the banner. -->
+  <p class="small" style="border-left:3px solid var(--warn,#d29922);padding-left:.7em">
+    <b>The ARD-MAV column was 0.994 and that number was wrong.</b> <code>combined_splits()</code>
+    ignored ARD-MAV's published 15-video test list and re-split by position, so rounds 5&ndash;7
+    trained on most of the official test set. Recomputed on the official split, 3 seeds at 100
+    epochs: <b>0.809</b>. The NPS column and the black-drone result are unaffected.
+    <a href="https://github.com/nadavcherry/SpeckLock/blob/main/docs/reports/round8-sota-campaign.md">Round&nbsp;8</a>.
+  </p>
   <p class="small">
     Combined training takes NPS from 0.21 &rarr; 0.81 and the low-contrast black drone from
     <b>0.00 &rarr; tracked</b>. <b>Honest limit:</b> on that black drone the earlier
@@ -454,8 +474,12 @@ footer .fl{display:flex;flex-wrap:wrap;gap:20px;margin-top:14px}
           <td class="n">0.80</td><td>&mdash;</td></tr>
       <tr><td><a href="https://arxiv.org/abs/2503.07115">YOLOMG</a> (2025)</td><td>per dataset</td>
           <td class="n">0.95 NPS · 0.85 ARD100</td><td>separate weights per set</td></tr>
+      <!-- "0.84 ARD-MAV ... held-out" was the claim the leak banner above voids: the ARD-MAV
+           figure came from a split that was not held out. 0.809 is the official-split
+           recomputation. NPS was never affected. -->
       <tr><td><b>this generalist</b></td><td><b>all sets at once</b></td><td class="n">&mdash;</td>
-          <td><b>0.84 ARD-MAV · 0.81 NPS · black drone tracked 1.000</b> — same weights, held-out</td></tr>
+          <td><b>0.809 ARD-MAV · 0.81 NPS · black drone tracked 1.000</b> — same weights;
+          ARD-MAV on its official 15-video test list, NPS whole-video held-out</td></tr>
     </tbody>
   </table></div>
   <p class="small">
@@ -745,15 +769,23 @@ footer .fl{display:flex;flex-wrap:wrap;gap:20px;margin-top:14px}
   </div>
 
   <ul class="tight">
-    <li><b>The loop is not real-time yet, and the detector is 100% of the reason.</b> Aiming the
-      network at a 640&nbsp;px crop instead of the whole frame took perception from 130.9&nbsp;ms
-      to 53.9&nbsp;ms; the tracker and guidance together are still 0.16&nbsp;ms. The remaining gap
-      to a 50&nbsp;ms budget is a pure inference problem — the same TensorRT FP16 route that took
-      the detection half from 4&nbsp;fps to 74&nbsp;fps applies unchanged.</li>
+    <!-- This bullet used to read "the detector is 100% of the reason ... perception from
+         130.9 ms to 53.9 ms ... a pure inference problem". The 53.9 ms was a hardcoded
+         literal in pursuit/tools/city_report.py with no run behind it (pursuit/README.md:382).
+         The measured figure is 231.5 ms, and it inverts the conclusion: the motion stage
+         dominates and TensorRT does not touch it. Section 04's table above (231.5 ms, 90%
+         motion) had already been corrected, so the page was contradicting itself. -->
+    <li><b>The loop is not real-time yet, and the classical motion detector is most of the
+      reason.</b> On the four-camera ring, perception is 231.5&nbsp;ms a tick and 208.0&nbsp;ms of
+      that is the motion stage (~90%); the network is 16.2&nbsp;ms (~7%), tracker and guidance the
+      rest. The remaining gap to a 50&nbsp;ms budget is therefore <em>not</em> an inference
+      problem — TensorRT does not touch a CPU background model. The untried levers are decimating
+      the motion search, restricting it to the arc the mission cares about, or moving the
+      background model onto the GPU. None has been tried, so no number is claimed for them.</li>
     <li><b>Latency compensation must be calibrated on hardware, not inherited.</b> The simulator's
       loop is synchronous, so its true capture-to-command age really is zero. On an aircraft
       running at 7.6&nbsp;fps it is ~130&nbsp;ms, and the difference between declaring it and
-      ignoring it is 36/42 versus 17/42 intercepts.</li>
+      ignoring it is 32/42 versus 18/42 intercepts.</li>
     <li><b>Drone-vs-bird is the frontier for the detection half.</b> At a few pixels, motion
       cannot separate a bird from a drone — only appearance can, and appearance is exactly what is
       weakest at that scale. A learned drone-vs-bird <em>track</em> classifier (appearance +

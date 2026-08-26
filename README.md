@@ -38,7 +38,8 @@ correction rather than leaving you to find it.
 
 | | result | n | measured on |
 |---|---|---|---|
-| Detection, **development** test video | **AP / F1 = 1.000**, zero false positives | 1 video · 337 boxes · 1 flight | 🟢 real video, causal. ⚠️ **not "unseen"**: no dataset builder reads `10_06`, so the *weights* are clean — but six track-classifier constants were hand-set against it. That is a development set |
+| Detection, **development** test video | **AP / F1 = 1.000** per frame — but **track precision 0.200**: 5 tracks raised, 4 of them on nothing | 1 video · 337 boxes · 1 flight | 🟢 real video, causal. ⚠️ **not "unseen"**: no dataset builder reads `10_06`, so the *weights* are clean — but six track-classifier constants were hand-set against it. That is a development set. ⚠️ "zero false positives" was true only of the score-weighted per-frame metric; [at track level it is not](docs/reports/track-level-birds.md) |
+| Bird rejection, **at track level** | **0** birds raised as targets, over **934** labelled bird instances that produced **440** detections — 3 bird tracks form and all 3 are rejected | 1 video · 8 bird tracks | 🟢 real video, hand-labelled birds. The counterpart: on the same video **11 clutter tracks** are raised, track precision **0.083**. [Full analysis](docs/reports/track-level-birds.md) |
 | The one change that mattered | mAP50 **0.06 → 0.83** | same 2 videos | 🟢 real video, identical recipe |
 | Speed | **4 fps** (PC-MAX) · **74 fps** (EDGE-RT, TensorRT FP16) | — | 🟢 RTX 5070. ⚠️ no `.engine` ships — they are architecture-specific, and without one the runner loads the `.pt`: **52.6 fps** measured on an RTX 4080 Laptop |
 | ARD-MAV, official 15-video split | temporal AP **0.809** (3 seeds, 100 ep) · small-MAV condition **0.689** vs GLAD's published 0.580 | 15 videos · 28,160 boxes · 3 seeds | 🟢 real video, official split — the recomputation the old disputed 0.994 row promised. [Round 8](docs/reports/round8-sota-campaign.md) |
@@ -48,7 +49,7 @@ correction rather than leaving you to find it.
 | One-camera pursuit, **real detector** | **54 / 62** — 87.1 %, Wilson CI [76.6, 93.3] | 62 engagements | 🟡 Isaac Sim, `detector: "fusion"`, trained weights. **This is the closed-loop number to quote** |
 | How close | mean closest approach **0.080 m** (airframe span 0.47 m) | 24 engagements | 🟡 Isaac Sim, oracle sensor |
 | Seeing 3 pixels | reliable to **140 m**, target ~3 px | — | 🟡 Isaac Sim, live town |
-| Tests | **941** unit tests (939 pass, 2 env-gated skips), ~40 s | — | `python -m pytest` |
+| Tests | **943** unit tests (540 `pursuit/` + 403 `dronedet/`), ~40 s. A small number skip rather than fail where the machine cannot host them — a wall-clock budget needs dedicated cores, some fixtures need CUDA | — | `python -m pytest` |
 
 <p align="center">
   <img src="docs/media/chart_cpa.png" width="900" alt="Closest approach for all 24 city engagements against arrival bearing"/>
@@ -82,8 +83,15 @@ anything that moved leaves a coloured trail.
 > The representation is the breakthrough, not the network.
 
 **The two shipped models**, scored on `10_06.mp4` — never trained on, never used to pick a model.
-Matching is by centre distance (τ = 12 px); IoU is meaningless on a 4 px box. These are the **causal**
-numbers, frame by frame with no look-ahead:
+Matching is by centre distance (τ = 12 px); IoU is meaningless on a 4 px box.
+
+⚠️ **On look-ahead, precisely:** `final/run_final.py` passes `--smooth-coast`, which
+[round 3](docs/reports/round3-deliverables.md) defines as up to 60 frames of look-ahead and calls
+legal only for a recorded-and-reviewed product. It does not change the 10_06 result — causal
+coasting and offline smoothing both give **1.000** there — but the shipped command is *not* causal,
+and this table previously said it was. For a live system, read the 10_06 column as the achievable
+number and treat the 07_05 column as the split-trained generation's validation figure, not the
+shipped weights':
 
 | model | what it is | 07_05 val (hardest) | **10_06 test (unseen)** | fps |
 |---|---|---|---|---|
@@ -104,8 +112,14 @@ numbers, frame by frame with no look-ahead:
 
 **One model for all datasets.** Public tiny-drone data (ARD-MAV, NPS-Drones — air-to-air, *moving*
 cameras) merged with our own, and a 4-channel `[R,G,B,ego-motion]` detector with an NWD tiny-object
-loss: ARD-MAV AP **0.994**, NPS **0.801**, and the low-contrast black drone **0.00 → tracked**.
-[Round 7 →](docs/reports/round7-fusion.md)
+loss: ARD-MAV AP **0.809** on the official 15-video test split (3 seeds, 100 epochs), NPS **0.801**,
+and the low-contrast black drone **0.00 → tracked**.
+[Round 8 →](docs/reports/round8-sota-campaign.md) · [Round 7 →](docs/reports/round7-fusion.md)
+
+> This line said **ARD-MAV 0.994** until the leak below was found. That figure was also a
+> *per-clip* number — `tools/eval_improvements.py` scores one hand-picked clip per dataset, and
+> ARD-MAV's (`phantom16`) has a median target of 39.1 px, roughly 3.5× the dataset median, so it
+> does not test the few-pixel claim it was quoted for. 0.809 is the whole official test list.
 
 <p align="center">
   <img src="docs/media/external/panel_color_invariance.png" width="860" alt="The same model detecting white, varied and black drones"/>
@@ -114,27 +128,41 @@ loss: ARD-MAV AP **0.994**, NPS **0.801**, and the low-contrast black drone **0.
 ### One model against the specialist state of the art
 
 Every published leader on these benchmarks is a **specialist** — one dataset, one set of weights,
-scored at home — and the 2025 anti-UAV survey ([arXiv 2504.11967](https://arxiv.org/abs/2504.11967))
-lists no unified multi-dataset model. Off home turf the specialists collapse, and ours did too,
-until the training corpus was combined:
+scored at home. No method in this repository's survey set ([`docs/references/`](docs/references/))
+reports a single set of weights scored across ARD-MAV, NPS-Drones and ARD100; the field's 2025
+survey, *Securing the Skies* ([arXiv 2504.11967](https://arxiv.org/abs/2504.11967)), is the
+background for that reading rather than a citation for it. Off home turf the specialists collapse,
+and ours did too, until the training corpus was combined:
 
 | | trained on | at home | off its home dataset |
 |---|---|---|---|
-| Dogfight ([2103.17242](https://arxiv.org/abs/2103.17242)) | NPS | 0.89 | 0.50 on ARD100 · ~1 fps |
+| Dogfight ([2103.17242](https://arxiv.org/abs/2103.17242)) | NPS | 0.89 | 0.22 on **ARD-MAV** · ~1 fps |
 | TransVisDrone ([2210.08423](https://arxiv.org/abs/2210.08423)) | NPS | **0.95** | **0.15** on ARD100 |
 | GLAD ([2312.11008](https://arxiv.org/abs/2312.11008)) | ARD-MAV | 0.80 | — |
 | YOLOMG ([2503.07115](https://arxiv.org/abs/2503.07115)) | per dataset | 0.95 NPS · 0.85 ARD100 | separate weights per set |
 | our round-4 specialist | ARD-MAV | 0.76 | 0.15 NPS · **0.00** on our drone |
-| **this generalist (rounds 5–7)** | **all sets at once** | — | 0.84 ARD-MAV · 0.81 NPS · black drone tracked 1.000 — ⚠️ see below |
+| **this generalist (rounds 5–7)** | **all sets at once** | — | 0.809 ARD-MAV (official split) · 0.81 NPS · black drone tracked 1.000 |
 
-> ⚠️ **The ARD-MAV column of the last row is void, and this section's headline claim is
-> suspended until it is replaced.** `combined_splits()` ignored the published 15-video test
-> list and re-split by position, so rounds 5–7 trained on most of the official test set —
-> "all held-out" was not true of ARD-MAV. The code is fixed and a test now pins the old path
-> as provably leaky so nobody mistakes it, but **every ARD-MAV number from those rounds must
-> be recomputed on the official split**, and until that lands the generalist claim rests on
-> one leg. The NPS column and the black-drone result are unaffected. Full account:
-> [internal audit](docs/research/internal-audit-2026-08.md).
+The "off its home dataset" column is **not one shared dataset** — the Dogfight row is ARD-MAV,
+the TransVisDrone row is ARD100. Every cell names its own.
+
+> The Dogfight cell read **"0.50 on ARD100"** until this project audited its own sources. No paper,
+> table or ledger row anywhere in this repository carries a Dogfight ARD100 score, and 0.50 is not
+> among the ARD100 numbers the repo does hold (0.85 / 0.78 / 0.64 / 0.53 / 0.33 / 0.15). The figure
+> now shown, 0.22 AP@0.5 on ARD-MAV, is sourced: GLAD (arXiv 2312.11008) Table IV, recorded at
+> [`round4-external-datasets.md`](docs/reports/round4-external-datasets.md) and in
+> [`benchmarks/published.py`](benchmarks/published.py).
+
+> ⚠️ **The ARD-MAV numbers from rounds 5–7 were leaked, and have been replaced.**
+> `combined_splits()` ignored the published 15-video test list and re-split by position, so
+> rounds 5–7 trained on most of the official test set — "all held-out" was not true of ARD-MAV.
+> The code is fixed and a test now pins the old path as provably leaky so nobody mistakes it.
+>
+> **The recomputation has since landed**: on the official 15-video split, 3 seeds at 100 epochs,
+> ARD-MAV AP is **0.809** — not the 0.994 those rounds reported. That is the number this README
+> now quotes everywhere. The NPS column and the black-drone result were never affected.
+> Full account: [internal audit](docs/research/internal-audit-2026-08.md) ·
+> [Round 8](docs/reports/round8-sota-campaign.md).
 
 Published numbers are AP@0.5 IoU on each paper's own split; ours are centre-distance AP on
 whole-video held-out splits (τ = 12 px — IoU swings wildly on a 6 px box, which is why this repo
@@ -263,7 +291,7 @@ No simulator needed — the same closed loop, with arithmetic instead of a rende
 ```bash
 python -m pursuit.sandbox --suite city --ring        # 24/24, the whole city mission
 python -m pursuit.sandbox --suite stress             # 120/120 in 1.2 s
-python -m pytest                                     # 540 tests in ~22 s
+python -m pytest                                     # 943 tests in ~40 s
 ```
 
 With pixels, against Isaac Sim — **which is not part of this repository**, see

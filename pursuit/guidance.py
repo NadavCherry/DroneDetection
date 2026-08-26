@@ -792,7 +792,13 @@ class GuidanceConfig:
 
     On hardware, set it from a *measured* frame-to-bearing age. It is worth
     real money when it is right: at a true 150 ms, an uncompensated loop scores
-    17/42 and a correctly-declared one 36/42.
+    18/42 and a correctly-declared one 32/42.
+
+    (This docstring said 17/42 and 36/42 until the same claim was found published
+    with two different values in six places. ``python -m pursuit.sandbox --suite full
+    --latency-frames 3 [--compensate-latency]`` was re-run and gives 18/42 and 32/42,
+    which is what README.md and pursuit/README.md already carried -- and the suite is
+    deterministic, so there was never a run behind the other pair.)
     """
 
     omnidirectional: bool = False

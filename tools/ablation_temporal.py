@@ -43,13 +43,35 @@ from dronedet import metrics as M  # noqa: E402
 from dronedet.detections import DetectionSet  # noqa: E402
 from dronedet.gt import GroundTruth  # noqa: E402
 
-#: (label, detections, how to produce it if absent)
+#: THE CONTROLLED PAIR: (label, detections, how to produce it if absent).
+#:
+#: Same network family, same training corpus, same 1280 px, same pipeline -- the ONLY
+#: difference is whether the three input channels are three moments or one frame's RGB.
+#: That is what makes this an ablation of the input representation rather than a
+#: comparison of two systems.
+#:
+#: This replaces a pair that was not controlled: `tools/run_baseline.py` with an external
+#: yolo26n checkpoint against `final/run_final.py --profile edge-rt`. Those differ in
+#: architecture, training corpus AND resolution, yet the result was published under a
+#: column headed "input representation" with only the resolution difference disclosed.
+#: The uncontrolled comparison is still run below, because "does an off-the-shelf detector
+#: find this at all" is a fair separate question -- it is just not this question.
 SINGLE_VS_TEMPORAL = [
-    ("single-frame appearance",
+    ("single frame, RGB (rt-f-single1280)",
+     "realtime/work/out/1006/rt-f-single1280/dets.json",
+     "python realtime/tools/run_all.py rt-f-single1280"),
+    ("3-moment temporal stack (rt-c-full1280)",
+     "realtime/work/out/1006/rt-c-full1280/dets.json",
+     "python realtime/tools/run_all.py rt-c-full1280"),
+]
+
+#: The uncontrolled cross-check, kept and LABELLED as such.
+OFF_THE_SHELF = [
+    ("off-the-shelf YOLO26n, single frame @1760 px",
      "work/ablation/singleframe_1006.json",
      "python tools/run_baseline.py --weights baseline/yolo26n-*.pt "
      "--video data/videos/10_06.mp4 --out work/ablation/singleframe"),
-    ("3-moment temporal stack",
+    ("this pipeline, EDGE-RT profile",
      "work/ablation/temporal_1006.json",
      "python final/run_final.py --video data/videos/10_06.mp4 --profile edge-rt "
      "--out work/ablation/edge"),
@@ -69,20 +91,9 @@ def _missing(path: Path, how: str) -> None:
     print(f"  MISSING {path}\n    produce it with:  {how}", file=sys.stderr)
 
 
-def experiment_single_vs_temporal(gt_path: Path, block: int, resamples: int) -> str:
-    gt = GroundTruth.load(gt_path)
-    lines = [
-        "## Experiment 1 — can a single frame find it at all?",
-        "",
-        "Same video, same target, same ground truth. The single-frame model runs at "
-        "**1760 px**, higher than the temporal model's 1280, so the gap below is not a "
-        "resolution artefact.",
-        "",
-        "| input representation | AP | 95% CI | recall | precision | detections |",
-        "|---|---|---|---|---|---|",
-    ]
+def _score_rows(gt, rows, block: int, resamples: int, lines: list) -> bool:
     any_row = False
-    for label, rel, how in SINGLE_VS_TEMPORAL:
+    for label, rel, how in rows:
         p = REPO / rel
         if not p.exists():
             _missing(p, how)
@@ -94,15 +105,60 @@ def experiment_single_vs_temporal(gt_path: Path, block: int, resamples: int) -> 
         s = M.summarise(ev, M.pick_threshold(ev))
         lo, hi = M.bootstrap_ci(ev, block=block, n_resamples=resamples)
         n = sum(len(v) for v in ds.frames.values())
-        lines.append(f"| {label} | **{s.ap:.3f}** | [{lo:.3f}, {hi:.3f}] | {s.recall:.3f} "
+        ci = f"[{lo:.3f}, {hi:.3f}]"
+        # A degenerate interval on one video is not a tight measurement, it is a sample
+        # size of one. Say so in the cell rather than letting [1.000, 1.000] read as
+        # certainty.
+        if hi - lo < 1e-9:
+            ci += " ⚠️"
+        lines.append(f"| {label} | **{s.ap:.3f}** | {ci} | {s.recall:.3f} "
                      f"| {s.precision:.3f} | {n} |")
-    if any_row:
+    return any_row
+
+
+def experiment_single_vs_temporal(gt_path: Path, block: int, resamples: int) -> str:
+    gt = GroundTruth.load(gt_path)
+    lines = [
+        "## Experiment 1 — what does the temporal stack actually buy?",
+        "",
+        "### 1a. Controlled: the input representation, and nothing else",
+        "",
+        "Same network family, same training corpus, same **1280 px**, same pipeline, same "
+        "video, same ground truth. The only difference between these two rows is whether "
+        "the three input channels carry three moments or one frame's RGB. This is the "
+        "ablation; 1b below is not.",
+        "",
+        "| input representation | AP | 95% CI | recall | precision | detections |",
+        "|---|---|---|---|---|---|",
+    ]
+    ok_a = _score_rows(gt, SINGLE_VS_TEMPORAL, block, resamples, lines)
+
+    lines += [
+        "",
+        "### 1b. Uncontrolled cross-check: versus an off-the-shelf detector",
+        "",
+        "⚠️ **These two rows differ in architecture, training corpus AND resolution**, so "
+        "the gap between them is *not* attributable to the input representation. It answers "
+        "a different and still useful question — whether a competent off-the-shelf detector "
+        "finds this target at all — and it is reported separately for that reason. This "
+        "pair was previously published as though it were 1a.",
+        "",
+        "| system | AP | 95% CI | recall | precision | detections |",
+        "|---|---|---|---|---|---|",
+    ]
+    ok_b = _score_rows(gt, OFF_THE_SHELF, block, resamples, lines)
+
+    if ok_a or ok_b:
         lines += [
             "",
-            "The single-frame column is not a tuning failure. Its **precision is 1.000** — "
-            "every detection it makes is correct. It simply does not fire: the target is "
-            "present and it is not visible to a single-frame model, at any threshold, at "
-            "higher resolution than the model that finds it every frame.",
+            "Where the single-frame column has **precision 1.000 and near-zero recall**, it "
+            "is not a tuning failure: every detection it makes is correct, it simply does "
+            "not fire. The target is present and it is not visible to a single-frame model "
+            "at any threshold.",
+            "",
+            "⚠️ marks a confidence interval of zero width. Both arms here run on **one "
+            "video with one drone**, so a degenerate interval reflects a sample size of "
+            "one, not a precise measurement.",
         ]
     return "\n".join(lines)
 

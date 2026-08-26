@@ -168,10 +168,23 @@ def run(args: list[str]) -> None:
 
 
 def load_facts(results: Path, key: str) -> dict:
-    """Pull one engagement's measured facts straight out of its run manifest."""
+    """Pull one engagement's measured facts straight out of its run manifest.
+
+    ``detector`` is carried through with the rest, and it is not decoration. The city
+    clips were flown with ``detector: "oracle"`` -- the simulator's own bounding box,
+    zero latency -- so their "detection rate 0.97" is that oracle's *visibility*, not a
+    seeker's performance. The chase clips ran on a real trained detector. Both sets used
+    to render identical captions, giving a reader no way to tell which was which, while
+    the same city mission on the real detector scores 0.022-0.044.
+
+    Reading it from the run manifest rather than labelling the cards by hand is the same
+    rule the rest of this file follows: a caption that is typed can drift, a caption that
+    is read cannot.
+    """
     if not results.is_file():
         return {}
     blob = json.loads(results.read_text(encoding="utf-8"))
+    detector = (blob.get("args") or {}).get("detector")
     for r in blob.get("results", []):
         if r.get("name") == key:
             return {
@@ -184,6 +197,8 @@ def load_facts(results: Path, key: str) -> dict:
                 "track_rate": r.get("track_rate"),
                 "policy": r.get("policy"),
                 "struck_asset": r.get("struck_asset"),
+                # Per-engagement if the run recorded it, else the run-level setting.
+                "detector": r.get("detector", detector),
             }
     return {}
 
@@ -244,7 +259,33 @@ def main(argv=None) -> int:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--only", choices=["city", "chase"], help="one group only")
     ap.add_argument("--dry-run", action="store_true", help="list what would be written")
+    ap.add_argument("--facts-only", action="store_true",
+                    help="re-read each clip's facts from its run manifest and rewrite "
+                         "showcase.json, without re-encoding any video")
     a = ap.parse_args(argv)
+
+    ### Facts change when a run is re-scored or a field is added; the video does not.
+    ### Re-encoding 16 clips to correct a caption needs ffmpeg and the source recordings,
+    ### which is why the `detector` field went missing from every card for so long -- the
+    ### only way to refresh a caption was a job nobody wanted to run.
+    if a.facts_only:
+        path = OUT / "showcase.json"
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+        by_id = {c.out.rsplit("/", 1)[-1]: c for c in (*CITY, *CHASE)}
+        changed = 0
+        for group in manifest.values():
+            for entry in group:
+                clip = by_id.get(entry.get("id"))
+                if clip is None:
+                    print(f"  no clip definition for {entry.get('id')!r} -- left alone")
+                    continue
+                fresh = load_facts(ROOT / clip.results, clip.key)
+                if fresh and fresh != entry.get("facts"):
+                    entry["facts"] = fresh
+                    changed += 1
+        path.write_text(json.dumps(manifest, indent=1) + "\n", encoding="utf-8")
+        print(f"refreshed facts for {changed} clip(s) -> {path}")
+        return 0
 
     fx = ffmpeg()
     groups = {"city": CITY, "chase": CHASE}

@@ -1,0 +1,475 @@
+{
+  "gt": "work/gt_user.json",
+  "tracks": [
+    {
+      "id": 1,
+      "pred": "near",
+      "gt_kind": "other-ignore",
+      "gt_object": "near",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.0,
+        "other-ignore": 1.0,
+        "nothing": 0.0
+      },
+      "n_frames": 571,
+      "n_tracked": 571,
+      "conf_frac": 1.0,
+      "n_conf": 571,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    },
+    {
+      "id": 2,
+      "pred": "drone",
+      "gt_kind": "target",
+      "gt_object": "far",
+      "fractions": {
+        "target": 1.0,
+        "bird": 0.0,
+        "other-ignore": 0.0,
+        "nothing": 0.0
+      },
+      "n_frames": 571,
+      "n_tracked": 325,
+      "conf_frac": 0.997,
+      "n_conf": 324,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    },
+    {
+      "id": 243,
+      "pred": "drone",
+      "gt_kind": "nothing",
+      "gt_object": "far",
+      "fractions": {
+        "target": 0.003,
+        "bird": 0.0,
+        "other-ignore": 0.0,
+        "nothing": 0.997
+      },
+      "n_frames": 326,
+      "n_tracked": 72,
+      "conf_frac": 0.986,
+      "n_conf": 71,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    },
+    {
+      "id": 612,
+      "pred": "drone",
+      "gt_kind": "nothing",
+      "gt_object": "",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.0,
+        "other-ignore": 0.0,
+        "nothing": 1.0
+      },
+      "n_frames": 239,
+      "n_tracked": 50,
+      "conf_frac": 1.0,
+      "n_conf": 50,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    },
+    {
+      "id": 636,
+      "pred": "drone",
+      "gt_kind": "nothing",
+      "gt_object": "",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.0,
+        "other-ignore": 0.0,
+        "nothing": 1.0
+      },
+      "n_frames": 238,
+      "n_tracked": 170,
+      "conf_frac": 0.776,
+      "n_conf": 132,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    },
+    {
+      "id": 645,
+      "pred": "drone",
+      "gt_kind": "nothing",
+      "gt_object": "",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.0,
+        "other-ignore": 0.0,
+        "nothing": 1.0
+      },
+      "n_frames": 235,
+      "n_tracked": 192,
+      "conf_frac": 0.771,
+      "n_conf": 148,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    },
+    {
+      "id": 64,
+      "pred": "other",
+      "gt_kind": "nothing",
+      "gt_object": "bird",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.45,
+        "other-ignore": 0.0,
+        "nothing": 0.55
+      },
+      "n_frames": 229,
+      "n_tracked": 73,
+      "conf_frac": 0.123,
+      "n_conf": 9,
+      "confirmed_by_appearance": false,
+      "sustained_only": false
+    },
+    {
+      "id": 139,
+      "pred": "drone",
+      "gt_kind": "nothing",
+      "gt_object": "far",
+      "fractions": {
+        "target": 0.014,
+        "bird": 0.0,
+        "other-ignore": 0.0,
+        "nothing": 0.986
+      },
+      "n_frames": 218,
+      "n_tracked": 30,
+      "conf_frac": 0.9,
+      "n_conf": 27,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    },
+    {
+      "id": 121,
+      "pred": "other",
+      "gt_kind": "bird",
+      "gt_object": "bird",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.773,
+        "other-ignore": 0.0,
+        "nothing": 0.227
+      },
+      "n_frames": 207,
+      "n_tracked": 112,
+      "conf_frac": 0.009,
+      "n_conf": 1,
+      "confirmed_by_appearance": false,
+      "sustained_only": false
+    },
+    {
+      "id": 196,
+      "pred": "drone",
+      "gt_kind": "nothing",
+      "gt_object": "",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.0,
+        "other-ignore": 0.0,
+        "nothing": 1.0
+      },
+      "n_frames": 207,
+      "n_tracked": 28,
+      "conf_frac": 1.0,
+      "n_conf": 28,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    },
+    {
+      "id": 169,
+      "pred": "other",
+      "gt_kind": "bird",
+      "gt_object": "bird",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.758,
+        "other-ignore": 0.0,
+        "nothing": 0.242
+      },
+      "n_frames": 186,
+      "n_tracked": 85,
+      "conf_frac": 0.0,
+      "n_conf": 0,
+      "confirmed_by_appearance": false,
+      "sustained_only": false
+    },
+    {
+      "id": 35,
+      "pred": "drone",
+      "gt_kind": "nothing",
+      "gt_object": "near",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.0,
+        "other-ignore": 0.148,
+        "nothing": 0.852
+      },
+      "n_frames": 183,
+      "n_tracked": 53,
+      "conf_frac": 0.981,
+      "n_conf": 52,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    },
+    {
+      "id": 228,
+      "pred": "drone",
+      "gt_kind": "nothing",
+      "gt_object": "",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.0,
+        "other-ignore": 0.0,
+        "nothing": 1.0
+      },
+      "n_frames": 182,
+      "n_tracked": 52,
+      "conf_frac": 0.942,
+      "n_conf": 49,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    },
+    {
+      "id": 6,
+      "pred": "other",
+      "gt_kind": "nothing",
+      "gt_object": "bird",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.237,
+        "other-ignore": 0.0,
+        "nothing": 0.763
+      },
+      "n_frames": 173,
+      "n_tracked": 46,
+      "conf_frac": 0.13,
+      "n_conf": 6,
+      "confirmed_by_appearance": false,
+      "sustained_only": false
+    },
+    {
+      "id": 225,
+      "pred": "other",
+      "gt_kind": "bird",
+      "gt_object": "bird",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.74,
+        "other-ignore": 0.0,
+        "nothing": 0.26
+      },
+      "n_frames": 169,
+      "n_tracked": 61,
+      "conf_frac": 0.0,
+      "n_conf": 0,
+      "confirmed_by_appearance": false,
+      "sustained_only": false
+    },
+    {
+      "id": 122,
+      "pred": "drone",
+      "gt_kind": "nothing",
+      "gt_object": "",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.0,
+        "other-ignore": 0.0,
+        "nothing": 1.0
+      },
+      "n_frames": 164,
+      "n_tracked": 33,
+      "conf_frac": 1.0,
+      "n_conf": 33,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    },
+    {
+      "id": 593,
+      "pred": "drone",
+      "gt_kind": "other-ignore",
+      "gt_object": "near",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.0,
+        "other-ignore": 0.562,
+        "nothing": 0.438
+      },
+      "n_frames": 146,
+      "n_tracked": 33,
+      "conf_frac": 1.0,
+      "n_conf": 33,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    },
+    {
+      "id": 340,
+      "pred": "other",
+      "gt_kind": "nothing",
+      "gt_object": "bird",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.493,
+        "other-ignore": 0.0,
+        "nothing": 0.507
+      },
+      "n_frames": 138,
+      "n_tracked": 51,
+      "conf_frac": 0.137,
+      "n_conf": 7,
+      "confirmed_by_appearance": false,
+      "sustained_only": false
+    },
+    {
+      "id": 23,
+      "pred": "near",
+      "gt_kind": "nothing",
+      "gt_object": "",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.0,
+        "other-ignore": 0.0,
+        "nothing": 1.0
+      },
+      "n_frames": 101,
+      "n_tracked": 15,
+      "conf_frac": 1.0,
+      "n_conf": 15,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    },
+    {
+      "id": 105,
+      "pred": "drone",
+      "gt_kind": "nothing",
+      "gt_object": "",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.0,
+        "other-ignore": 0.0,
+        "nothing": 1.0
+      },
+      "n_frames": 85,
+      "n_tracked": 21,
+      "conf_frac": 1.0,
+      "n_conf": 21,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    }
+  ],
+  "dets": "work/det3/0705/pc-max.json",
+  "constants": {
+    "CONF_FRAC": 0.7,
+    "N_CONF": 8,
+    "LONG_TRACK": 120,
+    "DRONE_SCORE": 0.35,
+    "allow_motion": true
+  },
+  "ground_truth": {
+    "target_objects": [
+      "far"
+    ],
+    "bird_objects": [
+      "bird",
+      "bird#2",
+      "bird#3",
+      "bird#4",
+      "bird#5",
+      "bird#6",
+      "bird#7",
+      "bird#8"
+    ],
+    "other_ignore_objects": [
+      "near"
+    ],
+    "bird_instances": 934
+  },
+  "raw_detections": {
+    "detections_scored": 6262,
+    "on_target": 525,
+    "on_bird": 440,
+    "on_other-ignore": 1038,
+    "on_nothing": 4259,
+    "per_bird": {
+      "bird": 254,
+      "bird#3": 61,
+      "bird#5": 16,
+      "bird#4": 37,
+      "bird#2": 52,
+      "bird#6": 17,
+      "bird#7": 3
+    }
+  },
+  "n_confirmed_tracks": 20,
+  "confusion_matrix": {
+    "drone": {
+      "target": 1,
+      "bird": 0,
+      "other-ignore": 1,
+      "nothing": 10,
+      "ambiguous": 0
+    },
+    "near": {
+      "target": 0,
+      "bird": 0,
+      "other-ignore": 1,
+      "nothing": 1,
+      "ambiguous": 0
+    },
+    "other": {
+      "target": 0,
+      "bird": 3,
+      "other-ignore": 0,
+      "nothing": 3,
+      "ambiguous": 0
+    }
+  },
+  "operating_point": {
+    "raised_tracks": 14,
+    "raised_on_other_ignore_not_scored": 2,
+    "judged_tracks": 12,
+    "true_target_tracks": 1,
+    "bird_false_alarms": 0,
+    "clutter_false_alarms": 11,
+    "track_precision": 0.0833,
+    "track_recall_over_objects": 1.0,
+    "missed_target_objects": []
+  },
+  "durations_frames": {
+    "target": {
+      "n": 1,
+      "median": 571,
+      "min": 571,
+      "max": 571
+    },
+    "bird": {
+      "n": 0,
+      "median": null,
+      "min": null,
+      "max": null
+    },
+    "clutter": {
+      "n": 11,
+      "median": 207,
+      "min": 85,
+      "max": 326
+    }
+  },
+  "long_track_bypass": {
+    "promoted_by_sustained_only": 0,
+    "of_which_bird": 0,
+    "of_which_clutter": 0
+  },
+  "rejected_tracks": {
+    "n_other": 6,
+    "failed_conf_frac": 6,
+    "failed_n_conf": 5,
+    "rejected_that_were_birds": 3,
+    "rejected_that_were_targets": 0
+  }
+}

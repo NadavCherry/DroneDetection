@@ -176,7 +176,20 @@ def facts_line(f: dict) -> str:
     if f.get("margin_s") is not None:
         bits.append(f"{f['margin_s']:.2f} s before the strike")
     if f.get("detect_rate") is not None:
-        bits.append(f"detection rate {f['detect_rate']:.2f}")
+        # NEVER print a detection rate without saying which sensor produced it. The city
+        # clips ran on `detector: oracle` -- the simulator's own box -- so their 0.97 is
+        # the oracle's visibility, not a seeker's skill; the chase clips ran on a real
+        # trained detector and carried an identical-looking caption. A reader had no way
+        # to tell them apart, and the same city mission on the real detector scores 0.02.
+        det = f.get("detector")
+        if det == "oracle":
+            bits.append(f"detection rate {f['detect_rate']:.2f} "
+                        f"<b>(perfect sensor &mdash; oracle)</b>")
+        elif det:
+            bits.append(f"detection rate {f['detect_rate']:.2f} "
+                        f"(<code>{det}</code> detector)")
+        else:
+            bits.append(f"detection rate {f['detect_rate']:.2f} (sensor not recorded)")
     if not bits:
         bits.append("see the run manifest in <code>work/pursuit/</code>")
     return " &#183; ".join(bits)
@@ -196,6 +209,14 @@ def main() -> int:
                "shows all four camera feeds with the owning camera outlined, a "
                "contrast-stretched magnified inset of the target, and a top-down map with both "
                "flight paths and a red cross on the wall the intruder was aiming at.</p>")
+    out.append('<p style="border-left:3px solid #d29922;padding-left:.8em">'
+               '<b>These engagements were flown with a perfect sensor</b> '
+               '(<code>detector: oracle</code>, the simulator\'s own bounding box with zero '
+               'latency), so they measure the <i>guidance</i>, not the seeker &mdash; the '
+               'detection rates on the cards are that oracle\'s visibility. Flown on the '
+               'seeker\'s own detections the same city mission is <b>0 / 3</b> with a '
+               'detection rate of 4.4&#37;. The closed-loop result with a real detector is '
+               'the one-camera pursuit campaign: <b>54 / 62</b>.</p>')
     out.append('<div class="grid">')
     for c in manifest.get("city", []):
         f = c.get("facts", {})

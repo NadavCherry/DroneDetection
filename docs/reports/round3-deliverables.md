@@ -32,7 +32,7 @@ track-level kinematic/spectral features. It turned out simpler than the literatu
 **aggregate the 2-class verifier's per-detection opinion over the track's lifetime.**
 
 For every track: match its `tracked`-status positions back to the detections that fed them;
-count the fraction that are verifier-confirmed drones (label `drone*`, score ≥ 0.5).
+count the fraction that are verifier-confirmed drones (label `drone*`, score ≥ `DRONE_SCORE` = **0.35**).
 Measured separation on both videos (moe3 + edge tracks):
 
 | track | conf_frac | n_conf |
@@ -43,14 +43,28 @@ Measured separation on both videos (moe3 + edge tracks):
 | all clutter tracks (both videos) | 0.00–0.02 | 0–7 |
 | brief sky object (712) | 1.00 | **4** |
 
-The rule (`dronedet/trackclass.py`): a track is a **drone** iff `conf_frac ≥ 0.5` **and**
-`n_conf ≥ 8` (sustained evidence — a 4-detection flash is an anecdote, not a track);
+The rule (`dronedet/trackclass.py`): a track is a **drone** iff `conf_frac ≥ CONF_FRAC` = **0.70** **and**
+`n_conf ≥ N_CONF` = 8 (sustained evidence — a 4-detection flash is an anecdote, not a track) — **or** if it is `sustained`, i.e. ≥ `LONG_TRACK` = 120 tracked
+frames, which promotes it with no appearance requirement at all;
 mostly-large-box tracks are the landed drone (`near`); everything else is `other` and is
 dropped from the tracked output (`tools/tracks_to_dets.py --classify`).
 
-- No flap-spectrum or kinematic features were needed: the labeled GT birds never even form
-  tracks (the verifier already suppresses them below tracker threshold). The planned
-  bird/drone discriminator collapsed into eight lines of counting.
+> This paragraph said `conf_frac ≥ 0.5` and `score ≥ 0.5`, and did not mention the
+> `LONG_TRACK` bypass. The code has used 0.70 and 0.35 throughout, and the bypass is the
+> only route to `drone` that never consults the appearance verifier — which is exactly
+> the clause a bird is most likely to exploit. Corrected against the source.
+
+- No flap-spectrum or kinematic features were needed: no labelled bird is ever raised as a
+  target. The planned bird/drone discriminator collapsed into eight lines of counting.
+
+  > ⚠️ **The mechanism stated here was wrong.** This said the birds "never even form tracks
+  > (the verifier already suppresses them below tracker threshold)". Measured at track level
+  > for the first time in [`track-level-birds.md`](track-level-birds.md): **440 detections do
+  > land on labelled birds, and three bird tracks do form** — they are stopped by the *track
+  > classifier*, not by the verifier. The conclusion (0 birds raised, over 934 bird
+  > instances) survives and is now measured where the decision is actually made. The
+  > difference matters, because it is the classifier's thresholds that would have to hold on
+  > new data, not the verifier's.
 - The rule is **online-capable**: the drone track reaches its 8th confirmation 7–8 frames
   after track start on both videos (≈ 0.25 s alarm latency at 30 fps).
 
@@ -159,7 +173,20 @@ frame 0 (v2 was blind for the first 12 frames of every stream).
 | full-frame stabilizer instead of crop-correlation | no gain (val AP 0.710 vs 0.717) — the 768×448 crop correlation is not the bottleneck; keep it (3 ms) |
 | resolution 1280 → 640 | per-frame val AP 0.243 — too coarse for 4 px targets; 640 stays the "fast fallback", 1280 is the operating point |
 | checkpoint choice | fitness-selected `best.pt` ≫ `last.pt` at pipeline level (val 0.719 vs 0.530) — late epochs overfit the pastes |
-| temporal spacing DT = 9 (t−18/t−9/t) | no gain: val AP 0.710 vs 0.719, test 0.873 vs 0.889 — longer trails buy recall (0.67→0.73) but accumulate foliage motion (precision 0.80→0.71); DT = 6 stays |
+| temporal spacing DT = 9 (t−18/t−9/t) | no gain: val AP 0.710 vs 0.719, test 0.873 vs 0.889 — longer trails buy recall (0.67→0.73) but accumulate foliage motion (precision 0.80→0.71); DT = 6 stays. ⚠️ **This row cannot be re-derived — see the note below.** |
+
+> ⚠️ **The DT row is the one row in this table with nothing behind it.** Unlike its neighbours, no
+> detection JSON, checkpoint, seed or eval file for DT = 9 survives: the training runs were
+> gitignored build output and were not kept, and a search of `work/`, `work/det3/`,
+> `work/eval_round3_*.md` and `realtime/work/` finds no artifact mentioning that spacing. The
+> numbers above are a transcription of a run nobody can reproduce.
+>
+> That matters more than it would for any other row, because **DT = 6 is the founding constant of
+> this project** — "three moments at t−12 / t−6 / t" is the whole method — and until now this single
+> line was its entire published justification. It is being replaced by a real sweep over
+> dt ∈ {2, 4, 6, 8, 12} on NPS-Drones, 3 seeds each, one evaluator, with the artifacts kept
+> (`cluster/dt_build.sbatch`, `cluster/dt_train.sbatch`). Treat this row as a historical note, not
+> as evidence.
 | ByteTrack-style min-score 0.15 association | rejected (see PC table note) — clutter poisons the Kalman state |
 | coast smoothing (offline artifact only) | linear interpolation of coast positions between real-detection anchors (gaps ≤ 60 frames): fixes the last coast-drift miss on each video; causal per-frame path unchanged |
 
@@ -167,7 +194,8 @@ frame 0 (v2 was blind for the first 12 frames of every stream).
 
 The deliverables are retrained on **all 548 labeled frames** of 07_05. The split-trained generation
 above is the honest ablation record, and what was preserved is the *evidence*, not the run
-directories. §5's rows can be read straight out of the committed
+directories. §5's rows can be read straight out of the committed — **with one exception, the
+temporal-spacing row, whose artifacts were not kept; it is flagged in place above** —
 [`work/eval_round3_0705val.md`](../../work/eval_round3_0705val.md),
 [`work/eval_round3_0705full.md`](../../work/eval_round3_0705full.md) and
 [`work/eval_round3_1006test.md`](../../work/eval_round3_1006test.md) — and, for the edge lineup,

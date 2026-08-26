@@ -1,0 +1,207 @@
+{
+  "gt": "realtime/work/gt_1006_v2.json",
+  "tracks": [
+    {
+      "id": 9,
+      "pred": "drone",
+      "gt_kind": "target",
+      "gt_object": "far",
+      "fractions": {
+        "target": 1.0,
+        "bird": 0.0,
+        "other-ignore": 0.0,
+        "nothing": 0.0
+      },
+      "n_frames": 338,
+      "n_tracked": 272,
+      "conf_frac": 0.963,
+      "n_conf": 262,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    },
+    {
+      "id": 23,
+      "pred": "drone",
+      "gt_kind": "nothing",
+      "gt_object": "",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.0,
+        "other-ignore": 0.0,
+        "nothing": 1.0
+      },
+      "n_frames": 270,
+      "n_tracked": 46,
+      "conf_frac": 0.848,
+      "n_conf": 39,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    },
+    {
+      "id": 54,
+      "pred": "drone",
+      "gt_kind": "nothing",
+      "gt_object": "",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.0,
+        "other-ignore": 0.0,
+        "nothing": 1.0
+      },
+      "n_frames": 183,
+      "n_tracked": 22,
+      "conf_frac": 0.909,
+      "n_conf": 20,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    },
+    {
+      "id": 64,
+      "pred": "drone",
+      "gt_kind": "nothing",
+      "gt_object": "mover2",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.0,
+        "other-ignore": 0.106,
+        "nothing": 0.894
+      },
+      "n_frames": 151,
+      "n_tracked": 22,
+      "conf_frac": 1.0,
+      "n_conf": 22,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    },
+    {
+      "id": 42,
+      "pred": "drone",
+      "gt_kind": "nothing",
+      "gt_object": "mover1",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.0,
+        "other-ignore": 0.189,
+        "nothing": 0.811
+      },
+      "n_frames": 148,
+      "n_tracked": 16,
+      "conf_frac": 1.0,
+      "n_conf": 16,
+      "confirmed_by_appearance": true,
+      "sustained_only": false
+    },
+    {
+      "id": 323,
+      "pred": "other",
+      "gt_kind": "nothing",
+      "gt_object": "",
+      "fractions": {
+        "target": 0.0,
+        "bird": 0.0,
+        "other-ignore": 0.0,
+        "nothing": 1.0
+      },
+      "n_frames": 17,
+      "n_tracked": 3,
+      "conf_frac": 1.0,
+      "n_conf": 3,
+      "confirmed_by_appearance": false,
+      "sustained_only": false
+    }
+  ],
+  "dets": "work/det3/1006/pc-max.json",
+  "constants": {
+    "CONF_FRAC": 0.7,
+    "N_CONF": 8,
+    "LONG_TRACK": 120,
+    "DRONE_SCORE": 0.35,
+    "allow_motion": true
+  },
+  "ground_truth": {
+    "target_objects": [
+      "far"
+    ],
+    "bird_objects": [],
+    "other_ignore_objects": [
+      "mover1",
+      "mover2"
+    ],
+    "bird_instances": 0
+  },
+  "raw_detections": {
+    "detections_scored": 2348,
+    "on_target": 327,
+    "on_bird": 0,
+    "on_other-ignore": 81,
+    "on_nothing": 1940,
+    "per_bird": {}
+  },
+  "n_confirmed_tracks": 6,
+  "confusion_matrix": {
+    "drone": {
+      "target": 1,
+      "bird": 0,
+      "other-ignore": 0,
+      "nothing": 4,
+      "ambiguous": 0
+    },
+    "near": {
+      "target": 0,
+      "bird": 0,
+      "other-ignore": 0,
+      "nothing": 0,
+      "ambiguous": 0
+    },
+    "other": {
+      "target": 0,
+      "bird": 0,
+      "other-ignore": 0,
+      "nothing": 1,
+      "ambiguous": 0
+    }
+  },
+  "operating_point": {
+    "raised_tracks": 5,
+    "raised_on_other_ignore_not_scored": 0,
+    "judged_tracks": 5,
+    "true_target_tracks": 1,
+    "bird_false_alarms": 0,
+    "clutter_false_alarms": 4,
+    "track_precision": 0.2,
+    "track_recall_over_objects": 1.0,
+    "missed_target_objects": []
+  },
+  "durations_frames": {
+    "target": {
+      "n": 1,
+      "median": 338,
+      "min": 338,
+      "max": 338
+    },
+    "bird": {
+      "n": 0,
+      "median": null,
+      "min": null,
+      "max": null
+    },
+    "clutter": {
+      "n": 4,
+      "median": 167.0,
+      "min": 148,
+      "max": 270
+    }
+  },
+  "long_track_bypass": {
+    "promoted_by_sustained_only": 0,
+    "of_which_bird": 0,
+    "of_which_clutter": 0
+  },
+  "rejected_tracks": {
+    "n_other": 1,
+    "failed_conf_frac": 0,
+    "failed_n_conf": 1,
+    "rejected_that_were_birds": 0,
+    "rejected_that_were_targets": 0
+  }
+}

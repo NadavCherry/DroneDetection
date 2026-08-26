@@ -1,0 +1,267 @@
+{
+  "dataset": "ardmav",
+  "bins": "aitod",
+  "rule": "iou",
+  "iou": 0.5,
+  "conf": 0.001,
+  "arms": {
+    "ours": {
+      "bins": {
+        "very-tiny": {
+          "mean": 0.5025015338061295,
+          "std": 0.0114807436278199,
+          "seeds": [
+            0.5049,
+            0.5126,
+            0.49
+          ],
+          "n_seeds": 3,
+          "n_gt": 5677,
+          "ci95": [
+            0.3192210845923913,
+            0.6493874557397568
+          ],
+          "underpowered": false
+        },
+        "tiny": {
+          "mean": 0.7480538946885904,
+          "std": 0.006321585604001174,
+          "seeds": [
+            0.7425,
+            0.755,
+            0.7467
+          ],
+          "n_seeds": 3,
+          "n_gt": 12584,
+          "ci95": [
+            0.6232398831443055,
+            0.8161187991159561
+          ],
+          "underpowered": false
+        },
+        "small": {
+          "mean": 0.8098183923795839,
+          "std": 0.01738861551335813,
+          "seeds": [
+            0.7945,
+            0.8287,
+            0.8062
+          ],
+          "n_seeds": 3,
+          "n_gt": 7931,
+          "ci95": [
+            0.6409105948287046,
+            0.8870412434614212
+          ],
+          "underpowered": false
+        },
+        "medium": {
+          "mean": 0.4735474272265048,
+          "std": 0.035684084706910764,
+          "seeds": [
+            0.4408,
+            0.5116,
+            0.4683
+          ],
+          "n_seeds": 3,
+          "n_gt": 1968,
+          "ci95": [
+            0.1589508196524434,
+            0.6918485676396955
+          ],
+          "underpowered": false
+        }
+      },
+      "sequences": [
+        "phantom05",
+        "phantom08",
+        "phantom09",
+        "phantom10",
+        "phantom19",
+        "phantom30",
+        "phantom41",
+        "phantom43",
+        "phantom46",
+        "phantom47",
+        "phantom58",
+        "phantom63",
+        "phantom65",
+        "phantom70",
+        "phantom86"
+      ],
+      "n_sequences": 15
+    },
+    "yolomg": {
+      "bins": {
+        "very-tiny": {
+          "mean": 0.41976865459195495,
+          "std": 0.01748160907835297,
+          "seeds": [
+            0.4399,
+            0.4088,
+            0.4105
+          ],
+          "n_seeds": 3,
+          "n_gt": 5672,
+          "ci95": [
+            0.3015745485205605,
+            0.5211311426872782
+          ],
+          "underpowered": false
+        },
+        "tiny": {
+          "mean": 0.7598172032494473,
+          "std": 0.00878783007601287,
+          "seeds": [
+            0.77,
+            0.7548,
+            0.7547
+          ],
+          "n_seeds": 3,
+          "n_gt": 12572,
+          "ci95": [
+            0.6482659211721105,
+            0.8539836304991779
+          ],
+          "underpowered": false
+        },
+        "small": {
+          "mean": 0.9107554791202017,
+          "std": 0.010731879658055086,
+          "seeds": [
+            0.9191,
+            0.8987,
+            0.9145
+          ],
+          "n_seeds": 3,
+          "n_gt": 7926,
+          "ci95": [
+            0.8481876807563559,
+            0.9569306899905325
+          ],
+          "underpowered": false
+        },
+        "medium": {
+          "mean": 0.892700446224806,
+          "std": 0.013155664162608775,
+          "seeds": [
+            0.9075,
+            0.8824,
+            0.8881
+          ],
+          "n_seeds": 3,
+          "n_gt": 1968,
+          "ci95": [
+            0.6037644282721664,
+            0.970006167014061
+          ],
+          "underpowered": false
+        }
+      },
+      "sequences": [
+        "phantom05",
+        "phantom08",
+        "phantom09",
+        "phantom10",
+        "phantom19",
+        "phantom30",
+        "phantom41",
+        "phantom43",
+        "phantom46",
+        "phantom47",
+        "phantom58",
+        "phantom63",
+        "phantom65",
+        "phantom70",
+        "phantom86"
+      ],
+      "n_sequences": 15
+    },
+    "ours-single": {
+      "bins": {
+        "very-tiny": {
+          "mean": 0.3784609802674647,
+          "std": 0.031245750230523724,
+          "seeds": [
+            0.3468,
+            0.4092,
+            0.3794
+          ],
+          "n_seeds": 3,
+          "n_gt": 5677,
+          "ci95": [
+            0.2174593765246239,
+            0.44925539454853197
+          ],
+          "underpowered": false
+        },
+        "tiny": {
+          "mean": 0.6975851171834379,
+          "std": 0.025303114702606842,
+          "seeds": [
+            0.6797,
+            0.7265,
+            0.6865
+          ],
+          "n_seeds": 3,
+          "n_gt": 12584,
+          "ci95": [
+            0.5116781904357837,
+            0.7890845944395114
+          ],
+          "underpowered": false
+        },
+        "small": {
+          "mean": 0.8362590753154007,
+          "std": 0.031165958228427233,
+          "seeds": [
+            0.801,
+            0.86,
+            0.8478
+          ],
+          "n_seeds": 3,
+          "n_gt": 7931,
+          "ci95": [
+            0.6096263340918864,
+            0.9026170766623903
+          ],
+          "underpowered": false
+        },
+        "medium": {
+          "mean": 0.487966224514426,
+          "std": 0.08405699680346858,
+          "seeds": [
+            0.3924,
+            0.5506,
+            0.5208
+          ],
+          "n_seeds": 3,
+          "n_gt": 1968,
+          "ci95": [
+            0.12657718764965684,
+            0.6317574394599546
+          ],
+          "underpowered": false
+        }
+      },
+      "sequences": [
+        "phantom05",
+        "phantom08",
+        "phantom09",
+        "phantom10",
+        "phantom19",
+        "phantom30",
+        "phantom41",
+        "phantom43",
+        "phantom46",
+        "phantom47",
+        "phantom58",
+        "phantom63",
+        "phantom65",
+        "phantom70",
+        "phantom86"
+      ],
+      "n_sequences": 15
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "script": "/home/cherryn/projects/SpeckLock/third_party/YOLOMG/data/split_train_val.py",
+  "n_input_frames": 9087,
+  "returncode": 0,
+  "counts": {
+    "trainval": 9087,
+    "train": 7723,
+    "val": 1364,
+    "test": 0
+  },
+  "distinct_videos_per_split": {
+    "trainval": 50,
+    "train": 50,
+    "val": 50,
+    "test": 0
+  }
+}

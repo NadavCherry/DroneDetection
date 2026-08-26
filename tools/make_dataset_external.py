@@ -64,6 +64,22 @@ ARD_VAL_IDS = ["phantom06", "phantom23", "phantom45", "phantom61", "phantom79"]
 TEMPORAL_DT = 6
 
 
+def _temporal_name(base: str, temporal: bool, dt: int) -> str:
+    """Dataset directory name, carrying a non-default tap spacing in the name itself.
+
+    Without this, `--dt 2` writes into `nps_yolo_temporal` -- the directory holding the
+    dt=6 tiles every shipped number was trained on -- and destroys it in place. The
+    build is hours of CPU, the overwrite is silent, and the resulting table would
+    compare a dt=2 model against numbers whose dataset no longer exists.
+
+    The default keeps its bare name so every existing path, config and manifest that
+    already says `nps_yolo_temporal` still resolves.
+    """
+    if not temporal:
+        return base
+    return base if dt == TEMPORAL_DT else f"{base}_dt{dt}"
+
+
 # ----------------------------------------------------------------------------- parsing
 def parse_ardmav(vid_id):
     """-> {frame0: [[x1,y1,x2,y2], ...]}  (frame0 is 0-based decoded index)."""
@@ -170,7 +186,8 @@ def build_nps_tiled(stride_train, stride_val, min_side, tile=640, temporal=False
     Same builder for both arms, differing only in which extractor is called, so the two
     arms of the A/B cannot drift apart in tiling, stride or negatives.
     """
-    name = "nps_yolo_temporal" if temporal else "nps_yolo_tiled"
+    name = _temporal_name("nps_yolo_temporal" if temporal else "nps_yolo_tiled",
+                          temporal, dt)
     root = OUT_ROOT / name
     stats = {"train": [0, 0], "val": [0, 0]}
     extractor = extract_yolo_tiled_temporal if temporal else extract_yolo_tiled
@@ -653,7 +670,7 @@ def build_ardmav_temporal_tiled(stride_train, stride_val, min_side, tile=640,
     on -- and the 5 val videos are a whole-video holdout, so no frame of a val sequence
     can reach train through a neighbouring tile.
     """
-    root = OUT_ROOT / "ardmav_yolo_temporal"
+    root = OUT_ROOT / _temporal_name("ardmav_yolo_temporal", True, dt)
     train_ids = [v for v in _ard_all() if v not in ARD_TEST_IDS and v not in ARD_VAL_IDS]
     stats = {"train": [0, 0], "val": [0, 0]}
     print(f"temporal stacks: dt={dt} (taps t-{2*dt}, t-{dt}, t), "
@@ -732,7 +749,8 @@ def build_local_tiled(stride_train=1, stride_val=None, min_side=0.0, tile=640,
     """
     train_vid, test_vid = LOCAL_DIRECTIONS[direction]
     suffix = "" if direction == "fwd" else "_rev"
-    root = OUT_ROOT / f"local{suffix}_yolo_{'temporal' if temporal else 'tiled'}"
+    root = OUT_ROOT / _temporal_name(
+        f"local{suffix}_yolo_{'temporal' if temporal else 'tiled'}", temporal, dt)
 
     boxes = parse_repo_gt(LOCAL_GT[train_vid])
     pos = sorted(f for f, b in boxes.items() if b)

@@ -11,12 +11,25 @@ verifier's opinion separates cleanly. Measured on 07_05 (moe3) + 10_06:
     all foliage-clutter tracks        0.00-0.02      0-1
     brief unlabeled sky object           1.00         4   <- n_conf kills it
 
-Rule: a track is a DRONE iff at least CONF_FRAC of its real detections
-are verifier-confirmed drone detections (label 'drone*', score >= 0.5)
-AND it has at least N_CONF such detections (sustained evidence -- a
+Rule: a track is a DRONE iff at least CONF_FRAC (0.70) of its matched detections
+are verifier-confirmed drone detections (label 'drone*', score >= DRONE_SCORE = 0.35)
+AND it has at least N_CONF (8) such detections (sustained evidence -- a
 4-detection flash is an anecdote, not a track). Tracks whose detections
 are mostly large boxes are the landed/near drone ('near'); everything
 else is 'other' (foliage, birds, unknown movers).
+
+...OR the track is `sustained`: LONG_TRACK = 120 tracked frames promotes it with **no
+appearance requirement at all**. That clause is not a detail -- it is the only path to
+'drone' that never consults the verifier, and `dronedet/track.py` says in its own comment
+that the kinematic filter does not exclude birds ("Birds pass too -- bird vs drone is an
+appearance/classifier problem, not a kinematic one"). A bird that flies straight for four
+seconds is what it admits. `tools/track_level_birds.py` reports how many tracks it
+promoted and how many of those were labelled birds; do not remove that measurement.
+
+This docstring previously said "score >= 0.5" while the code used 0.35, and did not
+mention LONG_TRACK at all -- so the module contradicted itself and the round-3 report
+repeated the wrong number. The constants below are the authority; if you change one,
+change this paragraph in the same commit.
 """
 
 from __future__ import annotations

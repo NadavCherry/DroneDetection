@@ -282,3 +282,29 @@ def test_chroma_444_preserves_the_inter_channel_difference_better(tmp_path):
     assert out["444"] < out["420"], (
         f"4:4:4 should round-trip a temporal stack more faithfully "
         f"(444 err {out['444']:.2f} vs 420 err {out['420']:.2f})")
+
+
+# --------------------------------------------------------------- dt sweep safety
+
+def test_a_non_default_dt_gets_its_own_directory():
+    """A dt sweep must not overwrite the dataset the shipped weights were trained on.
+
+    Every temporal builder wrote to a fixed name -- `nps_yolo_temporal` -- regardless of
+    the `--dt` it was handed, while the CLI has advertised `--dt` all along. Running the
+    sweep MISSION item 7 asks for would therefore have destroyed the dt=6 tiles in place,
+    silently, after hours of CPU, leaving a table that compares a dt=2 model against
+    numbers whose dataset no longer exists.
+    """
+    assert M._temporal_name("nps_yolo_temporal", True, M.TEMPORAL_DT) == \
+        "nps_yolo_temporal", "the default must keep its bare name: paths, configs and " \
+        "manifests already reference it"
+    for dt in (2, 3, 4, 8, 12):
+        got = M._temporal_name("nps_yolo_temporal", True, dt)
+        assert got == f"nps_yolo_temporal_dt{dt}"
+        assert got != "nps_yolo_temporal"
+
+
+def test_single_frame_builds_never_get_a_dt_suffix():
+    """dt is meaningless without a temporal stack, so it must not reach the name."""
+    for dt in (2, 6, 12):
+        assert M._temporal_name("nps_yolo_tiled", False, dt) == "nps_yolo_tiled"

@@ -25,6 +25,20 @@ to resolve first, not this one.
 | [NVIDIA Isaac Sim](https://developer.nvidia.com/isaac-sim) + [Pegasus Simulator](https://github.com/PegasusSimulator/PegasusSimulator) | NVIDIA Omniverse EULA · BSD-3-Clause | the pursuit renderer and airframe model. **Not redistributed here** — the container is yours to obtain and run. |
 | [TensorRT](https://developer.nvidia.com/tensorrt) | NVIDIA SLA | the FP16 engines behind the edge profile. Engines are architecture-specific and are **not** committed. |
 
+## Redistributed model weights
+
+The table above licenses the *code* these models are built with. Two **trained checkpoints**
+are committed to this repository and are separate artifacts, so they are named separately:
+
+| file | origin | licence |
+|---|---|---|
+| `baseline/yolo26n-new-data_full__2026_Jan_19.pt` | An externally trained Ultralytics YOLO26n, used only as the single-frame **baseline** the temporal stack is compared against — it is not part of any shipped SpeckLock model. Not trained in this repository: the checkpoint's own metadata records the run as `/app/train_yolo/runs/detect/Train_Detect/Project-Yolo26-New_Data/Full_300_b8_mgpu`, a path that exists nowhere here. | The checkpoint declares `AGPL-3.0 (https://ultralytics.com/license)` in its own metadata. |
+| `work/models/FSRCNN_x4.pb` | Pretrained super-resolution weights for OpenCV's `dnn_superres`, from [Saafke/FSRCNN_Tensorflow](https://github.com/Saafke/FSRCNN_Tensorflow) (written for OpenCV during GSoC 2019; trained on T91 and fine-tuned on General100). | Apache-2.0, per that repository. |
+
+Neither was trained by me, and the training **data** behind the first one is not mine to
+describe. If you are reusing this repository's weights, these two are the files whose
+provenance is somebody else's.
+
 ## Data
 
 The two source videos in `data/videos/` and their hand labels

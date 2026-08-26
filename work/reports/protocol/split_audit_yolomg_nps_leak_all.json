@@ -1,0 +1,14 @@
+{
+  "dataset": "/home/cherryn/projects/SpeckLock/work/ext_datasets/yolomg_nps",
+  "style": "yolomg",
+  "pool": "all-clips",
+  "seed": 0,
+  "train_frac": 0.85,
+  "n_train": 7723,
+  "n_val": 1364,
+  "n_total": 9087,
+  "train_clips": 50,
+  "val_clips": 50,
+  "clips_in_both": 50,
+  "val_clips_unseen_in_train": []
+}
