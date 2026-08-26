@@ -33,7 +33,10 @@ claim to be. The pattern across every corpus is consistent and is the actual fin
 > **The advantage tracks target size.** On NPS (targets 10–25 px) the competitor leads.
 > On ARD-MAV overall (median 11.8 px) it leads; on ARD-MAV's small-MAV subset the point
 > estimate favours us on every seed (five sequences cannot make that significant). On this project's own task (median 8.0 px, distractor birds at 6.0 px) we lead by
-> +0.24 AP on average — every seed, never below +0.12 — with zero distractor false alarms. The smaller the target, the more the
+> +0.24 AP on average — every seed, never below +0.12. Distractors are a split result and
+> §1a gives both halves: zero hits on 10_06's two moving objects, but birds DO draw fire
+> on 07_05 — what separates the arms there is selectivity, roughly half the bird hits per
+> drone found, not immunity. The smaller the target, the more the
 > temporal stack is worth — which is the design thesis, now with its supporting and its
 > *limiting* evidence in one table.
 
