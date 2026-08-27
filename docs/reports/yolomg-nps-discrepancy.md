@@ -1,8 +1,7 @@
 # Why the paper reports 0.95 on NPS-Drones and we measure 0.527
 
-**Status: investigation in progress.** Sections 1-6 are complete and measured. Section 7
-(the leak-split retrain) is running; its result is the last quantitative piece and this
-document will not claim a total until it lands.
+**Status: complete.** All seven sections are measured. The leak-split retrain landed and
+its verdict is applied in 7d against the rule fixed in 7c before the data existed.
 
 ---
 
@@ -315,6 +314,68 @@ leak arms sit *inside* the disjoint band: 0.6950 (ctl) and 0.6799 (all) against 
 memorisation can appear late in training, which is exactly why the arms are being run to
 100 epochs instead of being called here.
 
+### 7d. The verdict, applied
+
+Both arms finished 100/100 epochs, COMPLETED, exit 0.
+
+| arm | pool | epochs | **best** | at epoch | **final** |
+|---|---|---|---|---|---|
+| video-disjoint | train 1-36, val 37-40 | 100 x3 | 0.790 / 0.788 / 0.809 | — | — |
+| **leak, controlled** | random 85/15 over clips 1-40 | 100 | **0.8411** | **99** | **0.8397** |
+| leak, faithful | random 85/15 over clips 1-50 | 100 | 0.8022 | 93 | 0.7974 |
+
+**Against the rule fixed in 7c:**
+
+* The controlled arm's best is **0.8411, above the 0.83 threshold**. Per the rule as
+  written, **per-frame leakage is a real contributor**, quantified as
+  `0.8411 - 0.796 = +0.045`.
+* The faithful arm lands at **0.8022, inside the disjoint band 0.788-0.809** — no effect.
+
+**The invalidation check fires, and it matters.** 7c required checking, before reading the
+result, whether the best epoch sits at or near the end of training. The controlled arm's
+best is **epoch 99 of 100**, and its last eight epochs read 0.832 / 0.835 / 0.838 / 0.839 /
+0.837 / 0.839 / 0.841 / 0.840 — still climbing, gaining ~0.015 over the final thirty epochs.
+**That run had not converged.** So +0.045 is a **lower bound on the leak effect, not a
+measurement of its ceiling.** The faithful arm, by contrast, did plateau (best at 93, final
+0.7974, last eight flat or drifting down), so its null result is a real null.
+
+**A prediction this document made, and got wrong.** At epoch 43 the controlled arm sat at
+0.8109 and this investigation read it as "noise around the band edge, not movement toward a
+leak effect", leaning toward the leakage-contributes-nothing outcome. It kept climbing for
+another 57 epochs. Late-appearing memorisation is precisely the effect 7c named as the
+reason not to call the result early; the discipline held and the guess did not. Recorded
+because a document that only preserves its correct predictions is not evidence of anything.
+
+**Why the two arms disagree.** The faithful arm pools all 50 clips, so its validation slice
+draws from clips 41-50 as well — the ones section 5 shows are substantially harder. It
+leaks across *more* videos and still scores lower, because its test material is harder. The
+controlled arm holds the clip pool identical to the disjoint runs and varies only the
+partition rule, which is why it, not the faithful arm, is the one the rule is about.
+
+---
+
+## The accounting, complete
+
+Every step measured with their code and their metric, on our data:
+
+| step | from | to | worth |
+|---|---|---|---|
+| video-disjoint **test** (clips 41-50) | | **0.505** | — |
+| ...to video-disjoint **val** (clips 37-40) — *which videos you hold out* | 0.505 | 0.796 | **+0.291** |
+| ...to **per-frame** val — *leakage* | 0.796 | 0.841 | **+0.045** (lower bound) |
+| ...protocol / AP convention | | | **+0.010** |
+| **still unexplained** | 0.841 | **0.95** | **~0.109** |
+
+**About 78 % of the 0.445 gap is now accounted for by three measured mechanisms**, and the
+largest of them by a factor of six is the one nobody would call a trick: which videos are
+held out. Leakage is real and second. The metric convention this investigation began by
+blaming is last, at a fortieth of the total.
+
+**~0.109 remains unexplained**, and this document does not speculate about it. What can be
+said is what the measurements support: **the published 0.95 and our 0.527 are not
+measurements of the same quantity**, and the difference is dominated by evaluation-set
+composition rather than by anything about either method's ability to detect a drone.
+
 ## Running total
 
 | reason | measured impact | status |
@@ -323,12 +384,13 @@ memorisation can appear late in training, which is exactly why the arms are bein
 | truncated ground truth | 0 | ruled out |
 | AP definition, frame set, matcher, conf floor, aggregation | **+0.010** | measured, refutes the leading hypothesis |
 | which videos are held out (test 41-50 vs val 37-40) | **+0.285** | measured |
-| whether videos are held out at all (per-frame leak) | *pending* | running |
+| whether videos are held out at all (per-frame leak) | **+0.045** | measured; a **lower bound** — the run was still climbing at epoch 99/100 |
+| **still unexplained** | **~0.109** | — |
 | *(not their protocol, but larger than all of the above: per-video instead of pooled aggregation)* | *+0.095* | measured |
 
-## What this already licenses us to say
+## What this licenses us to say
 
-Regardless of how section 7 resolves, three things are established:
+Four things are established:
 
 1. **Our 0.487 and their published 0.95 are not the same quantity and must never be
    subtracted.** `dronedet.Protocol.mismatches_with` already refuses this in code; this
@@ -339,6 +401,11 @@ Regardless of how section 7 resolves, three things are established:
 3. **The published NPS protocol has no held-out test set, by two independent mechanisms** —
    an empty `test.txt` and a `val.py` with no `--task2` flag. A number produced under it
    describes performance on frames interleaved with training frames from the same flights.
+4. **Leakage is real but second, and evaluation-set composition dominates.** A per-frame
+   partition is worth at least +0.045; *which videos you hold out* is worth +0.291, six
+   times more. The mechanism that most changes the number is the one that looks least
+   like a mistake, which is exactly why it goes unreported — and why a benchmark result
+   without its split named is not a result.
 
 ## Reproducing this
 
