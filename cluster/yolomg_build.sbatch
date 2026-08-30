@@ -13,7 +13,7 @@
 ### Two tasks so ARD-MAV and NPS build side by side rather than end to end.
 
 set -uo pipefail
-ROOT=/home/cherryn/projects/SpeckLock
+ROOT=${SPECKLOCK_ROOT:-/home/cherryn/projects/SpeckLock}
 cd "$ROOT"
 module load anaconda
 source activate speck

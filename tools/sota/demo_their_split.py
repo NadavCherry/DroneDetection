@@ -56,7 +56,7 @@ def main() -> int:
     for part in ("train", "val", "test"):
         f = a.names_from / f"{part}.txt"
         if f.exists():
-            names += [Path(ln).name for ln in f.read_text().split() if ln.strip()]
+            names += [Path(ln).name for ln in f.read_text(encoding="utf-8").split() if ln.strip()]
     if not names:
         raise SystemExit(f"no frame names found under {a.names_from}")
 
@@ -77,7 +77,7 @@ def main() -> int:
         counts, clips = {}, {}
         for part in ("trainval", "train", "val", "test"):
             f = main_dir / f"{part}.txt"
-            rows = [ln for ln in f.read_text().split() if ln.strip()] if f.exists() else []
+            rows = [ln for ln in f.read_text(encoding="utf-8").split() if ln.strip()] if f.exists() else []
             counts[part] = len(rows)
             clips[part] = len({_clip(r) for r in rows})
 

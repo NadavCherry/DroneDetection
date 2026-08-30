@@ -17,7 +17,7 @@
 ### measure a configuration that produced no published AP (0.25 alone).
 
 set -uo pipefail
-ROOT=/home/cherryn/projects/SpeckLock
+ROOT=${SPECKLOCK_ROOT:-/home/cherryn/projects/SpeckLock}
 cd "$ROOT"
 module load anaconda
 OUT="$ROOT/work/bench"

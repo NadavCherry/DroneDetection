@@ -16,7 +16,7 @@
 ### it never starts against a known-bad env.
 
 set -euo pipefail          # -e ON: any failing step must kill this job, not be narrated
-ROOT=/home/cherryn/projects/SpeckLock
+ROOT=${SPECKLOCK_ROOT:-/home/cherryn/projects/SpeckLock}
 cd "$ROOT/third_party/YOLOMG"
 module load anaconda
 source activate tph

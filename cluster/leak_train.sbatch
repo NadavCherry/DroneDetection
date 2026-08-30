@@ -27,7 +27,7 @@
 ### 640 px needs less but shares the array.
 
 set -uo pipefail
-ROOT=/home/cherryn/projects/SpeckLock
+ROOT=${SPECKLOCK_ROOT:-/home/cherryn/projects/SpeckLock}
 cd "$ROOT"
 module load anaconda
 export YOLO_AUTOINSTALL=false

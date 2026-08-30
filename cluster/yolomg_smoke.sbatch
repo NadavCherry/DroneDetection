@@ -12,7 +12,7 @@
 ### otherwise fail six times in parallel at 03:00.
 
 set -uo pipefail
-ROOT=/home/cherryn/projects/SpeckLock
+ROOT=${SPECKLOCK_ROOT:-/home/cherryn/projects/SpeckLock}
 MG=$ROOT/third_party/YOLOMG
 cd "$MG"
 module load anaconda

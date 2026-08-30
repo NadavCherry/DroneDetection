@@ -32,7 +32,7 @@
 ### and tuning only one side is how a comparison stops meaning anything.
 
 set -uo pipefail
-ROOT=/home/cherryn/projects/SpeckLock
+ROOT=${SPECKLOCK_ROOT:-/home/cherryn/projects/SpeckLock}
 cd "$ROOT"
 module load anaconda
 

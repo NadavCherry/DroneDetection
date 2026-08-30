@@ -14,7 +14,7 @@
 ### which is exactly why tools/evaluate.py takes JSONs instead of weights.
 
 set -uo pipefail
-ROOT=/home/cherryn/projects/SpeckLock
+ROOT=${SPECKLOCK_ROOT:-/home/cherryn/projects/SpeckLock}
 cd "$ROOT"
 module load anaconda
 

@@ -21,7 +21,7 @@
 ### does not survive the first reviewer, and the GPU-hours are cheaper than the retraction.
 
 set -uo pipefail
-ROOT=/home/cherryn/projects/SpeckLock
+ROOT=${SPECKLOCK_ROOT:-/home/cherryn/projects/SpeckLock}
 MG=$ROOT/third_party/YOLOMG
 cd "$MG"
 module load anaconda

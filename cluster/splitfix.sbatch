@@ -18,7 +18,7 @@
 ### now resolves both ends and stats sampled entries before writing anything.
 
 set -uo pipefail
-ROOT=/home/cherryn/projects/SpeckLock
+ROOT=${SPECKLOCK_ROOT:-/home/cherryn/projects/SpeckLock}
 cd "$ROOT"
 module load anaconda
 source activate speck

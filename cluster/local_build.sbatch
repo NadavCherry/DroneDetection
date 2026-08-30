@@ -12,7 +12,7 @@
 ### 548 annotated training frames, so these are minutes, not hours.
 
 set -uo pipefail
-ROOT=/home/cherryn/projects/SpeckLock
+ROOT=${SPECKLOCK_ROOT:-/home/cherryn/projects/SpeckLock}
 cd "$ROOT"
 module load anaconda
 source activate speck

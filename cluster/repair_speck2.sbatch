@@ -18,7 +18,7 @@
 ### precisions -- the operation that failed, not a proxy for it.
 
 set -uo pipefail
-ROOT=/home/cherryn/projects/SpeckLock
+ROOT=${SPECKLOCK_ROOT:-/home/cherryn/projects/SpeckLock}
 cd "$ROOT"
 module load anaconda
 source activate speck

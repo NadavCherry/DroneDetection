@@ -72,7 +72,7 @@ sys.path.insert(0, str(REPO))
 
 
 def _read_list(p: Path) -> list[str]:
-    return [ln.strip() for ln in p.read_text().splitlines() if ln.strip()]
+    return [ln.strip() for ln in p.read_text(encoding="utf-8").splitlines() if ln.strip()]
 
 
 def _clip_of(path: str) -> str:
@@ -140,27 +140,27 @@ def build(dataset: Path, style: str, pool: str, seed: int, out: Path,
         cut = int(len(pairs) * train_frac)
         tr, va = pairs[:cut], pairs[cut:]
 
-    (out / "train.txt").write_text("\n".join(a for a, _ in tr) + "\n")
-    (out / "val.txt").write_text("\n".join(a for a, _ in va) + "\n")
+    (out / "train.txt").write_text("\n".join(a for a, _ in tr) + "\n", encoding="utf-8")
+    (out / "val.txt").write_text("\n".join(a for a, _ in va) + "\n", encoding="utf-8")
     if style == "yolomg":
-        (out / "train2.txt").write_text("\n".join(b for _, b in tr) + "\n")
-        (out / "val2.txt").write_text("\n".join(b for _, b in va) + "\n")
+        (out / "train2.txt").write_text("\n".join(b for _, b in tr) + "\n", encoding="utf-8")
+        (out / "val2.txt").write_text("\n".join(b for _, b in va) + "\n", encoding="utf-8")
         # Their loader also wants test/test2 keys present; point them at val so the yaml
         # is loadable. Nothing in this experiment reads them -- and note that pointing
         # them at val is exactly what their own empty test.txt effectively amounts to.
-        (out / "test.txt").write_text("\n".join(a for a, _ in va) + "\n")
-        (out / "test2.txt").write_text("\n".join(b for _, b in va) + "\n")
+        (out / "test.txt").write_text("\n".join(a for a, _ in va) + "\n", encoding="utf-8")
+        (out / "test2.txt").write_text("\n".join(b for _, b in va) + "\n", encoding="utf-8")
         (out / "nps.yaml").write_text(
             f"train: {out}/train.txt\ntrain2: {out}/train2.txt\n"
             f"val: {out}/val.txt\nval2: {out}/val2.txt\n"
-            f"test: {out}/test.txt\ntest2: {out}/test2.txt\n\nnc: 1\nnames: ['Drone']\n")
+            f"test: {out}/test.txt\ntest2: {out}/test2.txt\n\nnc: 1\nnames: ['Drone']\n", encoding="utf-8")
     else:
         ### No `path:` key. Ultralytics joins `path` onto `train`/`val`, so supplying both
         ### an absolute path and absolute list files is one redundancy too many; the list
         ### files are absolute and that is sufficient.
         (out / "data.yaml").write_text(
             f"train: {out}/train.txt\nval: {out}/val.txt\n"
-            "names:\n  0: drone\n")
+            "names:\n  0: drone\n", encoding="utf-8")
 
     ### Verify the lists point at files that exist, here, rather than discovering it from
     ### a GPU job's traceback 15 seconds after it allocated a 4090. Sampling the ends and
@@ -191,7 +191,7 @@ def build(dataset: Path, style: str, pool: str, seed: int, out: Path,
         "clips_in_both": len(tr_clips & va_clips),
         "val_clips_unseen_in_train": sorted(va_clips - tr_clips),
     }
-    (out / "SPLIT_AUDIT.json").write_text(json.dumps(audit, indent=2) + "\n")
+    (out / "SPLIT_AUDIT.json").write_text(json.dumps(audit, indent=2) + "\n", encoding="utf-8")
     return audit
 
 

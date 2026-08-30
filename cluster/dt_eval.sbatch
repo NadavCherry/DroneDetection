@@ -31,7 +31,7 @@
 ### 12 tasks = 4 dt values x 3 seeds, throttled to 2 concurrent.
 
 set -uo pipefail
-ROOT=/home/cherryn/projects/SpeckLock
+ROOT=${SPECKLOCK_ROOT:-/home/cherryn/projects/SpeckLock}
 cd "$ROOT"
 module load anaconda
 source activate speck
