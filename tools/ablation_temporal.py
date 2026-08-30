@@ -14,10 +14,13 @@ repository, and both fail. This script runs the test and prints the table.
     python tools/ablation_temporal.py                      # both experiments
     python tools/ablation_temporal.py --experiment birds   # just the discrimination one
 
-**Experiment 1 — can a single frame find it at all?**
-The same target, the same video, two input representations. The single-frame model is
-given every advantage: it runs full-frame at 1760 px, *higher* resolution than the
-temporal model's 1280, so any gap is not a resolution artefact.
+**Experiment 1 — what does the temporal stack actually buy?**
+Reported in two parts, because they answer different questions and were once conflated.
+*1a* is the controlled ablation: same network family, same training corpus, same 1280 px,
+same pipeline — the only difference is whether the three input channels carry three moments
+or one frame's RGB. *1b* is a cross-check against an off-the-shelf detector at 1760 px,
+which differs in architecture, corpus AND resolution and therefore cannot attribute its gap
+to the representation. 1b was previously published as though it were 1a.
 
 **Experiment 2 — is finding it the challenge, or is telling it apart?**
 07_05 carries 8 hand-labelled bird tracks, 934 instances, median 6.0 px against the
@@ -243,11 +246,20 @@ def main(argv=None) -> int:
         parts += [experiment_birds(a.gt_0705, tuple(a.recalls)), ""]
 
     report = "\n".join(parts)
-    print(report)
+    ### WRITE BEFORE PRINT. The file is the deliverable; stdout is a convenience.
+    ### Printing first meant that on a console whose encoding cannot represent the
+    ### report -- cp1255 on the author's own machine -- the script died on the print and
+    ### never reached the write, so regenerating appeared to fail while producing
+    ### nothing. The published REPORT.md drifted from its generator for exactly that
+    ### reason, and kept publishing a comparison the generator had already corrected.
     if a.out:
         a.out.parent.mkdir(parents=True, exist_ok=True)
         a.out.write_text(report, encoding="utf-8")
-        print(f"\nwrote {a.out}", file=sys.stderr)
+        print(f"wrote {a.out}", file=sys.stderr)
+    try:
+        print(report)
+    except UnicodeEncodeError:
+        print("(written to file; this console cannot display it)", file=sys.stderr)
     return 0
 
 

@@ -121,8 +121,16 @@ dist/
 # regenerate from detections and would otherwise accumulate one file per run --
 # but a scorecard you intend to CITE should be force-added, because a number in a
 # report must point at the artifact that produced it.
+#
+# That rule was aspirational until the campaign's scorecards were gzipped: raw they
+# are 623.7 MB, which cannot ship in a repo already at 510 MB, so ZERO were tracked
+# while two reports told the reader to recompute from them. Gzipped they are 29.1 MB
+# (21.5x, lossless), and the 42 cited cards are now force-added as *.json.gz.
+# benchmarks.scorecard.Scorecard.load reads either form, and falls back to the .gz
+# sibling when handed a plain .json path, so no caller had to change.
 work/prepared/
 work/scorecards/
+!work/scorecards/*.json.gz
 work/det_bench/
 work/_overnight/
 work/_vram/

@@ -137,18 +137,46 @@ class Scorecard:
         return hits, total
 
     # ------------------------------------------------------------------ io
+    #
+    # Scorecards are stored gzipped when the path says so, and `load` accepts either form.
+    #
+    # This is not premature optimisation. The artifact holds every detection down to the
+    # 0.001 confidence floor, which is the property that makes precision at any operating
+    # point recomputable -- and also means two thirds of every file is a tail of near-zero
+    # false positives. The campaign's 42 scorecards are 623.7 MB raw and 29.1 MB gzipped,
+    # a 21.5x saving on text that is almost entirely repeated digits. Raw, they cannot ship
+    # in a repository that is already 510 MB, and .gitignore's own rule says "a scorecard
+    # you intend to CITE should be force-added, because a number in a report must point at
+    # the artifact that produced it". Gzip is what makes that rule affordable rather than
+    # aspirational; nothing is lost, the bytes are identical after decompression.
     def save(self, path: str | Path) -> None:
         p = Path(path)
         p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(json.dumps(asdict(self), indent=1), encoding="utf-8")
+        blob = json.dumps(asdict(self), indent=1)
+        if p.suffix == ".gz":
+            import gzip
+            p.write_bytes(gzip.compress(blob.encode("utf-8"), 6))
+        else:
+            p.write_text(blob, encoding="utf-8")
 
     @staticmethod
     def load(path: str | Path) -> "Scorecard":
-        d = json.loads(Path(path).read_text(encoding="utf-8"))
+        p = Path(path)
+        # Accept either form, and fall back to the gzipped sibling so that every existing
+        # caller naming a plain .json keeps working once the artifact is compressed.
+        if not p.exists() and p.suffix != ".gz":
+            gz = p.with_suffix(p.suffix + ".gz")
+            if gz.exists():
+                p = gz
+        if p.suffix == ".gz":
+            import gzip
+            d = json.loads(gzip.decompress(p.read_bytes()).decode("utf-8"))
+        else:
+            d = json.loads(p.read_text(encoding="utf-8"))
         got = d.get("schema_version", 0)
         if got != SCHEMA_VERSION:
             raise ValueError(
-                f"{path}: scorecard schema v{got}, this code expects v{SCHEMA_VERSION}. "
+                f"{p}: scorecard schema v{got}, this code expects v{SCHEMA_VERSION}. "
                 "Re-run the evaluation rather than reading it with mismatched semantics.")
         seqs = [SequenceResult(**{**s, "detections": [tuple(x) for x in s["detections"]]})
                 for s in d.pop("sequences")]

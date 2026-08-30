@@ -57,14 +57,25 @@ def parse_name(name: str):
     return g["ds"], g["arm"], (g["budget"] or "e30"), seed
 
 
+def _read_scorecard(p: Path) -> dict:
+    """Scorecards ship gzipped (623.7 MB raw -> 29.1 MB), so read either form."""
+    if p.suffix == ".gz":
+        import gzip
+        return json.loads(gzip.decompress(p.read_bytes()).decode("utf-8"))
+    return json.loads(p.read_text(encoding="utf-8"))
+
+
 def load_all(scorecard_dir: Path):
     out, unparsed = {}, []
-    for p in sorted(scorecard_dir.glob("*.json")):
-        key = parse_name(p.stem)
+    for p in sorted([*scorecard_dir.glob("*.json"), *scorecard_dir.glob("*.json.gz")]):
+        # Path('a.json.gz').stem is 'a.json', which the name pattern rejects -- strip the
+        # compression suffix before parsing, or every gzipped card reads as unparseable.
+        stem = p.stem[:-5] if p.stem.endswith(".json") else p.stem
+        key = parse_name(stem)
         if key is None:
-            unparsed.append(p.stem)
+            unparsed.append(stem)
             continue
-        payload = json.loads(p.read_text(encoding="utf-8"))
+        payload = _read_scorecard(p)
         seqs = load_sequences(payload)
         out[key] = {"seqs": seqs, "ap": pooled_ap(seqs),
                     "split": payload.get("split", "?"),

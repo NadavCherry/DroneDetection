@@ -12,7 +12,10 @@ asks of a detection claim — including the ones asked of this project publicly.
 section below names the question, gives the measured answer, and says plainly what was
 NOT measured. The full tables with per-seed confidence intervals are in
 [`work/reports/SUMMARY.md`](../../work/reports/SUMMARY.md); every number is reproducible
-from the scorecards in `work/scorecards/` via `tools/make_summary.py`.
+from the scorecards in [`work/scorecards/`](../../work/scorecards/) via
+`PYTHONPATH=. python tools/make_summary.py --scorecards work/scorecards`. Those 42
+scorecards ship **gzipped** (`*.json.gz`, 29.1 MB for 623.7 MB of raw evidence);
+`benchmarks.scorecard.Scorecard.load` reads either form.
 
 ---
 
@@ -140,8 +143,10 @@ that flattered us, which were fixed with the same urgency as the ones that did n
 
 Correct, and the distractor table above is that measurement, on the only corpus we have
 whose annotations make it possible. Beyond it, every scorecard in `work/scorecards/`
-retains the full score-ordered detection list per sequence — so precision at any
-operating point, not just AP, is recomputable by a reader without rerunning inference.
+retains the full score-ordered detection list per sequence, down to the 0.001
+confidence floor — so precision at any operating point, not just AP, is recomputable
+by a reader without rerunning inference. That tail is two thirds of each file and the
+reason they are shipped gzipped rather than not shipped at all.
 
 ### 6. "You see everything — you don't need an image buffer. That's not the challenge."
 
