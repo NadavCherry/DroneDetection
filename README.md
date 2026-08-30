@@ -312,7 +312,10 @@ python -m pursuit.tools.city_report --search work/pursuit/city
 ```bash
 python tools/make_arch_figure_system.py    # the method diagram
 python tools/make_result_charts.py         # the three charts above, from work/pursuit/*.json
-python tools/publish_showcase.py           # re-encode the showcase clips
+python tools/publish_showcase.py           # AUTHORS ONLY: needs the Isaac Sim
+                                           # recordings under work/pursuit/, which
+                                           # do not ship. It now refuses rather than
+                                           # emptying docs/media/showcase.json.
 python tools/make_gallery.py               # rebuild the gallery page
 python tools/check_docs.py                 # every documented link resolves and is tracked
 ```

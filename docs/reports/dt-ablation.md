@@ -197,6 +197,7 @@ sbatch cluster/dt_build.sbatch          # datasets, CPU only
 sbatch cluster/dt_train.sbatch          # 15 runs, 5 dt x 3 seeds
 sbatch cluster/dt_eval.sbatch           # full-frame test AP, 12 tasks
 sbatch cluster/dt_compare.sbatch        # paired tests -> work/reports/dt_test_ap.md
+# or, without SLURM:  PYTHONPATH=. python tools/dt_compare.py --out work/reports/dt_test_ap.md
 ```
 
 Artifacts: `work/runs_dt/dt{2,4,8,12}-s{0,1,2}/`, `work/det/nps_dt/`,

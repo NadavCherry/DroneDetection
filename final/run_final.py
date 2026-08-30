@@ -3,7 +3,7 @@
     # most powerful (desktop GPU):
     .venv/bin/python final/run_final.py --video some.mp4 --profile pc-max --out out_dir
 
-    # real-time / edge profile (one nano net; ~85 fps on an RTX 5070,
+    # real-time / edge profile (one nano net; ~74 fps on an RTX 5070 Laptop with a TensorRT engine, ~48-53 fps on the .pt fallback,
     # projected 10-15 fps FP16 on a Jetson Orin Nano at 1280):
     .venv/bin/python final/run_final.py --video some.mp4 --profile edge-rt --out out_dir
 

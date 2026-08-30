@@ -300,6 +300,28 @@ def main(argv=None) -> int:
         manifest[name] = entries
         total += sum(e["bytes"] for e in entries)
 
+    ### REFUSE to write a manifest that could not be built.
+    ###
+    ### The 16 source clips are Isaac Sim recordings under work/pursuit/, excluded by
+    ### .gitignore and absent from every clone. encode() SKIPS a missing source and
+    ### returns None; those Nones are filtered out, and the surviving EMPTY list was then
+    ### merged over the tracked manifest -- emptying docs/media/showcase.json, after which
+    ### tools/make_gallery.py (the very next line of the README's reproduction block)
+    ### rewrote docs/gallery.html from nothing. Two tracked files destroyed, silently, by
+    ### following the documented instructions.
+    ###
+    ### An empty group is never a legitimate result: every group is non-empty by
+    ### construction, so zero entries means zero sources were found.
+    empty = [name for name, entries in manifest.items() if not entries]
+    if empty and not a.dry_run:
+        raise SystemExit(
+            "no source clips found for: " + ", ".join(empty)
+            + ". These are Isaac Sim recordings under work/pursuit/ and are NOT in "
+            "the repository (.gitignore). Nothing was written; "
+            "docs/media/showcase.json is unchanged. To rebuild the gallery from the "
+            "tracked manifest run tools/make_gallery.py on its own -- this script is "
+            "for the authors, who have the recordings.")
+
     if not a.dry_run:
         path = OUT / "showcase.json"
         merged = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else {}
