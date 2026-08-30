@@ -1,0 +1,126 @@
+[
+  {
+    "arm": "edge-pt-1280",
+    "backend": "pt",
+    "imgsz": 1280,
+    "weights": "/home/cherryn/projects/SpeckLock/final/edge_rt/edge_n1280.pt",
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "n_frames": 361,
+    "end_to_end_fps": 29.04,
+    "warmup_frames_discarded": 20,
+    "warmup_ms_total": 1486.8,
+    "slowest_frame_index": 0,
+    "slowest_frame_ms": 904.9,
+    "steady_state": {
+      "n": 341,
+      "p50_ms": 28.407,
+      "p95_ms": 30.512,
+      "p99_ms": 32.067,
+      "mean_ms": 28.273,
+      "fps_at_p50": 35.2
+    },
+    "stage_ms": {
+      "stabilize+warp": 13.889,
+      "detector NN": 15.307,
+      "TOTAL ms/frame": 29.196
+    },
+    "ap": 0.8793,
+    "recall": 0.8754,
+    "precision": 0.7995,
+    "n_gt": 337,
+    "n_frames_scored": 337
+  },
+  {
+    "arm": "edge-pt-640",
+    "backend": "pt",
+    "imgsz": 640,
+    "weights": "/home/cherryn/projects/SpeckLock/final/edge_rt/edge_n1280.pt",
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "n_frames": 361,
+    "end_to_end_fps": 34.56,
+    "warmup_frames_discarded": 20,
+    "warmup_ms_total": 657.3,
+    "slowest_frame_index": 0,
+    "slowest_frame_ms": 193.1,
+    "steady_state": {
+      "n": 341,
+      "p50_ms": 24.9,
+      "p95_ms": 26.784,
+      "p99_ms": 27.552,
+      "mean_ms": 25.134,
+      "fps_at_p50": 40.2
+    },
+    "stage_ms": {
+      "stabilize+warp": 13.813,
+      "detector NN": 10.206,
+      "TOTAL ms/frame": 24.02
+    },
+    "ap": 0.6464,
+    "recall": 0.6053,
+    "precision": 0.8908,
+    "n_gt": 337,
+    "n_frames_scored": 337
+  },
+  {
+    "arm": "edge-engine-1280",
+    "backend": "engine",
+    "imgsz": 1280,
+    "weights": "/home/cherryn/projects/SpeckLock/work/edge_engines/edge_n1280.engine",
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "n_frames": 361,
+    "end_to_end_fps": 30.43,
+    "warmup_frames_discarded": 20,
+    "warmup_ms_total": 4890.7,
+    "slowest_frame_index": 0,
+    "slowest_frame_ms": 4558.6,
+    "steady_state": {
+      "n": 341,
+      "p50_ms": 16.979,
+      "p95_ms": 18.853,
+      "p99_ms": 19.922,
+      "mean_ms": 17.142,
+      "fps_at_p50": 58.9
+    },
+    "stage_ms": {
+      "stabilize+warp": 8.149,
+      "detector NN": 20.2,
+      "TOTAL ms/frame": 28.349
+    },
+    "ap": 0.8757,
+    "recall": 0.8576,
+    "precision": 0.8118,
+    "n_gt": 337,
+    "n_frames_scored": 337
+  },
+  {
+    "arm": "edge-engine-640",
+    "backend": "engine",
+    "imgsz": 640,
+    "weights": "/home/cherryn/projects/SpeckLock/work/edge_engines/edge_n640.engine",
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "n_frames": 361,
+    "end_to_end_fps": 57.13,
+    "warmup_frames_discarded": 20,
+    "warmup_ms_total": 488.5,
+    "slowest_frame_index": 0,
+    "slowest_frame_ms": 240.5,
+    "steady_state": {
+      "n": 341,
+      "p50_ms": 13.869,
+      "p95_ms": 15.265,
+      "p99_ms": 15.799,
+      "mean_ms": 13.843,
+      "fps_at_p50": 72.1
+    },
+    "stage_ms": {
+      "stabilize+warp": 7.981,
+      "detector NN": 5.158,
+      "TOTAL ms/frame": 13.139
+    },
+    "ap": 0.6393,
+    "recall": 0.6024,
+    "precision": 0.8982,
+    "n_gt": 337,
+    "n_frames_scored": 337
+  }
+]

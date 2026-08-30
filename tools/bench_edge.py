@@ -113,10 +113,20 @@ def timed_pass(video: str, pipe, warmup: int, min_track_score: float = 0.2):
     def q(p):
         return s[min(len(s) - 1, int(round(p * (len(s) - 1))))] if s else float("nan")
 
+    head = per_frame[:warmup]
+    slowest = max(range(len(per_frame)), key=lambda i: per_frame[i]) if per_frame else -1
     return ds, {
         "n_frames": n,
         "end_to_end_fps": round(n / elapsed, 2),
         "warmup_frames_discarded": min(warmup, len(per_frame)),
+        # A TensorRT engine pays a large one-time cost on its first inference (context
+        # creation, tactic selection). Over a 361-frame clip that single spike can dominate
+        # the end-to-end average and make the FASTER backend look catastrophically slower --
+        # engine end-to-end read 2.03 fps against a p50 of 16.6 ms, i.e. 60 fps. Reporting
+        # the cost explicitly turns that from a puzzle into a measurement.
+        "warmup_ms_total": round(sum(head), 1),
+        "slowest_frame_index": slowest,
+        "slowest_frame_ms": round(max(per_frame), 1) if per_frame else None,
         "steady_state": {
             "n": len(tail),
             "p50_ms": round(q(0.50), 3), "p95_ms": round(q(0.95), 3),
@@ -206,13 +216,15 @@ def main() -> int:
          "SAME pass, so they describe one execution and cannot drift apart.", "",
          "The published 74 / 84.8 / 104 fps figures were taken on an RTX 5070 Laptop and "
          "are **not** comparable to these.", "",
-         "| arm | backend | imgsz | AP | recall | precision | end-to-end fps | p50 ms | p95 ms | p99 ms |",
-         "|---|---|---|---|---|---|---|---|---|---|"]
+         "| arm | backend | imgsz | AP | recall | precision | **fps (steady p50)** | p50 ms | p95 ms | p99 ms | end-to-end fps | warm-up cost |",
+         "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for r in rows:
         ss = r["steady_state"]
+        fps50 = ss["fps_at_p50"]
         L.append(f"| {r['arm']} | {r['backend']} | {r['imgsz']} | **{r['ap']:.4f}** | "
-                 f"{r['recall']:.3f} | {r['precision']:.3f} | **{r['end_to_end_fps']}** | "
-                 f"{ss['p50_ms']} | {ss['p95_ms']} | {ss['p99_ms']} |")
+                 f"{r['recall']:.3f} | {r['precision']:.3f} | **{fps50}** | "
+                 f"{ss['p50_ms']} | {ss['p95_ms']} | {ss['p99_ms']} | "
+                 f"{r['end_to_end_fps']} | {r['warmup_ms_total']/1000:.1f} s |")
     L += ["", "Per-stage means (ms/frame):", "",
           "| arm | " + " | ".join(sorted(rows[0]["stage_ms"])) + " |",
           "|---|" + "---|" * len(rows[0]["stage_ms"])]
