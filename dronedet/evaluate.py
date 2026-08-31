@@ -1,10 +1,37 @@
-"""Center-distance evaluation for tiny-target detection.
+"""Center-distance evaluation for tiny-target detection. THE ROUND-1 SCORER.
 
 IoU is unstable for few-pixel boxes (a 1-2 px shift zeroes it), so a
 detection matches a GT object when its center lies within a per-object
 radius: ``max(tau, 0.5 * sqrt(gt_area))``. Frames listed in
 ``gt.meta.exclude_frames`` are skipped entirely (uncertain GT).
 Detections matching ``ignore`` objects are neither TP nor FP.
+
+SUPERSEDED BY ``dronedet.metrics`` FOR ANYTHING REPORTED
+-------------------------------------------------------
+Every published number in this repository is produced by ``dronedet.metrics`` (via
+``tools/evaluate.py`` into ``benchmarks.scorecard``), not by this module. Keep this file --
+it is what the round-1 reports were scored with and they should stay re-derivable -- but do
+not reach for it when adding a measurement.
+
+The two matchers use the SAME radius and differ in exactly one place: what happens when a
+detection falls inside both a target's radius and a distractor's.
+
+  this file            takes the NEAREST object regardless of its ignore flag, so a bird
+                       that happens to be closer than the drone wins and the detection is
+                       dropped as ``ign`` -- neither credited nor charged.
+  ``metrics.py``       ranks positives above distractors first (``_match_frame``: "positives
+                       outrank distractors at equal match quality"), so the same detection
+                       scores ``tp``.
+
+``metrics.py`` is therefore the MORE GENEROUS of the two in that case, and it is the one
+behind the headline numbers -- worth knowing before quoting them.
+
+How much this matters, measured rather than assumed: over the 23 committed 07_05 detection
+sets (``work/det/*.json`` + ``work/det3/0705/*.json``) scored against ``work/gt_user.json``
+at tau=12, **102,017 detections were compared and 0 outcomes differed**. The precondition
+occurs in 3 frame-pairs out of 571 and no committed detection lands in any of them. So no
+published number depends on the choice -- today. It is pinned by a test so it cannot drift
+further, because a denser distractor set is exactly where it would start to matter.
 """
 
 from __future__ import annotations

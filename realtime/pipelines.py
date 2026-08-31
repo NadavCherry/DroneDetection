@@ -4,7 +4,12 @@ Every pipeline consumes frames sequentially and yields detections in
 original-frame coordinates plus per-stage timings. The tracker runs
 inline in the runner (it costs ~1 ms/frame).
 
-    RT-A  classical only: lagged-EMA + 3-frame-diff proposals, no NN
+    RT-A  classical only, no NN: lagged-MEDIAN background (make_slow_channel) ->
+          NMS -> isolation ranking. NOT lagged-EMA and not 3-frame-diff, which is
+          what this line used to claim: `rt_motion.LaggedEMA` and
+          `rt_motion.FrameDiff3` are evaluated alternatives that no pipeline wires
+          in, and make_slow_channel's own docstring records why -- the pure-EMA
+          variant lost slow drifters badly (val proposal recall 0.04 vs 0.57).
     RT-B  proposals -> temporal nano verifier @256 (top-8 crops)
     RT-C  full-frame temporal nano @1280 (no proposal stage)
     RT-D  full-frame temporal nano @640
@@ -28,7 +33,6 @@ from dronedet.stabilize import invert, apply_to_points
 
 from dronedet.motion import MotionDetector
 
-from .rt_motion import FrameDiff3
 from .rt_stabilize import LiteStabilizer
 
 

@@ -9,6 +9,12 @@ with no recompute spikes.
 
 ``FrameDiff3`` is the classical aligned three-frame differencing detector
 (min of |t - (t-k)| and |t - (t-2k)|), the cheapest possible mover finder.
+
+NEITHER CLASS IN THIS MODULE IS WIRED INTO A PIPELINE. `LaggedEMA` and `FrameDiff3`
+are evaluated alternatives kept as the record of what was tried; every shipped
+pipeline uses `realtime.pipelines.make_slow_channel`, a lagged-MEDIAN background,
+because the pure-EMA variant measurably lost slow drifters (val proposal recall
+0.04 vs 0.57). Do not read their presence as a description of what RT-A runs.
 """
 
 from __future__ import annotations

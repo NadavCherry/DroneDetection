@@ -140,7 +140,9 @@ def main() -> None:
     d.add_argument("--method-kw", help="extra method kwargs as JSON")
     d.set_defaults(fn=cmd_detect)
 
-    e = sub.add_parser("eval", help="score detection JSONs against GT")
+    e = sub.add_parser("eval", help="score detection JSONs against GT (round-1 scorer; "
+                                    "use `bench` for anything reported -- see "
+                                    "dronedet/evaluate.py for how they differ)")
     e.add_argument("--gt", required=True)
     e.add_argument("--dets", nargs="+", required=True)
     e.add_argument("--tau", type=float, default=12.0, help="center-distance match radius (px)")

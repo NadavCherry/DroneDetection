@@ -99,10 +99,14 @@ class Protocol:
 #: What `dronedet` natively produces. Correct at 4 px, and not comparable to any paper.
 SPECKLOCK_CENTRE = Protocol(
     matcher="centre", ap_style="voc-all-point", tau_px=12.0,
-    citation="dronedet/evaluate.py, dronedet/metrics.py",
+    citation="dronedet/metrics.py",
     notes="This repo's native rule: match if the detection centre is within "
           "max(tau, 0.5*sqrt(gt area)). Defensible at few-pixel scale and backed by "
-          "SAFit (TPAMI 2025) and SO-HOTA (MVA 2025), but it is NOT what papers report.")
+          "SAFit (TPAMI 2025) and SO-HOTA (MVA 2025), but it is NOT what papers report. "
+          "The citation names metrics.py alone: dronedet/evaluate.py implements the same "
+          "radius but resolves a detection that falls inside both a target's and a "
+          "distractor's radius the other way, so the two are not interchangeable "
+          "implementations of one protocol.")
 
 #: The lingua franca. Produce this for every external claim, whatever else is reported.
 COCO = Protocol(

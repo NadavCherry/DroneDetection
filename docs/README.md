@@ -12,7 +12,7 @@ Everything that isn't code. Start at the [project README](../README.md); come he
 
 Deliverable-specific docs live next to the code: [final/README.md](../final/README.md) (the two shipped models), [realtime/README.md](../realtime/README.md) (the edge pipeline in depth), [pursuit/README.md](../pursuit/README.md) (the other half of the problem — camera-only interception: the four-camera ring, the guidance law, the city-defence mission) and [simulators/pegasus/README.md](../simulators/pegasus/README.md) (the Isaac Sim render rig and the wire protocol between it and the brain).
 
-## Reports — the seven-round build story
+## Reports — the eight-round build story, and the investigations after it
 
 The design narrative, in order. Each reads on its own; together they are how the pipeline was earned.
 
@@ -25,6 +25,20 @@ The design narrative, in order. Each reads on its own; together they are how the
 | [reports/round5-moving-camera-multidataset.md](reports/round5-moving-camera-multidataset.md) | 5 — moving camera + one combined dataset (per-dataset video splits); strongest PC detector (colour+scale aug); new ego-motion-compensated motion front-end; method comparison; full pipeline tracks the black drone at 99.7% |
 | [reports/round6-max-pipeline.md](reports/round6-max-pipeline.md) | 6 — unified MAX pipeline (regime-adaptive fusion → affine tracker → track-level classification) in one command; temporal motion-in-input expert; v1 vs v2 — combining wins at detection (black drone 0.52→0.69) but tracking saturates; drone-vs-bird is the frontier |
 | [reports/round7-fusion.md](reports/round7-fusion.md) | 7 — one 4-channel RGB+motion model for *every* dataset, trained with the NWD tiny-object assignment; the best single-model generalist (NPS detection 0.59→0.80, black drone 0.27→0.69) — and the one case it still loses to the round-6 regime pipeline |
+| [reports/round8-sota-campaign.md](reports/round8-sota-campaign.md) | 8 — the SOTA campaign: **YOLOMG trained by us** on our splits and scored by our evaluator, on ARD-MAV's official 15-video test list and NPS. They lead overall. Every number carries a paired, seed-matched bootstrap **and** permutation test |
+
+### Investigations that followed round 8
+
+These answer a single question each, and three of them end in a negative result.
+
+| document | what it settles |
+|---|---|
+| [reports/yolomg-nps-discrepancy.md](reports/yolomg-nps-discrepancy.md) | **Why does the paper report 0.95 on NPS where we measure 0.527?** ~78 % attributed to three measured mechanisms: which videos are held out (+0.291), per-frame leakage (+0.045, a lower bound), AP convention (+0.010). ~0.109 is left explicitly unexplained |
+| [reports/size-crossover.md](reports/size-crossover.md) | **Is there a target size below which we win?** The means cross at ~10 px on ARD-MAV — but paired testing calls only the *competitor's* side significant. A consistent trend, not an established result |
+| [reports/track-level-birds.md](reports/track-level-birds.md) | **Does bird rejection hold where the decision is made?** 0 birds raised over 934 instances — measured at the track for the first time. The counterpart: 11 clutter tracks raised, track precision 0.083 |
+| [reports/dt-ablation.md](reports/dt-ablation.md) | **Is dt=6 the optimum?** 27 runs say the validation and test curves *disagree* and nothing separates. dt=6 is validation-supported, **not** empirically established |
+| [reports/edge-model.md](reports/edge-model.md) | **What is the 100+ FPS model?** The same checkpoint at half resolution, and the figure **did not reproduce**: 72.1 fps at 640 px on a 4090, at AP 0.639 |
+| [reports/pre-release-audit.md](reports/pre-release-audit.md) | The adversarial pre-release audit of this repository, and what it found |
 
 Rounds 1–3 are measured on this repo's own two videos and their artifacts are committed under
 [`work/`](../work/) — the eval tables, the ground truth, the detections and the tracks. Rounds 4–7

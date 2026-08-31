@@ -353,7 +353,7 @@ data/videos/         the two source videos (07_05 = train, 10_06 = unseen test)
 | [docs/guides/run-inference.md](docs/guides/run-inference.md) · [retrain.md](docs/guides/retrain.md) | run it on a new video · relabel, rebuild datasets, retrain |
 | [pursuit/README.md](pursuit/README.md) | the interceptor in depth, and a 26-row table of every bug that shaped it |
 | [final/README.md](final/README.md) · [realtime/README.md](realtime/README.md) | the two deliverables · the edge pipeline |
-| [docs/reports/](docs/reports/) | the build story, seven rounds, including every negative result |
+| [docs/reports/](docs/reports/) | the build story in eight rounds, plus five focused investigations — including every negative result |
 
 ## Limits
 

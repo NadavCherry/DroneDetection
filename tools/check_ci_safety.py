@@ -20,6 +20,7 @@ Exit code is the suite's, so it drops straight into a CI job.
 from __future__ import annotations
 
 import argparse
+import os
 import subprocess
 import sys
 import tempfile
@@ -65,7 +66,11 @@ def main(argv=None) -> int:
     with tempfile.TemporaryDirectory() as tmp:
         (Path(tmp) / "sitecustomize.py").write_text(
             _SITECUSTOMIZE.format(blocked=set(a.blocked)), encoding="utf-8")
-        env_path = f"{tmp}:{REPO}"
+        # os.pathsep, not ":" -- on Windows the separator is ";", so a hardcoded
+        # colon produces ONE nonsense path entry, PYTHONPATH silently does nothing,
+        # the blocking sitecustomize never loads, and the check reports green while
+        # testing nothing.
+        env_path = os.pathsep.join((tmp, str(REPO)))
         print(f"running the suite with {sorted(a.blocked)} blocked at import ...")
         proc = subprocess.run(
             [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", *a.targets],
