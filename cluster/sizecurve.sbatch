@@ -13,8 +13,6 @@
 
 ### NO --gpus. Every stage here reads JSON detection files that already exist and does
 ### arithmetic on them. Nothing benefits from CUDA, so nothing here may hold a GPU.
-### 24G covers the largest arm: NPS at conf 0.001 is a few hundred thousand detection
-### records held across three seeds at once.
 
 set -uo pipefail
 ROOT=${SPECKLOCK_ROOT:-/home/cherryn/projects/SpeckLock}

@@ -3,11 +3,13 @@
 #SBATCH --time 0-04:00:00
 #SBATCH --job-name sl_sweep
 #SBATCH --output /home/cherryn/projects/SpeckLock/cluster_logs/sweep-%j.out
-#SBATCH --mem=12G
+#SBATCH --mem=7G
 
 ### CPU only, and no --gpus at all: this re-scores detection JSONs that already exist.
-### Nothing here touches CUDA. 12G covers the largest detection file (~180 MB) with room
-### for the per-sequence record lists; measured peak on a trial run was under 6G.
+### Nothing here touches CUDA. 7G: the trial run's measured peak was under 6G, and this
+### file previously asked for 12G in the same breath as recording that -- the measurement
+### was taken and then not acted on. 7G is that peak plus the ~20% headroom the cluster
+### rules allow. Related: tools/rightsize_jobs.py, which found five more of these.
 
 set -uo pipefail
 cd /home/cherryn/projects/SpeckLock
