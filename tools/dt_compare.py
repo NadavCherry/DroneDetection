@@ -78,6 +78,13 @@ def main() -> int:
     ap.add_argument("--baseline-dt", type=int, default=6)
     ap.add_argument("--resamples", type=int, default=2000)
     ap.add_argument("--out", type=Path)
+    ap.add_argument("--runs-dir", type=Path, default=Path("work/runs_dt"),
+                    help="training runs, read for each arm's VALIDATION mAP50. The "
+                         "figure needs both curves: their disagreement is the result, "
+                         "so showing one of them alone would misrepresent it.")
+    ap.add_argument("--json", type=Path,
+                    help="machine-readable artefact for make_paper_figures.py -- a "
+                         "figure should never be parsed out of markdown")
     a = ap.parse_args()
 
     sc = Path(a.scorecards)
@@ -120,6 +127,7 @@ def main() -> int:
           "zero **and** the permutation p < 0.05, matching `tools/make_summary.py`." % a.baseline_dt,
           "", "| vs | seed | d AP | 95% CI | p perm | verdict |", "|---|---|---|---|---|---|"]
     sig_total = 0
+    paired_rows: list[dict] = []
     for dt in sorted(k for k in arms if k != a.baseline_dt):
         for seed in sorted(arms[a.baseline_dt]):
             if seed not in arms[dt]:
@@ -132,17 +140,56 @@ def main() -> int:
             pp = paired_permutation_pooled_ap(ua, ub, n_resamples=a.resamples, seed=seed)
             sig = (r["lo"] > 0 or r["hi"] < 0) and pp < 0.05
             sig_total += sig
+            paired_rows.append({"vs_dt": dt, "seed": seed, "d_ap": r["observed"],
+                                "lo": r["lo"], "hi": r["hi"], "p_perm": pp,
+                                "significant": bool(sig)})
             L.append("| dt%d | %d | %+.4f | [%+.4f, %+.4f] | %.4f | %s |"
                      % (dt, seed, r["observed"], r["lo"], r["hi"], pp,
                         "**significant**" if sig else "no difference"))
     L += ["", "**%d of %d paired comparisons reached significance.**"
           % (sig_total, 3 * (len(arms) - 1)), ""]
 
+    # ------------------------------------------------------- the validation curve too
+    # Read from each run's own results.csv, never transcribed. The figure needs BOTH
+    # curves, because their disagreement is the result.
+    import csv
+    import glob as _glob
+    val: dict[int, list[float]] = {}
+
+    def _best(path):
+        rows = list(csv.DictReader(open(path, encoding="utf-8")))
+        if not rows:
+            return None
+        h = {kk.strip(): kk for kk in rows[0]}
+        key = "metrics/mAP50(B)"
+        return max(float(r[h[key]]) for r in rows) if key in h else None
+
+    for f in sorted(_glob.glob(str(a.runs_dir / "dt*-s*" / "results.csv"))):
+        m = re.search(r"dt(\d+)-s", f)
+        v = _best(f)
+        if m and v is not None:
+            val.setdefault(int(m.group(1)), []).append(v)
+    # dt=6 is the shipped configuration; its runs live under runs_e100.
+    for f in sorted(_glob.glob(str(a.runs_dir.parent / "runs_e100" /
+                                   "temporal_nps-s*" / "results.csv"))):
+        v = _best(f)
+        if v is not None:
+            val.setdefault(a.baseline_dt, []).append(v)
+
     out = "\n".join(L) + "\n"
-    print(out)
     if a.out:
         a.out.parent.mkdir(parents=True, exist_ok=True)
         a.out.write_text(out, encoding="utf-8")
+    if a.json:
+        a.json.parent.mkdir(parents=True, exist_ok=True)
+        a.json.write_text(json.dumps({
+            "baseline_dt": a.baseline_dt, "resamples": a.resamples,
+            "test_ap": {str(d): per_seed[d] for d in sorted(per_seed)},
+            "val_map50": {str(d): v for d, v in sorted(val.items())},
+            "paired": paired_rows,
+        }, indent=2), encoding="utf-8")
+        print(f"wrote {a.json}")
+    print(out)
     return 0
 
 

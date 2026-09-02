@@ -3,7 +3,13 @@
 #SBATCH --time 0-03:00:00
 #SBATCH --job-name sl_sizecurve
 #SBATCH --output /home/cherryn/projects/SpeckLock/cluster_logs/sizecurve-%j.out
-#SBATCH --mem=24G
+#SBATCH --mem=4G
+### 4G, measured rather than guessed: size_curve peaks at 0.48 GB for 2 arms; 9 scales to ~2 GB.
+### This cluster sets JobAcctGatherType=(null), so sacct MaxRSS and sstat are both
+### empty and nothing ever contradicted an over-request. The python step below runs
+### under /usr/bin/time -v and prints its own peak RSS into this job's log, so the
+### next person sizing it has a measurement instead of a habit.
+
 
 ### NO --gpus. Every stage here reads JSON detection files that already exist and does
 ### arithmetic on them. Nothing benefits from CUDA, so nothing here may hold a GPU.
@@ -48,7 +54,7 @@ run_curve () {   # $1 dataset  $2 gt  $3..  arm triples
     done
     for b in mission aitod; do
         echo "----- $ds / $b"
-        python -u tools/size_curve.py --dataset "$ds" --bins "$b" \
+        /usr/bin/time -v python -u tools/size_curve.py --dataset "$ds" --bins "$b" \
             --rule iou --iou 0.5 --conf 0.001 --resamples 1000 \
             "${args[@]}" --out work/reports/size_curve \
             || echo "*** size_curve $ds/$b FAILED ***"

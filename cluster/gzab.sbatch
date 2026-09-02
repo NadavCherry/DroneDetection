@@ -3,7 +3,13 @@
 #SBATCH --time 0-06:00:00
 #SBATCH --job-name sl_gzab
 #SBATCH --output /home/cherryn/projects/SpeckLock/cluster_logs/gzab-%j.out
-#SBATCH --mem=16G
+#SBATCH --mem=5G
+### 5G, measured rather than guessed: two sequential make_summary runs, 3.21 GB each.
+### This cluster sets JobAcctGatherType=(null), so sacct MaxRSS and sstat are both
+### empty and nothing ever contradicted an over-request. The python step below runs
+### under /usr/bin/time -v and prints its own peak RSS into this job's log, so the
+### next person sizing it has a measurement instead of a habit.
+
 ### A/B the SCORECARD INPUT PATH, holding everything else fixed.
 ###
 ### The question is whether reading gzipped scorecards produces the same numbers as
@@ -21,10 +27,10 @@ cd "$ROOT"; module load anaconda; source activate speck; export PYTHONPATH=$ROOT
 echo "JOB $SLURM_JOB_ID on $(hostname)"
 N=500
 echo "### A: plain .json"
-python -u tools/make_summary.py --scorecards work/_jsononly --n-resamples $N \
+/usr/bin/time -v python -u tools/make_summary.py --scorecards work/_jsononly --n-resamples $N \
     --out work/_gzonly/SUMMARY_from_json.md || exit 1
 echo "### B: gzipped .json.gz"
-python -u tools/make_summary.py --scorecards work/_gzonly --n-resamples $N \
+/usr/bin/time -v python -u tools/make_summary.py --scorecards work/_gzonly --n-resamples $N \
     --out work/_gzonly/SUMMARY_from_gz.md || exit 1
 python - <<PY
 a = open("work/_gzonly/SUMMARY_from_json.md", encoding="utf-8").read()

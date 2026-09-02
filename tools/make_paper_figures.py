@@ -140,45 +140,59 @@ def fig1(results: Path, out: Path, datasets: list[str], bins: str = "mission") -
 
 # ---------------------------------------------------------------- figure 2
 def fig2(results: Path, out: Path) -> bool:
-    """AP against measured FPS. Both axes measured by us on one GPU."""
-    bench_dir = results / "reports" / "bench"
-    rows = []
-    for p in sorted(bench_dir.glob("*.json")) if bench_dir.is_dir() else []:
-        j = _load(p)
-        if j and j.get("fps_at_p50"):
-            rows.append(j)
+    """AP against measured FPS, from tools/bench_edge.py's own artefact.
+
+    Every point is one execution: accuracy and speed were measured in the SAME pass over
+    the same video, so the two axes cannot drift apart. The x axis is the steady-state p50
+    rate, not the end-to-end mean -- a TensorRT engine pays a one-time initialisation cost
+    that, averaged over a 361-frame clip, once made the faster backend read seventeen times
+    slower than the slower one.
+
+    The shape is the point: dropping 1280 -> 640 moves a short way right and a long way
+    down. Speed bought with resolution is expensive here, and the figure should show that
+    rather than a reader having to infer it from a table.
+    """
+    j = _load(results / "reports" / "edge" / "edge_bench.json")
+    if not j:
+        print("  fig2: no work/reports/edge/edge_bench.json -- skipped")
+        return False
+    rows = [r for r in j if r.get("ap") is not None
+            and (r.get("steady_state") or {}).get("fps_at_p50")]
     if not rows:
-        print("  fig2: no benchmark JSON found -- skipped")
+        print("  fig2: artefact present but no row has both AP and a p50 rate -- skipped")
         return False
 
-    fig, ax = plt.subplots(figsize=(6.4, 4.6))
-    for j in rows:
-        arm = j.get("arm", "?")
-        colour, marker, legend = ARM_STYLE.get(arm, (INK, "D", arm))
-        ap = j.get("ap")
-        label = j.get("label") or legend
-        if j.get("engine") in (".engine", ".onnx"):
-            label += f" [{j['engine'].lstrip('.')}]"
-        if ap is None:
-            # Speed measured but no AP attached: draw it on the axis floor and say so,
-            # rather than silently dropping a measurement that cost GPU time.
-            ax.plot([j["fps_at_p50"]], [0.02], marker=marker, markersize=9,
-                    color=colour, markerfacecolor=BG)
-            ax.annotate(f"{label}\n(AP not attached)", (j["fps_at_p50"], 0.02),
-                        textcoords="offset points", xytext=(6, 6),
-                        fontsize=7, color=SUB)
-            continue
-        ax.plot([j["fps_at_p50"]], [ap], marker=marker, markersize=10, color=colour)
-        ax.annotate(label, (j["fps_at_p50"], ap), textcoords="offset points",
-                    xytext=(8, 4), fontsize=8, color=INK)
+    fig, ax = plt.subplots(figsize=(6.8, 4.8))
+    # One colour per backend, one marker per resolution: a reader can read either
+    # dimension without the legend, and neither is carried by colour alone.
+    col = {"engine": BLUE, "pt": ORANGE}
+    mark = {1280: "o", 640: "^"}
+    for r in rows:
+        b, sz = r.get("backend", "?"), int(r.get("imgsz", 0))
+        ax.plot([r["steady_state"]["fps_at_p50"]], [r["ap"]],
+                marker=mark.get(sz, "D"), markersize=11,
+                color=col.get(b, INK), linestyle="none")
+        ax.annotate(f"{b} @ {sz}", (r["steady_state"]["fps_at_p50"], r["ap"]),
+                    textcoords="offset points", xytext=(9, -3), fontsize=8, color=INK)
 
-    ax.set_xlabel("frames per second (p50, whole pipeline, one GPU)")
-    ax.set_ylabel("AP @ IoU 0.5")
-    ax.set_ylim(0, 1)
+    # Join the two points that share a backend, so the resolution trade is a line the eye
+    # follows rather than two dots a reader has to pair up themselves.
+    for b, colour in col.items():
+        pair = sorted([r for r in rows if r.get("backend") == b],
+                      key=lambda r: r["steady_state"]["fps_at_p50"])
+        if len(pair) == 2:
+            ax.plot([q["steady_state"]["fps_at_p50"] for q in pair],
+                    [q["ap"] for q in pair], color=colour, alpha=0.45,
+                    linewidth=1.4, zorder=0)
+
+    ax.set_xlabel("frames per second  (steady-state p50, whole pipeline, one GPU)")
+    ax.set_ylabel("AP  (centre distance, tau = 12 px)")
+    ax.set_ylim(0.55, 0.95)
     ax.grid(True, linewidth=0.6, alpha=0.5)
-    fig.text(0.5, 1.02, "Accuracy against speed", ha="center", color=INK, fontsize=13)
-    fig.text(0.5, 0.98, "both arms timed in one process on one GPU, "
-             "pre- and post-processing included", ha="center", color=SUB, fontsize=8)
+    gpu = rows[0].get("gpu", "one GPU")
+    fig.text(0.5, 1.03, "Accuracy against speed", ha="center", color=INK, fontsize=13)
+    fig.text(0.5, 0.985, f"{gpu} - both axes from the same pass; halving resolution buys "
+             "1.2x speed for -0.24 AP", ha="center", color=SUB, fontsize=8)
     _finish(fig, out, "fig2_accuracy_vs_speed.png")
     return True
 
@@ -231,38 +245,187 @@ def fig3(results: Path, out: Path, datasets: list[str], bins: str = "mission") -
 
 # ---------------------------------------------------------------- figure 4
 def fig4(results: Path, out: Path) -> bool:
-    """AP against tap spacing dt, with the deployed choice marked.
+    """The dt ablation, BOTH curves, because their disagreement is the result.
 
-    Expects {"dataset": ..., "points": [{"dt":int,"ap_mean":float,"ap_std":float,
-    "seeds":[...], "fps":float|null}, ...], "chosen": int}.
+    Reads tools/dt_compare.py's JSON. Two panels rather than one: validation mAP50 and
+    full-frame held-out test AP live on different scales (~0.93 against ~0.49) and a twin
+    axis would invite reading a gap between them that is not there.
+
+    Drawing only the validation curve would produce the figure this project nearly
+    published -- a clean inverted U peaking at the deployed dt=6, with non-overlapping
+    seed ranges, which looks like the constant being vindicated. The test panel beside it
+    shows dt=6 third, dt=2 first, and the caption says what the paired tests found: nothing
+    separates, and the two comparisons that did reach significance contradicted each other
+    across seeds of the same pair.
     """
-    j = _load(results / "reports" / "ablation" / "dt_sweep.json")
-    if not j or not j.get("points"):
-        print("  fig4: no dt_sweep.json found -- skipped")
+    j = _load(results / "reports" / "dt_sweep.json")
+    if not j or not j.get("test_ap"):
+        print("  fig4: no work/reports/dt_sweep.json -- skipped")
         return False
 
-    pts = sorted(j["points"], key=lambda p: p["dt"])
-    xs = [p["dt"] for p in pts]
-    ys = [p["ap_mean"] for p in pts]
-    es = [p.get("ap_std", 0.0) for p in pts]
+    chosen = j.get("baseline_dt", 6)
+    fig, axes = plt.subplots(1, 2, figsize=(10.4, 4.3))
+    panels = [("val_map50", "validation mAP50  (640 px tiles)", BLUE,
+               "clean inverted U, peak at the deployed dt"),
+              ("test_ap", "held-out test AP  (full frame, 10 clips)", ORANGE,
+               "different ranking; nothing separates")]
 
-    fig, ax = plt.subplots(figsize=(6.4, 4.4))
-    ax.errorbar(xs, ys, yerr=es, color=BLUE, marker="o", markersize=7,
-                linewidth=2, capsize=4, label="AP @ IoU 0.5")
-    chosen = j.get("chosen")
-    if chosen in xs:
-        ax.axvline(chosen, color=CRIT, linewidth=1.2, linestyle=":")
-        ax.annotate(f"deployed: dt={chosen}", (chosen, min(ys)),
-                    textcoords="offset points", xytext=(6, -2),
-                    color=CRIT, fontsize=8)
-    ax.set_xticks(xs)
-    ax.set_xlabel("dt, frames between taps (aperture = 2*dt + 1)")
-    ax.set_ylabel("AP @ IoU 0.5")
-    ax.grid(True, linewidth=0.6, alpha=0.5)
-    ax.legend(fontsize=8)
-    fig.text(0.5, 1.02, f"Tap spacing ablation -- {j.get('dataset','')}",
+    for ax, (key, ylab, colour, note) in zip(axes, panels):
+        data = j.get(key) or {}
+        if not data:
+            ax.text(0.5, 0.5, f"no {key}", ha="center", va="center",
+                    transform=ax.transAxes, color=SUB)
+            continue
+        xs = sorted(int(k) for k in data)
+        ys = [st.fmean(data[str(x)]) for x in xs]
+        es = [st.stdev(data[str(x)]) if len(data[str(x)]) > 1 else 0.0 for x in xs]
+        ax.errorbar(xs, ys, yerr=es, color=colour, marker="o", markersize=7,
+                    linewidth=2, capsize=4)
+        # Every seed as a faint point: three runs behind a mean is a fact the reader
+        # should be able to see, especially where the spread dwarfs the effect.
+        for x in xs:
+            ax.plot([x] * len(data[str(x)]), data[str(x)], marker=".", linestyle="none",
+                    color=colour, alpha=0.45, markersize=6)
+        if chosen in xs:
+            ax.axvline(chosen, color=CRIT, linewidth=1.1, linestyle=":")
+            ax.annotate(f"deployed dt={chosen}", (chosen, min(ys)),
+                        textcoords="offset points", xytext=(6, -12),
+                        color=CRIT, fontsize=8)
+        best = xs[ys.index(max(ys))]
+        ax.annotate(f"best here: dt={best}", (best, max(ys)),
+                    textcoords="offset points", xytext=(-10, 10), fontsize=8,
+                    color=INK)
+        ax.set_xticks(xs)
+        ax.set_xlabel("dt, frames between taps   (aperture = 2·dt + 1)")
+        ax.set_ylabel(ylab)
+        ax.set_title(note, color=SUB, fontsize=9)
+        ax.grid(True, linewidth=0.6, alpha=0.5)
+
+    n_sig = sum(1 for r in j.get("paired", []) if r.get("significant"))
+    n_tot = len(j.get("paired", []))
+    fig.text(0.5, 1.04, "Tap spacing: the two metrics do not agree",
              ha="center", color=INK, fontsize=13)
+    fig.text(0.5, 0.985,
+             f"paired bootstrap + permutation over 10 sequences, seed-matched: "
+             f"{n_sig} of {n_tot} comparisons significant"
+             + (" -- and those contradict each other across seeds of the same pair"
+                if n_sig else ""),
+             ha="center", color=SUB, fontsize=8)
+    fig.tight_layout()
     _finish(fig, out, "fig4_dt_ablation.png")
+    return True
+
+
+# ---------------------------------------------------------------- figure 5
+def fig5(results: Path, out: Path, video: Path, gt_path: Path, dt: int = 6) -> bool:
+    """Qualitative: the same target at four sizes, one frame against three moments.
+
+    This is the figure that makes figure 1 legible. Figure 1 says our advantage lives
+    below 10 px and disappears above it; this shows what a target of that size actually
+    looks like, and why one frame cannot carry it.
+
+    Each column is a real frame from the held-out video, chosen because the labelled
+    target falls in that size bucket. Top row is the raw frame as a single-frame detector
+    sees it. Bottom row is the detector's actual input -- grayscale at t-2dt, t-dt and t
+    as R, G and B -- so a stationary world is grey and anything that moved is coloured.
+
+    cv2 is imported here rather than at module scope on purpose: the other four figures
+    need only matplotlib, and a missing OpenCV should cost this figure alone rather than
+    the whole run.
+    """
+    try:
+        import cv2  # noqa: F401
+        import numpy as np
+        from collections import deque
+        from dronedet.gt import GroundTruth
+        from dronedet.stabilize import Stabilizer
+        from dronedet.video import frames as _frames
+        from tools.make_dataset_external import _stack_aligned_to_now
+    except Exception as e:
+        print(f"  fig5: needs OpenCV and the repo pipeline ({type(e).__name__}) -- skipped")
+        return False
+    if not video.is_file() or not gt_path.is_file():
+        print(f"  fig5: missing {video if not video.is_file() else gt_path} -- skipped")
+        return False
+
+    gt = GroundTruth.load(gt_path)
+    target = next((o for o in gt.objects.values() if not o.ignore), None)
+    if target is None:
+        print("  fig5: no non-ignore GT object -- skipped")
+        return False
+
+    # One representative frame per size bucket, picked by the GT's own box area so the
+    # caption's pixel figure is measured rather than asserted.
+    buckets = [("< 8 px", 0.0, 8.0), ("8-10 px", 8.0, 10.0),
+               ("10-16 px", 10.0, 16.0), ("> 16 px", 16.0, 1e9)]
+    excl = set(gt.meta.get("exclude_frames", []))
+    want: dict[str, tuple[int, tuple]] = {}
+    for f, box in sorted(target.frames.items()):
+        if f in excl or f < 2 * dt + 1:
+            continue
+        s = (box[2] * box[3]) ** 0.5
+        for name, lo, hi in buckets:
+            if lo <= s < hi and name not in want:
+                want[name] = (f, box)
+    cols = [(n, *want[n]) for n, _, _ in buckets if n in want]
+    if not cols:
+        print("  fig5: no frame matched any size bucket -- skipped")
+        return False
+
+    need = {f for _, f, _ in cols}
+    stab = Stabilizer("translation")
+    buf: deque = deque(maxlen=2 * dt + 1)
+    raw: dict[int, "np.ndarray"] = {}
+    stack: dict[int, "np.ndarray"] = {}
+    for idx, frame in _frames(str(video)):
+        m = stab.update(frame)
+        buf.append((cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY),
+                    float(m[0, 2]), float(m[1, 2])))
+        if idx in need and len(buf) == buf.maxlen:
+            raw[idx] = frame.copy()
+            stack[idx] = np.dstack(_stack_aligned_to_now(buf, dt))
+        if idx > max(need):
+            break
+
+    cols = [c for c in cols if c[1] in raw and c[1] in stack]
+    if not cols:
+        print("  fig5: could not build the temporal stack for any chosen frame -- skipped")
+        return False
+
+    R = 44                                    # crop half-width, px
+    fig, axes = plt.subplots(2, len(cols), figsize=(2.5 * len(cols), 5.4), squeeze=False)
+    for j, (name, f, box) in enumerate(cols):
+        cx, cy = int(box[0]), int(box[1])
+        size = (box[2] * box[3]) ** 0.5
+        for i, img in enumerate((raw[f], stack[f])):
+            h, w = img.shape[:2]
+            x0, y0 = max(0, cx - R), max(0, cy - R)
+            crop = img[y0:min(h, cy + R), x0:min(w, cx + R)]
+            if crop.ndim == 3 and i == 0:
+                crop = cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
+            ax = axes[i][j]
+            ax.imshow(crop, interpolation="nearest")
+            ax.set_xticks([]); ax.set_yticks([])
+            for sp in ax.spines.values():
+                sp.set_color(GRID)
+            # Mark where the target is, without covering it.
+            ax.plot([cx - x0], [cy - y0], marker="o", markersize=16,
+                    markerfacecolor="none", markeredgecolor=CRIT, markeredgewidth=1.2)
+            if i == 0:
+                ax.set_title(f"{name}" + "\n" + f"{size:.1f} px, frame {f}",
+                             color=INK, fontsize=9)
+        axes[0][j].set_ylabel("")
+    axes[0][0].set_ylabel("one frame" + "\n" + "(what a single-frame"
+                          + "\n" + "detector sees)", color=SUB, fontsize=8)
+    axes[1][0].set_ylabel("three moments" + "\n" + "(the detector's"
+                          + "\n" + "actual input)", color=SUB, fontsize=8)
+    fig.text(0.5, 1.02, "The same target, one frame against three moments",
+             ha="center", color=INK, fontsize=13)
+    fig.text(0.5, 0.975, f"real frames from {video.name}; red circle marks the labelled "
+             f"target. Taps at t-{2*dt}, t-{dt}, t as R, G, B",
+             ha="center", color=SUB, fontsize=8)
+    fig.tight_layout()
+    _finish(fig, out, "fig5_qualitative_tiny_target.png")
     return True
 
 
@@ -275,13 +438,19 @@ def main() -> int:
     ap.add_argument("--datasets", nargs="*",
                     default=["nps", "ardmav", "local_ft"])
     ap.add_argument("--bins", default="mission")
+    ap.add_argument("--video", type=Path, default=REPO / "data/videos/10_06.mp4",
+                    help="fig5 only: the held-out video the crops come from")
+    ap.add_argument("--gt", type=Path,
+                    default=REPO / "realtime/work/gt_1006_v2.json",
+                    help="fig5 only: its ground truth, which picks the size buckets")
     a = ap.parse_args()
 
     print(f"reading results from {a.results}")
     made = [fig1(a.results, a.out, a.datasets, a.bins),
             fig2(a.results, a.out),
             fig3(a.results, a.out, a.datasets, a.bins),
-            fig4(a.results, a.out)]
+            fig4(a.results, a.out),
+            fig5(a.results, a.out, a.video, a.gt)]
     n = sum(1 for m in made if m)
     print(f"\n{n}/4 figures written to {a.out}")
     ### Zero figures is a failure worth an exit code: this runs in a job whose log nobody

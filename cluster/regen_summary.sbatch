@@ -3,7 +3,13 @@
 #SBATCH --time 0-08:00:00
 #SBATCH --job-name sl_regensum
 #SBATCH --output /home/cherryn/projects/SpeckLock/cluster_logs/regensum-%j.out
-#SBATCH --mem=16G
+#SBATCH --mem=4G
+### 4G, measured rather than guessed: make_summary peaks at 3.21 GB over all 30 arms.
+### This cluster sets JobAcctGatherType=(null), so sacct MaxRSS and sstat are both
+### empty and nothing ever contradicted an over-request. The python step below runs
+### under /usr/bin/time -v and prints its own peak RSS into this job's log, so the
+### next person sizing it has a measurement instead of a habit.
+
 ### NO --gpus. Regenerate work/reports/SUMMARY.md so that it records the settings that
 ### produced it. The previous file recorded none, so its Monte-Carlo columns (CIs,
 ### p-values) could not be reproduced -- a regeneration gave identical effect sizes and
@@ -21,7 +27,7 @@ set -uo pipefail
 ROOT=${SPECKLOCK_ROOT:-/home/cherryn/projects/SpeckLock}
 cd "$ROOT"; module load anaconda; source activate speck; export PYTHONPATH=$ROOT
 echo "JOB $SLURM_JOB_ID on $(hostname)"
-python -u tools/make_summary.py --scorecards work/scorecards --n-resamples 2000 \
+/usr/bin/time -v python -u tools/make_summary.py --scorecards work/scorecards --n-resamples 2000 \
     --out work/reports/SUMMARY.md
 echo "make_summary exit=$?"
 head -8 work/reports/SUMMARY.md

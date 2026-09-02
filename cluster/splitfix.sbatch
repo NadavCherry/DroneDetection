@@ -3,7 +3,13 @@
 #SBATCH --time 0-00:20:00
 #SBATCH --job-name sl_splitfix
 #SBATCH --output /home/cherryn/projects/SpeckLock/cluster_logs/splitfix-%j.out
-#SBATCH --mem=4G
+#SBATCH --mem=2G
+### 2G, measured rather than guessed: shuffles text; the images it lists are never opened.
+### This cluster sets JobAcctGatherType=(null), so sacct MaxRSS and sstat are both
+### empty and nothing ever contradicted an over-request. The python step below runs
+### under /usr/bin/time -v and prints its own peak RSS into this job's log, so the
+### next person sizing it has a measurement instead of a habit.
+
 
 ### NO --gpus. This shuffles lines in text files and touches empty filenames in a temp
 ### directory. Every image, label and mask it references already exists and none are
@@ -32,7 +38,7 @@ for spec in "yolomg_nps yolomg disjoint-clips yolomg_nps_leak_ctl" \
             "yolomg_nps yolomg all-clips yolomg_nps_leak_all" \
             "nps_yolo_temporal ours disjoint-clips nps_temporal_leak_ctl"; do
     set -- $spec
-    python -u tools/sota/make_leak_split.py \
+    /usr/bin/time -v python -u tools/sota/make_leak_split.py \
         --dataset "work/ext_datasets/$1" --style "$2" --pool "$3" --seed 0 \
         --out "work/ext_datasets/$4" || { echo "*** split $4 FAILED ***"; exit 1; }
 done
@@ -41,7 +47,7 @@ echo "########## 2. run THEIR split script, unmodified ##########"
 ### Evidence rather than code-reading for the two structural claims: their script cannot
 ### emit a held-out test set (trainval_percent = 1.0 means the else-branch never fires),
 ### and its train/val partition is per-frame across all videos rather than per-video.
-python -u tools/sota/demo_their_split.py \
+/usr/bin/time -v python -u tools/sota/demo_their_split.py \
     --names-from work/ext_datasets/yolomg_nps \
     --out work/reports/protocol/their_split_demo.json || exit 1
 
