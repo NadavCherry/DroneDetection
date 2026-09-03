@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import statistics as st
 import sys
 from pathlib import Path
 
@@ -94,46 +95,70 @@ def fig1(results: Path, out: Path, datasets: list[str], bins: str = "mission") -
         print("  fig1: no size_curve JSON found -- skipped")
         return False
 
-    fig, axes = plt.subplots(1, len(found), figsize=(5.2 * len(found), 4.2),
+    fig, axes = plt.subplots(1, len(found), figsize=(5.4 * len(found), 4.6),
                              squeeze=False)
     for ax, (ds, j) in zip(axes[0], found):
         arms = j["arms"]
         order = [k for k in ("ours", "yolomg", "ours-single") if k in arms]
-        labels: list[str] = []
+        labels = list(arms[order[0]]["bins"]) if order else []
+
+        # Which bins the PAIRED test separated, and in whose favour. This is the arbiter,
+        # not the bands: two marginal intervals can overlap completely while a paired test
+        # over the same sequences is decisive, and both can be wide while the paired test
+        # finds nothing. Reading significance off band overlap is the mistake this panel
+        # most invites, so the verdict is drawn rather than left to the eye.
+        by_bin = {}
+        for r in j.get("paired", []):
+            by_bin.setdefault(r["bin"], []).append(r)
+        verdict = {}
+        for b, rs in by_bin.items():
+            if rs and all(x["significant"] for x in rs)                     and len({x["favours"] for x in rs}) == 1:
+                verdict[b] = rs[0]["favours"]
+
         for arm in order:
             cells = arms[arm]["bins"]
-            names = [b for b in cells]
-            if not labels:
-                labels = names
             xs = list(range(len(labels)))
             ys = [cells[b]["mean"] if b in cells else float("nan") for b in labels]
             lo = [cells[b]["ci95"][0] if b in cells else float("nan") for b in labels]
             hi = [cells[b]["ci95"][1] if b in cells else float("nan") for b in labels]
             colour, marker, legend = ARM_STYLE.get(arm, (INK, "o", arm))
-            ax.fill_between(xs, lo, hi, color=colour, alpha=0.13, linewidth=0)
+            # Bands kept but faint: each arm's own spread over sequences is context,
+            # not the test.
+            ax.fill_between(xs, lo, hi, color=colour, alpha=0.07, linewidth=0)
             ax.plot(xs, ys, color=colour, marker=marker, markersize=6,
                     linewidth=2, label=legend)
-            # Hollow marker wherever the bin is underpowered.
             for x, b in zip(xs, labels):
                 if b in cells and cells[b].get("underpowered"):
                     ax.plot([x], [cells[b]["mean"]], marker=marker, markersize=6,
                             markerfacecolor=BG, markeredgecolor=colour, linewidth=0)
 
+        for x, b in enumerate(labels):
+            if b in verdict:
+                up = verdict[b] == "ours"
+                ax.axvspan(x - 0.32, x + 0.32, color=CRIT, alpha=0.10, linewidth=0)
+                ax.annotate("sig. " + ("ours" if up else "theirs"), (x, 0.03),
+                            ha="center", fontsize=7, color=CRIT)
+
         n_row = [str(arms[order[0]]["bins"][b]["n_gt"]) if b in arms[order[0]]["bins"]
                  else "-" for b in labels]
         ax.set_xticks(range(len(labels)))
-        ax.set_xticklabels([f"{b}\nn={n}" for b, n in zip(labels, n_row)], fontsize=8)
+        ax.set_xticklabels([b + chr(10) + "n=" + n for b, n in zip(labels, n_row)],
+                           fontsize=8)
         ax.set_ylim(0, 1)
         ax.grid(True, axis="y", linewidth=0.6, alpha=0.5)
-        ax.set_title(ds, color=INK, pad=8)
+        n_seq = arms[order[0]].get("n_sequences", "?")
+        ax.set_title("%s   (%s sequences)" % (ds, n_seq), color=INK, pad=8, fontsize=10)
         ax.set_xlabel("target size, sqrt(area)", labelpad=6)
-    axes[0][0].set_ylabel("AP @ IoU 0.5")
+    axes[0][0].set_ylabel("AP")
     axes[0][0].legend(loc="upper left", fontsize=8)
-    fig.text(0.5, 1.04, "Accuracy against target size", ha="center",
+    fig.text(0.5, 1.05, "Accuracy against target size", ha="center",
              color=INK, fontsize=13)
-    fig.text(0.5, 1.005,
-             "band = 95 % bootstrap CI over sequences; hollow marker = underpowered bin",
+    fig.text(0.5, 1.012,
+             "shaded band = each arm's own 95 % CI over sequences, NOT a significance "
+             "test. Red bracket = the paired test separated that bin",
              ha="center", color=SUB, fontsize=8)
+    fig.text(0.5, 0.975, "hollow marker = fewer GT instances than the power floor; "
+             "treat as noise", ha="center", color=SUB, fontsize=7)
     _finish(fig, out, "fig1_accuracy_vs_size.png")
     return True
 
@@ -452,7 +477,8 @@ def main() -> int:
             fig4(a.results, a.out),
             fig5(a.results, a.out, a.video, a.gt)]
     n = sum(1 for m in made if m)
-    print(f"\n{n}/4 figures written to {a.out}")
+    print("")
+    print("%d/%d figures written to %s" % (n, len(made), a.out))
     ### Zero figures is a failure worth an exit code: this runs in a job whose log nobody
     ### reads line by line, and "skipped, skipped, skipped, done" should not look like
     ### success to whatever ran it.

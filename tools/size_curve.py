@@ -245,6 +245,10 @@ def main() -> int:
     if not by_name:
         raise SystemExit("no arms evaluated")
 
+    # Declared here, not inside the paired block: a single-sequence dataset skips that
+    # block entirely, and the JSON must still carry the key so a figure can tell
+    # "no test was possible" from "the test found nothing".
+    paired_out: list[dict] = []
     rng = np.random.default_rng(a.seed)
     results: dict[str, dict] = {}
     for name, seed_runs in by_name.items():
@@ -395,6 +399,12 @@ def main() -> int:
                         continue
                     sig_summary.setdefault(bname, []).append(
                         bool(r["significant"]) and r["observed"] > 0)
+                    paired_out.append({"bin": bname, "seed": s,
+                                       "d_ap": r["observed"], "lo": r["lo"],
+                                       "hi": r["hi"], "p_perm": r["p_perm"],
+                                       "significant": bool(r["significant"]),
+                                       "favours": (ours if r["observed"] > 0
+                                                   else other)})
                     L.append(f"| {bname} | {s} | {r['observed']:+.3f} | "
                              f"[{r['lo']:+.3f}, {r['hi']:+.3f}] | {r['p_perm']:.4f} | "
                              f"{'**significant**' if r['significant'] else 'no difference'} |")
@@ -413,7 +423,9 @@ def main() -> int:
         (a.out / f"{a.dataset}_{a.bins}.md").write_text(out, encoding="utf-8")
         (a.out / f"{a.dataset}_{a.bins}.json").write_text(
             json.dumps({"dataset": a.dataset, "bins": a.bins, "rule": a.rule,
-                        "iou": a.iou, "conf": a.conf, "arms": results}, indent=2),
+                        "iou": a.iou, "conf": a.conf, "resamples": a.resamples,
+                        "min_gt": a.min_gt, "arms": results,
+                        "paired": paired_out}, indent=2),
             encoding="utf-8")
     return 0
 
