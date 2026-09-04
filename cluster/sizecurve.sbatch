@@ -1,10 +1,14 @@
 #!/bin/bash
 #SBATCH --partition main
-#SBATCH --time 0-03:00:00
+#SBATCH --time 0-08:00:00
 #SBATCH --job-name sl_sizecurve
 #SBATCH --output /home/cherryn/projects/SpeckLock/cluster_logs/sizecurve-%j.out
-#SBATCH --mem=4G
-### 4G, measured rather than guessed: size_curve peaks at 0.48 GB for 2 arms; 9 scales to ~2 GB.
+#SBATCH --mem=1G
+### 1G and 8h, both measured on a real run: peak RSS was 513 MB for the largest arm
+### set, and the 3h limit was hit part-way through the second bin set. The paired
+### bootstrap and permutation per bin per seed is what costs the time, not memory --
+### the earlier 4G estimate was 8x over while the 3h estimate was too SHORT. Guessing
+### a resource gets both directions wrong.
 ### This cluster sets JobAcctGatherType=(null), so sacct MaxRSS and sstat are both
 ### empty and nothing ever contradicted an over-request. The python step below runs
 ### under /usr/bin/time -v and prints its own peak RSS into this job's log, so the

@@ -342,24 +342,26 @@ def fig4(results: Path, out: Path) -> bool:
 
 
 # ---------------------------------------------------------------- figure 5
-def fig5(results: Path, out: Path, video: Path, gt_path: Path, dt: int = 6) -> bool:
-    """Qualitative: the same target at four sizes, one frame against three moments.
+def fig5(results: Path, out: Path, gt_dir: Path, video_root: Path, dt: int = 6) -> bool:
+    """Qualitative: one target at several sizes, a single frame above three moments.
 
-    This is the figure that makes figure 1 legible. Figure 1 says our advantage lives
-    below 10 px and disappears above it; this shows what a target of that size actually
-    looks like, and why one frame cannot carry it.
+    This makes figure 1 legible. Figure 1 says the advantage lives below 10 px and is gone
+    above it; this shows what a target of each size actually looks like, and why one frame
+    cannot carry the small ones.
 
-    Each column is a real frame from the held-out video, chosen because the labelled
-    target falls in that size bucket. Top row is the raw frame as a single-frame detector
-    sees it. Bottom row is the detector's actual input -- grayscale at t-2dt, t-dt and t
-    as R, G and B -- so a stationary world is grey and anything that moved is coloured.
+    SOURCED FROM ARD-MAV, not from 10_06. The first version used 10_06 and rendered a
+    single column -- correct behaviour on impossible input: realtime/work/gt_1006_v2.json
+    annotates its target with a CONSTANT 8.0 px box across all 337 frames, because that
+    ground truth was built by refining target *positions* and never box extents. No figure
+    about size could be drawn from it. ARD-MAV's labels carry real size variation, and it
+    is the dataset figure 1's curve comes from, so the two figures now describe one dataset.
 
-    cv2 is imported here rather than at module scope on purpose: the other four figures
-    need only matplotlib, and a missing OpenCV should cost this figure alone rather than
-    the whole run.
+    Crops are contrast-stretched per panel. At these sizes an unstretched crop of sky is a
+    flat grey rectangle in print -- which is why this project's own GIFs stretch their
+    insets. The stretch is named in the caption rather than left for a reader to wonder at.
     """
     try:
-        import cv2  # noqa: F401
+        import cv2
         import numpy as np
         from collections import deque
         from dronedet.gt import GroundTruth
@@ -369,39 +371,54 @@ def fig5(results: Path, out: Path, video: Path, gt_path: Path, dt: int = 6) -> b
     except Exception as e:
         print(f"  fig5: needs OpenCV and the repo pipeline ({type(e).__name__}) -- skipped")
         return False
-    if not video.is_file() or not gt_path.is_file():
-        print(f"  fig5: missing {video if not video.is_file() else gt_path} -- skipped")
+    if not gt_dir.is_dir():
+        print(f"  fig5: no GT directory at {gt_dir} -- skipped")
         return False
 
-    gt = GroundTruth.load(gt_path)
-    target = next((o for o in gt.objects.values() if not o.ignore), None)
-    if target is None:
-        print("  fig5: no non-ignore GT object -- skipped")
-        return False
-
-    # One representative frame per size bucket, picked by the GT's own box area so the
-    # caption's pixel figure is measured rather than asserted.
     buckets = [("< 8 px", 0.0, 8.0), ("8-10 px", 8.0, 10.0),
                ("10-16 px", 10.0, 16.0), ("> 16 px", 16.0, 1e9)]
-    excl = set(gt.meta.get("exclude_frames", []))
-    want: dict[str, tuple[int, tuple]] = {}
-    for f, box in sorted(target.frames.items()):
-        if f in excl or f < 2 * dt + 1:
-            continue
-        s = (box[2] * box[3]) ** 0.5
-        for name, lo, hi in buckets:
-            if lo <= s < hi and name not in want:
-                want[name] = (f, box)
-    cols = [(n, *want[n]) for n, _, _ in buckets if n in want]
-    if not cols:
-        print("  fig5: no frame matched any size bucket -- skipped")
+
+    # Pick the sequence whose labelled target spans the most buckets: a figure about size
+    # needs a target that changes size, and most sequences do not.
+    best = None
+    for gp in sorted(gt_dir.glob("*.json")):
+        gt = GroundTruth.load(gp)
+        excl = set(gt.meta.get("exclude_frames", []))
+        for obj in gt.objects.values():
+            if obj.ignore:
+                continue
+            hit = {}
+            for f, box in sorted(obj.frames.items()):
+                if f in excl or f < 2 * dt + 1:
+                    continue
+                s = (box[2] * box[3]) ** 0.5
+                for nm, lo, hi in buckets:
+                    if lo <= s < hi and nm not in hit:
+                        hit[nm] = (f, box, s)
+            if best is None or len(hit) > len(best[2]):
+                best = (gp, obj, hit)
+    if not best or len(best[2]) < 2:
+        n = len(best[2]) if best else 0
+        print(f"  fig5: no sequence spans more than {n} size bucket(s) -- skipped")
         return False
 
-    need = {f for _, f, _ in cols}
+    gp, obj, hit = best
+    cols = [(nm, hit[nm][0], hit[nm][1], hit[nm][2]) for nm, _, _ in buckets if nm in hit]
+
+    video = None
+    for ext in (".mp4", ".avi", ".MP4", ".mov"):
+        cand = video_root / (gp.stem + ext)
+        if cand.is_file():
+            video = cand
+            break
+    if video is None:
+        print(f"  fig5: no video for {gp.stem} under {video_root} -- skipped")
+        return False
+
+    need = {c[1] for c in cols}
     stab = Stabilizer("translation")
-    buf: deque = deque(maxlen=2 * dt + 1)
-    raw: dict[int, "np.ndarray"] = {}
-    stack: dict[int, "np.ndarray"] = {}
+    buf = deque(maxlen=2 * dt + 1)
+    raw, stack = {}, {}
     for idx, frame in _frames(str(video)):
         m = stab.update(frame)
         buf.append((cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY),
@@ -411,44 +428,64 @@ def fig5(results: Path, out: Path, video: Path, gt_path: Path, dt: int = 6) -> b
             stack[idx] = np.dstack(_stack_aligned_to_now(buf, dt))
         if idx > max(need):
             break
-
     cols = [c for c in cols if c[1] in raw and c[1] in stack]
     if not cols:
-        print("  fig5: could not build the temporal stack for any chosen frame -- skipped")
+        print("  fig5: could not build the stack for any chosen frame -- skipped")
         return False
 
-    R = 44                                    # crop half-width, px
-    fig, axes = plt.subplots(2, len(cols), figsize=(2.5 * len(cols), 5.4), squeeze=False)
-    for j, (name, f, box) in enumerate(cols):
+    def stretch(a):
+        """Per-crop percentile stretch. A few px of drone on sky is otherwise flat grey."""
+        a = a.astype(np.float32)
+        lo, hi = np.percentile(a, 1.0), np.percentile(a, 99.0)
+        if hi - lo < 1e-6:
+            return np.zeros(a.shape, dtype=np.uint8)
+        return np.clip((a - lo) * 255.0 / (hi - lo), 0, 255).astype(np.uint8)
+
+    R = 48
+    fig, axes = plt.subplots(2, len(cols), figsize=(2.6 * len(cols), 5.6), squeeze=False)
+    for j, (name, f, box, size) in enumerate(cols):
         cx, cy = int(box[0]), int(box[1])
-        size = (box[2] * box[3]) ** 0.5
         for i, img in enumerate((raw[f], stack[f])):
             h, w = img.shape[:2]
-            x0, y0 = max(0, cx - R), max(0, cy - R)
-            crop = img[y0:min(h, cy + R), x0:min(w, cx + R)]
-            if crop.ndim == 3 and i == 0:
+            x0 = max(0, min(cx - R, w - 2 * R))
+            y0 = max(0, min(cy - R, h - 2 * R))
+            crop = img[y0:y0 + 2 * R, x0:x0 + 2 * R]
+            if i == 0 and crop.ndim == 3:
                 crop = cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
             ax = axes[i][j]
-            ax.imshow(crop, interpolation="nearest")
-            ax.set_xticks([]); ax.set_yticks([])
+            ax.imshow(stretch(crop), interpolation="nearest")
+            ax.set_xticks([])
+            ax.set_yticks([])
             for sp in ax.spines.values():
                 sp.set_color(GRID)
-            # Mark where the target is, without covering it.
-            ax.plot([cx - x0], [cy - y0], marker="o", markersize=16,
-                    markerfacecolor="none", markeredgecolor=CRIT, markeredgewidth=1.2)
+            ax.plot([cx - x0], [cy - y0], marker="o", markersize=18,
+                    markerfacecolor="none", markeredgecolor=CRIT, markeredgewidth=1.3)
             if i == 0:
-                ax.set_title(f"{name}" + "\n" + f"{size:.1f} px, frame {f}",
+                ax.set_title(name + chr(10) + ("%.1f px, frame %d" % (size, f)),
                              color=INK, fontsize=9)
-        axes[0][j].set_ylabel("")
-    axes[0][0].set_ylabel("one frame" + "\n" + "(what a single-frame"
-                          + "\n" + "detector sees)", color=SUB, fontsize=8)
-    axes[1][0].set_ylabel("three moments" + "\n" + "(the detector's"
-                          + "\n" + "actual input)", color=SUB, fontsize=8)
+    axes[0][0].set_ylabel("one frame" + chr(10) + "(what a single-frame"
+                          + chr(10) + "detector sees)", color=SUB, fontsize=8)
+    axes[1][0].set_ylabel("three moments" + chr(10) + "(the detector" + chr(39)
+                          + "s" + chr(10) + "actual input)", color=SUB, fontsize=8)
     fig.text(0.5, 1.02, "The same target, one frame against three moments",
              ha="center", color=INK, fontsize=13)
-    fig.text(0.5, 0.975, f"real frames from {video.name}; red circle marks the labelled "
-             f"target. Taps at t-{2*dt}, t-{dt}, t as R, G, B",
+    fig.text(0.5, 0.972,
+             "%s, sequence %s. Red circle marks the labelled target; taps at t-%d, t-%d, t "
+             "as R, G, B. Crops are contrast-stretched."
+             % (gt_dir.name, gp.stem, 2 * dt, dt),
              ha="center", color=SUB, fontsize=8)
+    # Name what the bottom row actually shows. The method's premise is that a stabilised
+    # static world cancels to grey; on this data it visibly does not, because the
+    # stabiliser is translation-only and a moving camera over 3D buildings produces
+    # parallax it cannot remove. Leaving a reader to wonder whether the rainbow edges are
+    # a rendering artefact would be worse than saying so: this is the clutter the detector
+    # has to reject, and it is why the sub-10 px AP in figure 1 is near 0.5 and not near 1.
+    fig.text(0.5, -0.03,
+             "The coloured edges on the buildings are not an artefact of this figure. A "
+             "translation-only stabiliser cannot remove parallax from a moving camera over "
+             "3D structure, so the static world does NOT fully cancel here -- that residue "
+             "is the clutter the detector must reject, and it is why figure 1's sub-10 px "
+             "AP sits near 0.5.", ha="center", color=SUB, fontsize=7.5)
     fig.tight_layout()
     _finish(fig, out, "fig5_qualitative_tiny_target.png")
     return True
@@ -463,11 +500,13 @@ def main() -> int:
     ap.add_argument("--datasets", nargs="*",
                     default=["nps", "ardmav", "local_ft"])
     ap.add_argument("--bins", default="mission")
-    ap.add_argument("--video", type=Path, default=REPO / "data/videos/10_06.mp4",
-                    help="fig5 only: the held-out video the crops come from")
-    ap.add_argument("--gt", type=Path,
-                    default=REPO / "realtime/work/gt_1006_v2.json",
-                    help="fig5 only: its ground truth, which picks the size buckets")
+    ap.add_argument("--fig5-gt-dir", type=Path,
+                    default=REPO / "work/ext_datasets/gt/ardmav",
+                    help="fig5: GT directory. ARD-MAV rather than 10_06, whose GT carries "
+                         "a CONSTANT 8.0 px box on every frame and so cannot show size")
+    ap.add_argument("--fig5-video-root", type=Path,
+                    default=REPO / "data/external/ard_mav/ARD-MAV/videos",
+                    help="fig5: where the sequence videos live")
     a = ap.parse_args()
 
     print(f"reading results from {a.results}")
@@ -475,7 +514,7 @@ def main() -> int:
             fig2(a.results, a.out),
             fig3(a.results, a.out, a.datasets, a.bins),
             fig4(a.results, a.out),
-            fig5(a.results, a.out, a.video, a.gt)]
+            fig5(a.results, a.out, a.fig5_gt_dir, a.fig5_video_root)]
     n = sum(1 for m in made if m)
     print("")
     print("%d/%d figures written to %s" % (n, len(made), a.out))
